@@ -9,7 +9,7 @@ class UrlSegmentHandler(url: String) {
     private val paramsStart = '?'
 
     init {
-        var host = "localhost"
+        var host = ""
         var route = ""
         var params = HashMap<String, String>()
         var parsingState = ParsingState.HOST
@@ -18,22 +18,19 @@ class UrlSegmentHandler(url: String) {
             when(parsingState) {
                 ParsingState.HOST -> {
                     if (char == routeStart) {
-                        host = temp
                         parsingState = ParsingState.ROUTE
 
                         // Special case since all routes need to start with '/' internally
-                        temp = routeStart.toString()
+                        route = routeStart.toString()
                     } else {
-                        temp += char
+                        host += char
                     }
                 }
                 ParsingState.ROUTE -> {
                     if (char == paramsStart) {
-                        route = temp
                         parsingState = ParsingState.PARAMS
-                        temp = ""
                     } else {
-                        temp += char
+                        route += char
                     }
                 }
                 ParsingState.PARAMS -> {
