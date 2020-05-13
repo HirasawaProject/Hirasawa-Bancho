@@ -1,10 +1,12 @@
 package io.hirasawa.server.webserver.threads
 
 import io.hirasawa.server.webserver.Webserver
+import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -15,13 +17,23 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val dataInputStream = DataInputStream(socket.getInputStream())
 
         val headerHandler = HttpHeaderHandler(dataInputStream)
+        var postData = ByteArray(0)
+        if ("Content-Length" in headerHandler.headers &&
+            headerHandler.httpMethod == HttpMethod.POST) {
+            // Handle POST data
+            // We only do this when we're aware of content length
+            val postBuffer = ByteArrayOutputStream()
+            postBuffer.writeBytes(dataInputStream.readNBytes(headerHandler.headers["Content-Length"]!!.toInt()))
+            postData = postBuffer.toByteArray()
+        }
 
         val route = webserver.getRoute(headerHandler.route, headerHandler.httpMethod)
         val dataOutputStream = DataOutputStream(socket.getOutputStream())
 
         val responseBuffer = ByteArrayOutputStream()
 
-        val request = Request(headerHandler.route, headerHandler.httpMethod, headerHandler.headers)
+        val request = Request(headerHandler.route, headerHandler.httpMethod, headerHandler.headers,
+            ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), HashMap())
 
         route.handle(request, response)
