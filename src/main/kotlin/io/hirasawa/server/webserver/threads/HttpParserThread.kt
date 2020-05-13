@@ -4,6 +4,7 @@ import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
+import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import java.io.ByteArrayInputStream
@@ -27,12 +28,14 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             postData = postBuffer.toByteArray()
         }
 
-        val route = webserver.getRoute(headerHandler.route, headerHandler.httpMethod)
+        val urlSegment = UrlSegmentHandler(headerHandler.route).urlSegment
+
+        val route = webserver.getRoute(urlSegment.route, headerHandler.httpMethod)
         val dataOutputStream = DataOutputStream(socket.getOutputStream())
 
         val responseBuffer = ByteArrayOutputStream()
 
-        val request = Request(headerHandler.route, headerHandler.httpMethod, headerHandler.headers,
+        val request = Request(urlSegment, headerHandler.httpMethod, headerHandler.headers,
             ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
