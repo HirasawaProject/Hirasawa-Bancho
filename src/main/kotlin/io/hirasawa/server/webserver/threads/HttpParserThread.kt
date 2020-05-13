@@ -34,7 +34,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val request = Request(headerHandler.route, headerHandler.httpMethod, headerHandler.headers,
             ByteArrayInputStream(postData))
-        val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), HashMap())
+        val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
         route.handle(request, response)
 

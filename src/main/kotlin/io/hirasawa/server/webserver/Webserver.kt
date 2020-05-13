@@ -9,8 +9,16 @@ import kotlin.collections.HashMap
 
 class Webserver(val port: Int) {
     private val routes = HashMap<String, EnumMap<HttpMethod, Route>>()
+    private val defaultHeaders = HashMap<String, String>()
 
     private var sslEnabled = false
+
+    init {
+        addDefaultHeader("server", "Hirasawa")
+        // This one is only temporary, in the future will automatically set the content-type depending on if it's sent
+        // to a renderer or if it's just binary data
+        addDefaultHeader("content-type", "text/html")
+    }
 
     /**
      * Adds a route to the internal webserver
@@ -63,5 +71,25 @@ class Webserver(val port: Int) {
         } else {
             return RouteNotFoundRoute()
         }
+    }
+
+    /**
+     * Get headers we normally send out with every request
+     * This can be customised by calling addDefaultHeader
+     *
+     * @return HashMap of default headers
+     */
+    fun getDefaultHeaders(): HashMap<String, String> {
+        return defaultHeaders
+    }
+
+    /**
+     * Adds a header that will be send with every request
+     *
+     * @param key The header name
+     * @param value The header value
+     */
+    fun addDefaultHeader(key: String, value: String) {
+        defaultHeaders[key] = value
     }
 }
