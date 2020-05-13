@@ -41,7 +41,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         // Set version and status
         dataOutputStream.writeBytes("HTTP/1.0 ")
         dataOutputStream.writeBytes(response.httpStatus.code.toString() + " ")
-        dataOutputStream.writeBytes(response.httpStatus.name)
+        dataOutputStream.writeBytes(response.httpStatus.toString())
         dataOutputStream.writeBytes("\r\n")
 
         for ((key, value) in response.headers) {
