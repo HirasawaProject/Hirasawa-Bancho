@@ -5,7 +5,7 @@ import io.hirasawa.server.webserver.handlers.ParameterHandler
 import java.io.ByteArrayInputStream
 
 data class Request(
-    val path: String,
+    val urlSegment: UrlSegment,
     val httpMethod: HttpMethod,
     val headers: HashMap<String, String>,
     val byteArrayInputStream: ByteArrayInputStream
@@ -13,4 +13,10 @@ data class Request(
     val post: HashMap<String, String> by lazy {
         ParameterHandler(byteArrayInputStream.readAllBytes()).parameters
     }
+
+    val path: String
+        get() = urlSegment.route
+
+    val get: HashMap<String, String>
+        get() = urlSegment.params
 }
