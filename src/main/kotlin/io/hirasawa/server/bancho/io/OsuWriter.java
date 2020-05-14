@@ -1,5 +1,7 @@
 package io.hirasawa.server.bancho.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -89,5 +91,11 @@ public class OsuWriter {
 
         this.writeULEB128(data.length());
         this.writer.writeUTF(data);
+    }
+
+    public void writeBytes(byte[] array) throws IOException {
+        for (byte value : array) {
+            this.writer.writeByte(value);
+        }
     }
 }
