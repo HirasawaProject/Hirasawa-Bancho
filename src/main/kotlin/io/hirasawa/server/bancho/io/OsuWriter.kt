@@ -6,16 +6,17 @@ import java.io.IOException
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.experimental.or
 
 /**
  * Writer for osu! specific files and networking
  *
  * Based off the work from Markus Jarderot (https://stackoverflow.com/questions/28788616/parse-the-osu-binary-database-in-java)
  */
-class OsuWriter(source: OutputStream?) {
-    private val writer: DataOutputStream
+class OsuWriter(source: OutputStream) {
+    private val writer: DataOutputStream = DataOutputStream(source)
 
-    constructor(filename: String?) : this(FileOutputStream(filename)) {}
+    constructor(filename: String) : this(FileOutputStream(filename)) {}
 
     @Throws(IOException::class)
     fun writeByte(data: Byte) {
@@ -55,7 +56,7 @@ class OsuWriter(source: OutputStream?) {
             var groupValue = (data and 0x7F).toByte()
             data = data ushr 7
             if (data != 0) {
-                groupValue = groupValue or 0x80
+                groupValue = groupValue or 0x80.toByte()
             }
             writer.writeByte(data)
             bytesWritten++
@@ -110,7 +111,4 @@ class OsuWriter(source: OutputStream?) {
         writer.close()
     }
 
-    init {
-        writer = DataOutputStream(source)
-    }
 }
