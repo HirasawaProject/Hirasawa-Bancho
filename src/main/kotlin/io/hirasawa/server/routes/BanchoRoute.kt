@@ -13,7 +13,7 @@ import java.util.*
 
 class BanchoRoute: Route {
     override fun handle(request: Request, response: Response) {
-        if (response.headers["User-Agent"] != "osu!") {
+        if (request.headers["User-Agent"] != "osu!") {
             // Only osu! should be able to contact Bancho
             // Tell RouteForbidden to handle this request for us
             RouteForbidden().handle(request, response)
@@ -21,7 +21,7 @@ class BanchoRoute: Route {
         }
 
         response.headers[HttpHeader.CONTENT_TYPE.toString()] = ContentType.APPLICATION_OCTET_STREAM.toString()
-        request.headers["cho-version"] = "19"
+        response.headers["cho-version"] = "19"
 
         val osuWriter = OsuWriter(response.outputStream)
 
@@ -31,7 +31,7 @@ class BanchoRoute: Route {
             // TODO handle login
             // We'll generate their token now, we'll store it when we actually do auth, not sure why it's not osu-token
             // but we'll roll with it
-            request.headers["cho-token"] = UUID.randomUUID().toString()
+            response.headers["cho-token"] = UUID.randomUUID().toString()
             // We'll just say they're user ID 1 right now
             LoginReplyPacket(1).write(osuWriter)
             ChannelAvailablePacket("#osu").write(osuWriter)
