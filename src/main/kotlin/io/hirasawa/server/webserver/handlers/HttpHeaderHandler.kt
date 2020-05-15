@@ -1,10 +1,11 @@
 package io.hirasawa.server.webserver.handlers
 
 import io.hirasawa.server.webserver.enums.HttpMethod
+import io.hirasawa.server.webserver.objects.MutableHeaders
 import java.io.DataInputStream
 
 class HttpHeaderHandler(dataInputStream: DataInputStream) {
-    val headers = HashMap<String, String>()
+    val headers = MutableHeaders(HashMap<String, String>())
     var httpMethod = HttpMethod.GET
     var route = ""
     private var parsingState = ParsingState.HTTP_VERB

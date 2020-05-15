@@ -5,6 +5,7 @@ import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
+import io.hirasawa.server.webserver.objects.ImmutableHeaders
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import java.io.ByteArrayInputStream
@@ -18,13 +19,14 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val dataInputStream = DataInputStream(socket.getInputStream())
 
         val headerHandler = HttpHeaderHandler(dataInputStream)
+        val immutableHeaders = headerHandler.headers.makeImmutable()
         var postData = ByteArray(0)
-        if ("Content-Length" in headerHandler.headers &&
+        if ("Content-Length" in immutableHeaders &&
             headerHandler.httpMethod == HttpMethod.POST) {
             // Handle POST data
             // We only do this when we're aware of content length
             val postBuffer = ByteArrayOutputStream()
-            postBuffer.writeBytes(dataInputStream.readNBytes(headerHandler.headers["Content-Length"]!!.toInt()))
+            postBuffer.writeBytes(dataInputStream.readNBytes(immutableHeaders["Content-Length"]!!.toInt()))
             postData = postBuffer.toByteArray()
         }
 
@@ -35,7 +37,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val responseBuffer = ByteArrayOutputStream()
 
-        val request = Request(urlSegment, headerHandler.httpMethod, headerHandler.headers,
+        val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders,
             ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 

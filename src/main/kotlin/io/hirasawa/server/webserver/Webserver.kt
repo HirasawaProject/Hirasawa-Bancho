@@ -1,6 +1,7 @@
 package io.hirasawa.server.webserver
 
 import io.hirasawa.server.webserver.enums.HttpMethod
+import io.hirasawa.server.webserver.objects.MutableHeaders
 import io.hirasawa.server.webserver.routes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
@@ -9,7 +10,7 @@ import kotlin.collections.HashMap
 
 class Webserver(val port: Int) {
     private val routes = HashMap<String, EnumMap<HttpMethod, Route>>()
-    private val defaultHeaders = HashMap<String, String>()
+    private val defaultHeaders = MutableHeaders(HashMap<String, String>())
 
     private var sslEnabled = false
 
@@ -77,11 +78,11 @@ class Webserver(val port: Int) {
      * Get headers we normally send out with every request
      * This can be customised by calling addDefaultHeader
      *
-     * @return HashMap of default headers
+     * @return HashMap-like object of default headers
      */
-    fun getDefaultHeaders(): HashMap<String, String> {
+    fun getDefaultHeaders(): MutableHeaders {
         // Creates another instance of defaultHeaders
-        return HashMap(defaultHeaders)
+        return defaultHeaders.clone()
     }
 
     /**

@@ -4,7 +4,7 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 import java.io.DataOutputStream
 
 data class Response (var httpStatus: HttpStatus, val outputStream: DataOutputStream,
-                     val headers: HashMap<String, String> ) {
+                     val headers: MutableHeaders) {
     fun writeText(text: String) {
         outputStream.writeBytes(text)
     }

@@ -1,0 +1,30 @@
+package io.hirasawa.server.webserver.objects
+
+import io.hirasawa.server.webserver.enums.HttpHeader
+
+open class ImmutableHeaders(private val headers: HashMap<String, String>) {
+
+    operator fun get(key: String): String? {
+        return headers[key.toLowerCase()]
+    }
+
+    operator fun get(key: Any): String? {
+        return get(key.toString())
+    }
+
+    operator fun contains(key: String): Boolean {
+        return key.toLowerCase() in headers.keys
+    }
+
+    operator fun contains(key: Any): Boolean {
+        return contains(key.toString())
+    }
+
+    operator fun iterator(): Iterator<MutableMap.MutableEntry<String, String>> {
+        return headers.iterator()
+    }
+
+    open fun clone(): ImmutableHeaders {
+        return ImmutableHeaders(this.headers)
+    }
+}

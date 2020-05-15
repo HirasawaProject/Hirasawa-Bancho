@@ -7,7 +7,7 @@ import java.io.ByteArrayInputStream
 data class Request(
     val urlSegment: UrlSegment,
     val httpMethod: HttpMethod,
-    val headers: HashMap<String, String>,
+    val headers: ImmutableHeaders,
     val inputStream: ByteArrayInputStream
 ) {
     val post: HashMap<String, String> by lazy {
