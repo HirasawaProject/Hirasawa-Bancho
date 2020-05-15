@@ -1,5 +1,7 @@
 package io.hirasawa.server
 
+import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
+import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.TestGetRoute
 import io.hirasawa.server.routes.test.TestPostRoute
@@ -9,7 +11,9 @@ import io.hirasawa.server.webserver.routes.TestRoute
 
 
 fun main() {
-    val webserver = Webserver(8080)
+    Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
+
+    val webserver = Hirasawa.webserver
 
     webserver.addRoute("/", HttpMethod.GET, TestRoute())
     webserver.addRoute("/", HttpMethod.POST, BanchoRoute())

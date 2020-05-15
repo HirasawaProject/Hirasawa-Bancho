@@ -1,5 +1,6 @@
 package io.hirasawa.server.routes
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packethandler.PacketHandler
@@ -47,10 +48,6 @@ class BanchoRoute: Route {
 
         val user = BanchoUser(1, "Connor") // TODO this data up from somewhere later
 
-        // TODO move this somewhere else, this will be used to extend new packets
-        val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
-        packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
-
         while (request.inputStream.available() > 1) {
             val id = osuReader.readShort()
             osuReader.skipBytes(1) // unused byte
@@ -62,7 +59,7 @@ class BanchoRoute: Route {
 
             if (banchoPacketType == BanchoPacketType.UNKNOWN) continue
 
-            packetRouter[banchoPacketType]?.handle(packetReader, osuWriter, user)
+            Hirasawa.packetRouter[banchoPacketType]?.handle(packetReader, osuWriter, user)
         }
 
 
