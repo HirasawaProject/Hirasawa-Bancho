@@ -3,6 +3,7 @@ package io.hirasawa.server.routes
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.LoginReplyPacket
+import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.webserver.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -35,7 +36,16 @@ class BanchoRoute: Route {
             // We'll just say they're user ID 1 right now
             LoginReplyPacket(1).write(osuWriter)
             ChannelAvailablePacket("#osu").write(osuWriter)
+            return
         }
+
+        val user = BanchoUser(1, "Connor") // TODO this data up from somewhere later
+
+
+        for (packet in user.packetCache) {
+            packet.write(osuWriter)
+        }
+        user.packetCache.clear()
 
     }
 
