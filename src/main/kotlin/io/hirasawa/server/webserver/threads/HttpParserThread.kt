@@ -1,6 +1,7 @@
 package io.hirasawa.server.webserver.threads
 
 import io.hirasawa.server.webserver.Webserver
+import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
@@ -42,6 +43,8 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
         route.handle(request, response)
+
+        response.headers[HttpHeader.CONTENT_SIZE] = response.outputStream.size()
 
         // Set version and status
         dataOutputStream.writeBytes("HTTP/1.0 ")
