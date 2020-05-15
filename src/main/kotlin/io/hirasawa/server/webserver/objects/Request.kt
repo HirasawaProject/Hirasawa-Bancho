@@ -8,10 +8,10 @@ data class Request(
     val urlSegment: UrlSegment,
     val httpMethod: HttpMethod,
     val headers: HashMap<String, String>,
-    val byteArrayInputStream: ByteArrayInputStream
+    val inputStream: ByteArrayInputStream
 ) {
     val post: HashMap<String, String> by lazy {
-        ParameterHandler(byteArrayInputStream.readAllBytes()).parameters
+        ParameterHandler(inputStream.readAllBytes()).parameters
     }
 
     val path: String
