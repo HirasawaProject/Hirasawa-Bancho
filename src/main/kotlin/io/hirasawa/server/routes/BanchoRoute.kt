@@ -9,6 +9,8 @@ import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.LoginReplyPacket
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
+import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
 import io.hirasawa.server.webserver.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -40,9 +42,21 @@ class BanchoRoute: Route {
             // We'll generate their token now, we'll store it when we actually do auth, not sure why it's not osu-token
             // but we'll roll with it
             response.headers["cho-token"] = UUID.randomUUID().toString()
-            // We'll just say they're user ID 1 right now
-            LoginReplyPacket(1).write(osuWriter)
-            ChannelAvailablePacket("#osu").write(osuWriter)
+
+            val userInfo = String(request.inputStream.readAllBytes()).split("\n") // TODO fix this
+
+            val loginEvent = BanchoUserLoginEvent(BanchoUser(1, userInfo[0]))
+            Hirasawa.eventHandler.callEvent(loginEvent)
+
+            if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
+                // We'll just say they're user ID 1 right now
+                LoginReplyPacket(1).write(osuWriter)
+                ChannelAvailablePacket("#osu").write(osuWriter)
+            } else {
+                LoginReplyPacket(loginEvent.cancelReason.id).write(osuWriter)
+            }
+
+
             return
         }
 

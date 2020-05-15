@@ -2,6 +2,7 @@ package io.hirasawa.server
 
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacketType
+import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventHandler
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.webserver.Webserver
@@ -12,5 +13,6 @@ class Hirasawa {
         val webserver = Webserver(8080)
         val eventHandler = EventManager()
         val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
+        val pluginManager = PluginManager()
     }
 }

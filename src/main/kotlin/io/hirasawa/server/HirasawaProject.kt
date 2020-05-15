@@ -8,6 +8,7 @@ import io.hirasawa.server.routes.test.TestPostRoute
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.routes.TestRoute
+import java.io.File
 
 
 fun main() {
@@ -20,6 +21,8 @@ fun main() {
 
     webserver.addRoute("/test/get", HttpMethod.GET, TestGetRoute())
     webserver.addRoute("/test/post", HttpMethod.POST, TestPostRoute())
+
+    Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
 
     webserver.start()
 }
