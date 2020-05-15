@@ -29,7 +29,7 @@ class BanchoRoute: Route {
             return
         }
 
-        response.headers[HttpHeader.CONTENT_TYPE.toString()] = ContentType.APPLICATION_OCTET_STREAM.toString()
+        response.headers[HttpHeader.CONTENT_TYPE] = ContentType.APPLICATION_OCTET_STREAM
         response.headers["cho-version"] = "19"
 
         val osuWriter = OsuWriter(response.outputStream)
