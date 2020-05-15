@@ -80,7 +80,8 @@ class Webserver(val port: Int) {
      * @return HashMap of default headers
      */
     fun getDefaultHeaders(): HashMap<String, String> {
-        return defaultHeaders
+        // Creates another instance of defaultHeaders
+        return HashMap(defaultHeaders)
     }
 
     /**
