@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
+import io.hirasawa.server.bancho.packets.BanchoRestart
 import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.LoginReplyPacket
 import io.hirasawa.server.bancho.user.BanchoUser
@@ -63,7 +64,16 @@ class BanchoRoute: Route {
             return
         }
 
-        val user = BanchoUser(1, "Connor") // TODO this data up from somewhere later
+        val token = UUID.fromString(request.get["cho-token"]!!)
+        if (token !in Hirasawa.banchoUsers) {
+            // At some point their token has been invalidated or for some reason they're connecting using a token we
+            // haven't seen before, we'll tell them to reconnect to authenticate with us now
+
+            BanchoRestart(10).write(osuWriter)
+            return
+        }
+
+        val user = Hirasawa.banchoUsers[token]!!
 
         while (request.inputStream.available() > 1) {
             val id = osuReader.readShort()

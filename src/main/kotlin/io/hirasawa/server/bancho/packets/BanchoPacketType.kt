@@ -11,7 +11,9 @@ enum class BanchoPacketType(val id: Short) {
     BANCHO_LOGIN_REPLY(5),
 
     BANCHO_CHANNEL_JOIN_SUCCESS(63),
-    BANCHO_CHANNEL_AVAILABLE(64);
+    BANCHO_CHANNEL_AVAILABLE(64),
+
+    BANCHO_RESTART(86);
 
     companion object {
         private val map = BanchoPacketType.values().associateBy(BanchoPacketType::id)
