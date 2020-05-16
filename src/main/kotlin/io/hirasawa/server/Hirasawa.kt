@@ -2,6 +2,8 @@ package io.hirasawa.server
 
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacketType
+import io.hirasawa.server.database.DatabaseCredentials
+import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventHandler
 import io.hirasawa.server.plugin.event.EventManager
@@ -14,5 +16,7 @@ class Hirasawa {
         val eventHandler = EventManager()
         val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
         val pluginManager = PluginManager()
+        val database = MysqlDatabase(DatabaseCredentials("localhost", "hirasawa", "12apples",
+            "hirasawa"))
     }
 }

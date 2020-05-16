@@ -3,10 +3,8 @@ package io.hirasawa.server
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.routes.BanchoRoute
-import io.hirasawa.server.routes.test.TestGetRoute
-import io.hirasawa.server.routes.test.TestPostRoute
+import io.hirasawa.server.routes.test.*
 import io.hirasawa.server.webserver.enums.HttpMethod
-import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.routes.TestRoute
 import java.io.File
 
@@ -21,6 +19,9 @@ fun main() {
 
     webserver.addRoute("/test/get", HttpMethod.GET, TestGetRoute())
     webserver.addRoute("/test/post", HttpMethod.POST, TestPostRoute())
+    webserver.addRoute("/test/get/user", HttpMethod.GET, TestGetUserRoute())
+    webserver.addRoute("/test/get/user/auth", HttpMethod.GET, TestGetUserAuthRoute())
+    webserver.addRoute("/test/get/passwordhash", HttpMethod.GET, TestGetPasswordHashRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
 
