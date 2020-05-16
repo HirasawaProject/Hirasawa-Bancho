@@ -9,6 +9,7 @@ import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.objects.ImmutableHeaders
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
+import io.hirasawa.server.webserver.routes.errors.InternalServerErrorRoute
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -42,7 +43,12 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
-        route.handle(request, response)
+        try {
+            route.handle(request, response)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            InternalServerErrorRoute().handle(request, response)
+        }
 
         response.headers[HttpHeader.CONTENT_SIZE] = response.outputStream.size()
 

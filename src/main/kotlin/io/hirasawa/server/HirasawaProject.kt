@@ -1,5 +1,7 @@
 package io.hirasawa.server
 
+import io.hirasawa.server.bancho.chat.ChatChannel
+import io.hirasawa.server.bancho.chat.ChatEngine
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.routes.BanchoRoute
@@ -22,6 +24,7 @@ fun main() {
     webserver.addRoute("/test/get/user", HttpMethod.GET, TestGetUserRoute())
     webserver.addRoute("/test/get/user/auth", HttpMethod.GET, TestGetUserAuthRoute())
     webserver.addRoute("/test/get/passwordhash", HttpMethod.GET, TestGetPasswordHashRoute())
+    webserver.addRoute("/test/error", HttpMethod.GET, TestError())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
 
