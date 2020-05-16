@@ -45,17 +45,20 @@ class BanchoRoute: Route {
 
             val userInfo = String(request.inputStream.readAllBytes()).split("\n") // TODO fix this
 
-            val loginEvent = BanchoUserLoginEvent(BanchoUser(1, userInfo[0]))
-            Hirasawa.eventHandler.callEvent(loginEvent)
+            if (Hirasawa.database.authenticate(userInfo[0], userInfo[1])) {
+                val loginEvent = BanchoUserLoginEvent(BanchoUser(1, userInfo[0]))
+                Hirasawa.eventHandler.callEvent(loginEvent)
 
-            if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
-                // We'll just say they're user ID 1 right now
-                LoginReplyPacket(1).write(osuWriter)
-                ChannelAvailablePacket("#osu").write(osuWriter)
+                if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
+                    // We'll just say they're user ID 1 right now
+                    LoginReplyPacket(1).write(osuWriter)
+                    ChannelAvailablePacket("#osu").write(osuWriter)
+                } else {
+                    LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
+                }
             } else {
-                LoginReplyPacket(loginEvent.cancelReason.id).write(osuWriter)
+                LoginReplyPacket(BanchoLoginCancelReason.AUTHENTICATION_FAILED).write(osuWriter)
             }
-
 
             return
         }

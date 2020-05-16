@@ -10,11 +10,11 @@ abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun getUser(id: Int): User
     abstract fun getUser(username: String): User
 
-    fun authenticateBancho(username: String, password: String): Boolean {
+    fun authenticateWithMd5(username: String, password: String): Boolean {
         val messageDigest = MessageDigest.getInstance("MD5")
         val bytes = messageDigest.digest(password.toByteArray())
         val number = BigInteger(1, bytes)
-        val hashText = number.toString(16)
+        val hashText = number.toString(16).toLowerCase()
 
         return authenticate(username, hashText)
     }
