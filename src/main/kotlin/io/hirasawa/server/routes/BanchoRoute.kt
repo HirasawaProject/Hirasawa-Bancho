@@ -5,10 +5,7 @@ import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
-import io.hirasawa.server.bancho.packets.BanchoPacketType
-import io.hirasawa.server.bancho.packets.BanchoRestart
-import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
-import io.hirasawa.server.bancho.packets.LoginReplyPacket
+import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
@@ -36,24 +33,38 @@ class BanchoRoute: Route {
         val osuWriter = OsuWriter(response.outputStream)
         val osuReader = OsuReader(request.inputStream)
 
-        if ("osu-token" !in request.headers) {
+        if ("osu-token" !in request.headers.keys()) {
             // No osu! token, we need to read the login information from the client
             // This is oddly not a standard packet so we need to handle it as a one-off
-            // TODO handle login
-            // We'll generate their token now, we'll store it when we actually do auth, not sure why it's not osu-token
-            // but we'll roll with it
-            response.headers["cho-token"] = UUID.randomUUID().toString()
+            val token = UUID.randomUUID()
+            response.headers["cho-token"] = token
 
             val userInfo = String(request.inputStream.readAllBytes()).split("\n") // TODO fix this
 
             if (Hirasawa.database.authenticate(userInfo[0], userInfo[1])) {
-                val loginEvent = BanchoUserLoginEvent(BanchoUser(1, userInfo[0]))
+                val user = Hirasawa.database.getUser(userInfo[0]) as BanchoUser
+                val loginEvent = BanchoUserLoginEvent(user)
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
                 if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
                     // We'll just say they're user ID 1 right now
-                    LoginReplyPacket(1).write(osuWriter)
-                    ChannelAvailablePacket("#osu").write(osuWriter)
+                    LoginReplyPacket(user.id).write(osuWriter)
+
+                    for ((_, channel) in Hirasawa.chatEngine.chatChannels) {
+                        println(channel)
+                        if (channel.autojoin) {
+                            ChannelAvailableAutojoinPacket(channel).write(osuWriter)
+                        } else {
+                            ChannelAvailablePacket(channel).write(osuWriter)
+                        }
+                    }
+                    ChannelListingCompletePacket().write(osuWriter)
+
+
+                    ChannelJoinSuccessPacket(Hirasawa.chatEngine["#osu"]!!).write(osuWriter)
+
+                    Hirasawa.banchoUsers[token] = user
+
                 } else {
                     LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
                 }
@@ -64,8 +75,8 @@ class BanchoRoute: Route {
             return
         }
 
-        val token = UUID.fromString(request.get["cho-token"]!!)
-        if (token !in Hirasawa.banchoUsers) {
+        val token = UUID.fromString(request.headers["osu-token"]!!)
+        if (token !in Hirasawa.banchoUsers.keys) {
             // At some point their token has been invalidated or for some reason they're connecting using a token we
             // haven't seen before, we'll tell them to reconnect to authenticate with us now
 

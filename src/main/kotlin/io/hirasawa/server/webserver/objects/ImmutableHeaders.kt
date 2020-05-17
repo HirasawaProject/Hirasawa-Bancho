@@ -27,4 +27,12 @@ open class ImmutableHeaders(private val headers: HashMap<String, String>) {
     open fun clone(): ImmutableHeaders {
         return ImmutableHeaders(this.headers)
     }
+
+    override fun toString(): String {
+        return headers.toString()
+    }
+
+    fun keys(): Set<String> {
+        return headers.keys
+    }
 }

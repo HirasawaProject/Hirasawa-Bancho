@@ -1,0 +1,3 @@
+package io.hirasawa.server.bancho.packets
+
+class ChannelListingCompletePacket: BanchoPacket(BanchoPacketType.BANCHO_CHANNEL_LISTING_COMPLETE)

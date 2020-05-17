@@ -1,5 +1,6 @@
 package io.hirasawa.server
 
+import io.hirasawa.server.bancho.chat.ChatEngine
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.user.BanchoUser
@@ -18,6 +19,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val database = MysqlDatabase(DatabaseCredentials("localhost", "hirasawa", "12apples",
             "hirasawa"))
+        val chatEngine = ChatEngine()
 
         val banchoUsers = HashMap<UUID, BanchoUser>()
     }
