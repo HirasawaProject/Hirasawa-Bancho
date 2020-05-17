@@ -3,6 +3,7 @@ package io.hirasawa.server
 import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
+import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.*
 import io.hirasawa.server.webserver.enums.HttpMethod
@@ -16,6 +17,8 @@ fun main() {
     Hirasawa.chatEngine["#osu"] = ChatChannel("#osu", "Main channel", true)
     Hirasawa.chatEngine["#hirasawa"] = ChatChannel("#hirasawa", "Talk about the Hirasawa Project", true)
     Hirasawa.chatEngine["#idolhell"] = ChatChannel("#idolhell", "Talk about Love Live", false)
+
+    Hirasawa.chatEngine.registerCommand(TestCommand())
 
     val webserver = Hirasawa.webserver
 

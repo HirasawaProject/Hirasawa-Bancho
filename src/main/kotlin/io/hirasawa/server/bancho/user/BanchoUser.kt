@@ -8,7 +8,7 @@ import java.util.*
 
 class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, permissions: Byte, mode: GameMode,
                  longitude: Float, latitude: Float, rank: Int) : User(id, username,
-        timezone, countryCode, permissions, mode, longitude, latitude, rank){
+        timezone, countryCode, permissions, mode, longitude, latitude, rank) {
     val packetCache = Stack<BanchoPacket>()
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
 

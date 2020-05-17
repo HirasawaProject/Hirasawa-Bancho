@@ -9,6 +9,8 @@ enum class BanchoPacketType(val id: Short) {
     OSU_REQUEST_STATUS_UPDATE(3),
     OSU_PONG(4),
     BANCHO_LOGIN_REPLY(5),
+    BANCHO_COMMAND_ERROR(6),
+    BANCHO_SEND_MESSAGE(7),
 
     BANCHO_HANDLE_OSU_UPDATE(11),
 
@@ -23,7 +25,9 @@ enum class BanchoPacketType(val id: Short) {
 
     BANCHO_CHANNEL_LISTING_COMPLETE(89),
 
-    BANCHO_RESTART(86);
+    BANCHO_RESTART(86),
+
+    BANCHO_RTX(105);
 
     companion object {
         private val map = BanchoPacketType.values().associateBy(BanchoPacketType::id)
