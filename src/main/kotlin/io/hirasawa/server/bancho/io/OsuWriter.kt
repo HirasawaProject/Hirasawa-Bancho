@@ -6,6 +6,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.charset.Charset
 import kotlin.experimental.or
 
 /**
@@ -96,7 +97,7 @@ class OsuWriter(source: OutputStream) {
         // Set kind to 11 if contains data
         writer.writeByte(11)
         writeULEB128(data.length)
-        writer.writeUTF(data)
+        writer.writeBytes(data)
     }
 
     @Throws(IOException::class)
