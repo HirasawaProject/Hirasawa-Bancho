@@ -6,7 +6,7 @@ import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import java.lang.Exception
 
-class TestError: Route {
+class TestErrorRoute: Route {
     override fun handle(request: Request, response: Response) {
         response.writeText(request.headers["SomeHeaderWeProbablyDon'tHave"]!!)
     }

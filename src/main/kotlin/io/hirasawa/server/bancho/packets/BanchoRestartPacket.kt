@@ -1,6 +1,6 @@
 package io.hirasawa.server.bancho.packets
 
-class BanchoRestart(val waitTime: Int): BanchoPacket(BanchoPacketType.BANCHO_RESTART) {
+class BanchoRestartPacket(val waitTime: Int): BanchoPacket(BanchoPacketType.BANCHO_RESTART) {
     init {
         writer.writeInt(waitTime)
     }

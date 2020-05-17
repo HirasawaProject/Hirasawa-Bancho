@@ -27,7 +27,7 @@ fun main() {
     webserver.addRoute("/test/get/user", HttpMethod.GET, TestGetUserRoute())
     webserver.addRoute("/test/get/user/auth", HttpMethod.GET, TestGetUserAuthRoute())
     webserver.addRoute("/test/get/passwordhash", HttpMethod.GET, TestGetPasswordHashRoute())
-    webserver.addRoute("/test/error", HttpMethod.GET, TestError())
+    webserver.addRoute("/test/error", HttpMethod.GET, TestErrorRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
 
