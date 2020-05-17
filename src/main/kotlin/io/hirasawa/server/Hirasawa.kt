@@ -2,6 +2,7 @@ package io.hirasawa.server
 
 import io.hirasawa.server.bancho.chat.ChatEngine
 import io.hirasawa.server.bancho.packethandler.PacketHandler
+import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.DatabaseCredentials
@@ -22,5 +23,11 @@ class Hirasawa {
         val chatEngine = ChatEngine()
 
         val banchoUsers = HashMap<UUID, BanchoUser>()
+
+        fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
+            for (user in banchoUsers.values) {
+                user.sendPacket(banchoPacket)
+            }
+        }
     }
 }

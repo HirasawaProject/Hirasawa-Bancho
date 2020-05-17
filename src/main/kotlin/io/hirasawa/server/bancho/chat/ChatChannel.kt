@@ -1,7 +1,9 @@
 package io.hirasawa.server.bancho.chat
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.packets.BanchoPacket
+import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
@@ -25,14 +27,20 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
 
     fun addUser(banchoUser: BanchoUser) {
         connectedUsers.add(banchoUser)
+        update()
     }
 
     fun removePlayer(banchoUser: BanchoUser) {
         connectedUsers.remove(banchoUser)
+        update()
     }
 
     fun sendMessage(chatMessage: GlobalChatMessage) {
         sendPacketToAllExcluding(SendMessagePacket(chatMessage), chatMessage.source)
+    }
+
+    private fun update() {
+        Hirasawa.sendBanchoPacketToAll(ChannelAvailablePacket(this))
     }
 
 }
