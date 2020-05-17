@@ -1,5 +1,6 @@
 package io.hirasawa.server.database
 
+import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import org.mindrot.jbcrypt.BCrypt
@@ -37,7 +38,8 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
-            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"))
+            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
+                0, GameMode.OSU,0F,0F,0)
         }
 
         throw Exception("User not found")
@@ -50,7 +52,8 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
-            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"))
+            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
+                127, GameMode.OSU,0F,0F,0)
         }
 
         throw Exception("User not found")

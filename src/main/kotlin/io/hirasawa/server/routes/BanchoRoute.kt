@@ -3,8 +3,6 @@ package io.hirasawa.server.routes
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
-import io.hirasawa.server.bancho.packethandler.PacketHandler
-import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
@@ -47,11 +45,10 @@ class BanchoRoute: Route {
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
                 if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
-                    // We'll just say they're user ID 1 right now
                     LoginReplyPacket(user.id).write(osuWriter)
+                    ProtocolNegotiationPacket(19).write(osuWriter)
 
                     for ((_, channel) in Hirasawa.chatEngine.chatChannels) {
-                        println(channel)
                         if (channel.autojoin) {
                             ChannelAvailableAutojoinPacket(channel).write(osuWriter)
                         } else {
@@ -59,9 +56,10 @@ class BanchoRoute: Route {
                         }
                     }
                     ChannelListingCompletePacket().write(osuWriter)
-
-
                     ChannelJoinSuccessPacket(Hirasawa.chatEngine["#osu"]!!).write(osuWriter)
+
+                    HandleOsuUpdatePacket(user).write(osuWriter)
+
 
                     Hirasawa.banchoUsers[token] = user
 
