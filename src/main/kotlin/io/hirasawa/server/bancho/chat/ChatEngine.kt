@@ -1,11 +1,13 @@
 package io.hirasawa.server.bancho.chat
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.command.ChatCommand
 import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
 import kotlin.collections.HashMap
 
 class ChatEngine {
@@ -29,6 +31,15 @@ class ChatEngine {
     }
 
     fun handleChat(chatMessage: ChatMessage) {
+        val event = BanchoUserChatEvent(chatMessage)
+
+        Hirasawa.eventHandler.callEvent(event)
+
+        if (event.isCancelled) {
+            return
+        }
+
+
         if (chatMessage is GlobalChatMessage) {
             handleGlobalChat(chatMessage)
         } else if (chatMessage is PrivateChatMessage) {
