@@ -40,9 +40,9 @@ class Webserver(val port: Int) {
      */
     fun start() {
         if (sslEnabled) {
-            Thread(HttpsServerThread(4430)).run()
+            Thread(HttpsServerThread(4430)).start()
         }
-        Thread(HttpServerThread(8080, this)).run()
+        Thread(HttpServerThread(8080, this)).start()
     }
 
     /**

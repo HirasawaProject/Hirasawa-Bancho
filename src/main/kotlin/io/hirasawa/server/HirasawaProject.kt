@@ -1,6 +1,7 @@
 package io.hirasawa.server
 
 import io.hirasawa.server.bancho.chat.ChatChannel
+import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.packethandler.ChannelJoinPacket
 import io.hirasawa.server.bancho.packethandler.ChannelLeavePacket
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
@@ -40,4 +41,8 @@ fun main() {
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
 
     webserver.start()
+
+    while (true) {
+        Hirasawa.chatEngine.handleCommand(readLine()?.split(" ")!!, ConsoleCommandSender())
+    }
 }
