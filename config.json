@@ -1,0 +1,10 @@
+{
+  "httpPort": 8080,
+  "httpsPort": 4430,
+  "database": {
+    "host": "localhost",
+    "username": "hirasawa",
+    "password": "12apples",
+    "database": "hirasawa"
+  }
+}
