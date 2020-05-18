@@ -62,7 +62,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         response.headers[HttpHeader.CONTENT_SIZE] = response.outputStream.size()
 
         // Set version and status
-        dataOutputStream.writeBytes("HTTP/1.0 ")
+        dataOutputStream.writeBytes("HTTP/1.1 ")
         dataOutputStream.writeBytes(response.httpStatus.code.toString() + " ")
         dataOutputStream.writeBytes(response.httpStatus.toString())
         dataOutputStream.writeBytes("\r\n")
