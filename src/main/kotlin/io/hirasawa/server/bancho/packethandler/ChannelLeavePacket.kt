@@ -1,12 +1,10 @@
 package io.hirasawa.server.bancho.packethandler
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.message.ChatMessageProvider
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.ChannelAvailableAutojoinPacket
-import io.hirasawa.server.bancho.packets.ChannelJoinSuccessPacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.ChannelLeaveEvent
 
