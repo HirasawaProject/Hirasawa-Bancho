@@ -20,9 +20,9 @@ fun main() {
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
 
-    Hirasawa.chatEngine["#osu"] = ChatChannel("#osu", "Main channel", true)
-    Hirasawa.chatEngine["#hirasawa"] = ChatChannel("#hirasawa", "Talk about the Hirasawa Project", true)
-    Hirasawa.chatEngine["#idolhell"] = ChatChannel("#idolhell", "Talk about Love Live", false)
+    for (channel in Hirasawa.config.channels) {
+        Hirasawa.chatEngine[channel.name] = channel
+    }
 
     Hirasawa.chatEngine.registerCommand(TestCommand())
 
