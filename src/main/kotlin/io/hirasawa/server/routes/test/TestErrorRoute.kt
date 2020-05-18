@@ -8,6 +8,8 @@ import java.lang.Exception
 
 class TestErrorRoute: Route {
     override fun handle(request: Request, response: Response) {
+        response.writeText("<b>This text should not appear on the error</b>")
+        response.headers["ThisShouldNot"] = "Appear in the output"
         response.writeText(request.headers["SomeHeaderWeProbablyDon'tHave"]!!)
     }
 

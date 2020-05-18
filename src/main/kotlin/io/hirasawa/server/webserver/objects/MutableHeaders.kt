@@ -27,4 +27,8 @@ class MutableHeaders(private val headers: HashMap<String, String>): ImmutableHea
     fun makeImmutable(): ImmutableHeaders {
         return ImmutableHeaders(this.headers)
     }
+
+    fun clear() {
+        this.headers.clear()
+    }
 }

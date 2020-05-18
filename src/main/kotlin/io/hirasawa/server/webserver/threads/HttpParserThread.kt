@@ -47,6 +47,15 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             route.handle(request, response)
         } catch (e: Exception) {
             e.printStackTrace()
+
+            // Clean up after errored route
+            responseBuffer.reset()
+
+            response.headers.clear()
+            for ((key, value) in webserver.getDefaultHeaders()) {
+                response.headers[key] = value
+            }
+
             InternalServerErrorRoute().handle(request, response)
         }
 
