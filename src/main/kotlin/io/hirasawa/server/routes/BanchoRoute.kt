@@ -1,6 +1,7 @@
 package io.hirasawa.server.routes
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.*
@@ -37,10 +38,10 @@ class BanchoRoute: Route {
             val token = UUID.randomUUID()
             response.headers["cho-token"] = token
 
-            val userInfo = String(request.inputStream.readAllBytes()).split("\n") // TODO fix this
+            val userInfo = BanchoLoginHandler(request.inputStream)
 
-            if (Hirasawa.database.authenticate(userInfo[0], userInfo[1])) {
-                val user = Hirasawa.database.getUser(userInfo[0]) as BanchoUser
+            if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
+                val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
                 val loginEvent = BanchoUserLoginEvent(user)
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
