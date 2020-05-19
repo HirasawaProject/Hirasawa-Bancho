@@ -3,6 +3,7 @@ package io.hirasawa.server
 import com.google.gson.GsonBuilder
 import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.chat.ChatEngine
+import io.hirasawa.server.bancho.objects.BanchoUserMap
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
@@ -32,10 +33,10 @@ class Hirasawa {
         val database = MysqlDatabase(config.database)
         val chatEngine = ChatEngine()
 
-        val banchoUsers = HashMap<UUID, BanchoUser>()
+        val banchoUsers = BanchoUserMap()
 
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
-            for (user in banchoUsers.values) {
+            for (user in banchoUsers) {
                 user.sendPacket(banchoPacket)
             }
         }
