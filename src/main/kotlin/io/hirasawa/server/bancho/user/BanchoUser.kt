@@ -14,10 +14,6 @@ class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, p
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
     var lastKeepAlive = 0
 
-    override fun onMessage(from: User, channel: String, message: String) {
-        // TODO send message
-    }
-
     /**
      * Send a packet to the user
      *
