@@ -4,6 +4,7 @@ import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.packethandler.ChannelJoinPacket
 import io.hirasawa.server.bancho.packethandler.ChannelLeavePacket
+import io.hirasawa.server.bancho.packethandler.ExitPacket
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.ChannelListingCompletePacket
@@ -19,6 +20,7 @@ fun main() {
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_EXIT] = ExitPacket()
 
     for (channel in Hirasawa.config.channels) {
         Hirasawa.chatEngine[channel.name] = channel

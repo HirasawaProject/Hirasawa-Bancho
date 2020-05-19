@@ -13,6 +13,7 @@ enum class BanchoPacketType(val id: Short) {
     BANCHO_SEND_MESSAGE(7),
 
     BANCHO_HANDLE_OSU_UPDATE(11),
+    BANCHO_HANDLE_USER_QUIT(12),
 
     OSU_CHANNEL_JOIN(63),
     BANCHO_CHANNEL_JOIN_SUCCESS(64),
