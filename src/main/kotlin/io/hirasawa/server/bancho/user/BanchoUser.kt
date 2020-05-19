@@ -1,5 +1,7 @@
 package io.hirasawa.server.bancho.user
 
+import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.UserStats
@@ -7,8 +9,8 @@ import io.hirasawa.server.bancho.packets.BanchoPacket
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, permissions: Byte, mode: GameMode,
-                 longitude: Float, latitude: Float, rank: Int, var uuid: UUID) : User(id, username,
+open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, permissions: Byte, mode: GameMode,
+                      longitude: Float, latitude: Float, rank: Int, var uuid: UUID) : User(id, username,
         timezone, countryCode, permissions, mode, longitude, latitude, rank) {
     val packetCache = Stack<BanchoPacket>()
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
@@ -29,6 +31,16 @@ class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, p
       */
     fun updateKeepAlive() {
         lastKeepAlive = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()).toInt()
+    }
+
+    /**
+     * Sends a private chat message to this user
+     *
+     * @param from The user that sent the chat message
+     * @param message The message sent to the user
+     */
+    override fun sendPrivateMessage(from: User, message: String) {
+        Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
     }
 
 
