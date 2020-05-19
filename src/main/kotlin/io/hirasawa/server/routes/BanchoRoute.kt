@@ -42,6 +42,8 @@ class BanchoRoute: Route {
 
             if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
                 val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
+                user.uuid = token
+
                 val loginEvent = BanchoUserLoginEvent(user)
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
@@ -64,7 +66,7 @@ class BanchoRoute: Route {
                     HandleOsuUpdatePacket(user).write(osuWriter)
 
 
-                    Hirasawa.banchoUsers[token] = user
+                    Hirasawa.banchoUsers.add(user)
 
                 } else {
                     LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
@@ -77,7 +79,7 @@ class BanchoRoute: Route {
         }
 
         val token = UUID.fromString(request.headers["osu-token"]!!)
-        if (token !in Hirasawa.banchoUsers.keys) {
+        if (token !in Hirasawa.banchoUsers) {
             // At some point their token has been invalidated or for some reason they're connecting using a token we
             // haven't seen before, we'll tell them to reconnect to authenticate with us now
 

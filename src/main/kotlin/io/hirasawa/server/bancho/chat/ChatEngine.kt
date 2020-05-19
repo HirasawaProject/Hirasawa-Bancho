@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
 import kotlin.collections.HashMap
@@ -22,11 +23,11 @@ class ChatEngine {
         return chatChannels[key]
     }
 
-    fun handleChat(user: User, channel: String, message: String) {
-        if (channel.startsWith("#")) {
-           handleChat(GlobalChatMessage(user, chatChannels[channel]!!, message))
+    fun handleChat(user: User, destination: String, message: String) {
+        if (destination.startsWith("#")) {
+           handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
         } else {
-            TODO("we don't handle private chat yet")
+            handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
         }
     }
 
@@ -54,7 +55,10 @@ class ChatEngine {
     }
 
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
-        // TODO
+        if (chatMessage.destination in Hirasawa.banchoUsers) {
+            Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
+            println("foo")
+        }
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
