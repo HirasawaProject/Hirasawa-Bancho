@@ -57,7 +57,6 @@ class ChatEngine {
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
         if (chatMessage.destination in Hirasawa.banchoUsers) {
             Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
-            println("foo")
         }
     }
 
