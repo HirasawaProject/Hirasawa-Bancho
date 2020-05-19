@@ -1,6 +1,7 @@
 package io.hirasawa.server.bancho.objects
 
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.bancho.user.User
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -19,6 +20,10 @@ class BanchoUserMap {
 
     operator fun get(key: Int): BanchoUser? {
         return idCache[key]
+    }
+
+    operator fun get(user: User): BanchoUser? {
+        return idCache[user.id]
     }
 
     operator fun iterator(): MutableIterator<BanchoUser> {
@@ -53,5 +58,7 @@ class BanchoUserMap {
         return banchoUser in uuidCache.values
     }
 
-
+    operator fun contains(user: User): Boolean {
+        return user.id in idCache.keys
+    }
 }

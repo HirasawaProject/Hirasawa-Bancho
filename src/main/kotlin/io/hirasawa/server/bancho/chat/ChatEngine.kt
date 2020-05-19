@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
 import kotlin.collections.HashMap
@@ -54,7 +55,9 @@ class ChatEngine {
     }
 
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
-        // TODO
+        if (chatMessage.destination in Hirasawa.banchoUsers) {
+            Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
+        }
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
