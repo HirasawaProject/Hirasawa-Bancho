@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt
 import java.lang.Exception
 import java.sql.Connection
 import java.sql.DriverManager
+import java.util.*
 
 class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     private lateinit var connection: Connection
@@ -39,7 +40,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
             return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-                0, GameMode.OSU,0F,0F,0)
+                0, GameMode.OSU,0F,0F,0, UUID.randomUUID())
         }
 
         throw Exception("User not found")
@@ -53,7 +54,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
             return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-                127, GameMode.OSU,0F,0F,0)
+                127, GameMode.OSU,0F,0F,0, UUID.randomUUID())
         }
 
         throw Exception("User not found")

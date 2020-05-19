@@ -42,6 +42,8 @@ class BanchoRoute: Route {
 
             if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
                 val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
+                user.uuid = token
+
                 val loginEvent = BanchoUserLoginEvent(user)
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
