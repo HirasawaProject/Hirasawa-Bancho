@@ -7,6 +7,7 @@ import io.hirasawa.server.bancho.packethandler.ExitPacket
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
+import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.*
@@ -28,6 +29,8 @@ fun main() {
     }
 
     Hirasawa.chatEngine.registerCommand(TestCommand())
+
+    Hirasawa.banchoUsers.add(HirasawaBot(Hirasawa.database.getUser(2)))
 
     // Timeout users every second
     val exec = Executors.newSingleThreadScheduledExecutor()

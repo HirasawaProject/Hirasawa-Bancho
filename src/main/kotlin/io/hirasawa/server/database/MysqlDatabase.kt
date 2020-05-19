@@ -33,7 +33,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     override fun getUser(id: Int): User {
-        val query = "SELECT * FROM users WHERE username = ?"
+        val query = "SELECT * FROM users WHERE id = ?"
         val statement = connection.prepareStatement(query)
         statement.setInt(1, id)
 
