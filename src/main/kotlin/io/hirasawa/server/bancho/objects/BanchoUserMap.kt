@@ -36,4 +36,22 @@ class BanchoUserMap {
         usernameCache.remove(user.username)
         idCache.remove(user.id)
     }
+
+    operator fun contains(key: UUID): Boolean {
+        return key in uuidCache.keys
+    }
+
+    operator fun contains(key: String): Boolean {
+        return key in usernameCache.keys
+    }
+
+    operator fun contains(key: Int): Boolean {
+        return key in idCache.keys
+    }
+
+    operator fun contains(banchoUser: BanchoUser): Boolean {
+        return banchoUser in uuidCache.values
+    }
+
+
 }
