@@ -30,6 +30,9 @@ enum class BanchoPacketType(val id: Short) {
 
     BANCHO_RESTART(86),
 
+    BANCHO_USER_PRESENCE_SINGLE(95),
+    BANCHO_USER_PRESENCE_BUNDLE(96),
+
     BANCHO_RTX(105);
 
     companion object {

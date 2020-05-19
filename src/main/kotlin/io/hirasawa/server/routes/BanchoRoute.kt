@@ -5,6 +5,7 @@ import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.*
+import io.hirasawa.server.bancho.serialisation.BanchoIntListWriter
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
@@ -48,6 +49,7 @@ class BanchoRoute: Route {
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
                 if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
+                    Hirasawa.banchoUsers.add(user)
                     LoginReplyPacket(user.id).write(osuWriter)
                     ProtocolNegotiationPacket(19).write(osuWriter)
 
@@ -63,10 +65,10 @@ class BanchoRoute: Route {
                     ChannelListingCompletePacket().write(osuWriter)
                     ChannelJoinSuccessPacket(Hirasawa.chatEngine["#osu"]!!).write(osuWriter)
 
+                    UserPesenceBundlePacket(Hirasawa.banchoUsers.idKeys.toList()).write(osuWriter)
+                    Hirasawa.sendBanchoPacketToAll(UserPesenceSinglePacket(user.id))
+
                     HandleOsuUpdatePacket(user).write(osuWriter)
-
-
-                    Hirasawa.banchoUsers.add(user)
 
                 } else {
                     LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
