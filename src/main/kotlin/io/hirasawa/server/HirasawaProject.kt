@@ -35,6 +35,7 @@ fun main() {
     webserver.addRoute("/test/post", HttpMethod.POST, TestPostRoute())
     webserver.addRoute("/test/get/user", HttpMethod.GET, TestGetUserRoute())
     webserver.addRoute("/test/get/user/auth", HttpMethod.GET, TestGetUserAuthRoute())
+    webserver.addRoute("/test/get/bancho/users", HttpMethod.GET, TestGetBanchoUsersRoute())
     webserver.addRoute("/test/get/passwordhash", HttpMethod.GET, TestGetPasswordHashRoute())
     webserver.addRoute("/test/error", HttpMethod.GET, TestErrorRoute())
 
