@@ -70,6 +70,7 @@ class BanchoRoute: Route {
                     Hirasawa.sendBanchoPacketToAll(UserPesenceSinglePacket(user.id))
 
                     HandleOsuUpdatePacket(user).write(osuWriter)
+                    UserPresencePacket(user).write(osuWriter)
 
                 } else {
                     LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
