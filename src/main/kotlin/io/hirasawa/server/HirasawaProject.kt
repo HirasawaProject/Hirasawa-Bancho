@@ -38,7 +38,7 @@ fun main() {
     webserver.addRoute("/test/get/passwordhash", HttpMethod.GET, TestGetPasswordHashRoute())
     webserver.addRoute("/test/error", HttpMethod.GET, TestErrorRoute())
 
-    Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"))
+    Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
     webserver.start()
 
