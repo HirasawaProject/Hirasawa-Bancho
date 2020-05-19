@@ -23,11 +23,11 @@ class ChatEngine {
         return chatChannels[key]
     }
 
-    fun handleChat(user: User, channel: String, message: String) {
-        if (channel.startsWith("#")) {
-           handleChat(GlobalChatMessage(user, chatChannels[channel]!!, message))
+    fun handleChat(user: User, destination: String, message: String) {
+        if (destination.startsWith("#")) {
+           handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
         } else {
-            TODO("we don't handle private chat yet")
+            handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
         }
     }
 
@@ -57,6 +57,7 @@ class ChatEngine {
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
         if (chatMessage.destination in Hirasawa.banchoUsers) {
             Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
+            println("foo")
         }
     }
 
