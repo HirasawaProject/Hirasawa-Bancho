@@ -10,6 +10,6 @@ data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val database: 
         4430,
         DatabaseCredentials(),
         arrayListOf(ChatChannel("#osu", "Main channel", true)),
-        1000
+        10
     )
 }
