@@ -1,19 +1,20 @@
 package io.hirasawa.server
 
-import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.packethandler.ChannelJoinPacket
 import io.hirasawa.server.bancho.packethandler.ChannelLeavePacket
 import io.hirasawa.server.bancho.packethandler.ExitPacket
 import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
-import io.hirasawa.server.bancho.packets.ChannelListingCompletePacket
+import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.*
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.routes.TestRoute
 import java.io.File
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 fun main() {
@@ -27,6 +28,10 @@ fun main() {
     }
 
     Hirasawa.chatEngine.registerCommand(TestCommand())
+
+    // Timeout users every second
+    val exec = Executors.newSingleThreadScheduledExecutor()
+    exec.scheduleAtFixedRate(UserTimeoutThread(), 0, 1, TimeUnit.SECONDS)
 
     val webserver = Hirasawa.webserver
 

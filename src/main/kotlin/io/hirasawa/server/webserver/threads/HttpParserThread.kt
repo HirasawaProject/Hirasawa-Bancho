@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
+import java.util.concurrent.TimeUnit
 
 class HttpParserThread(private val socket: Socket, private val webserver: Webserver) : Runnable {
     override fun run() {

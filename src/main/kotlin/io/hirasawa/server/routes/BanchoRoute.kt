@@ -44,6 +44,7 @@ class BanchoRoute: Route {
             if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
                 val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
                 user.uuid = token
+                user.updateKeepAlive()
 
                 val loginEvent = BanchoUserLoginEvent(user)
                 Hirasawa.eventHandler.callEvent(loginEvent)
@@ -90,6 +91,7 @@ class BanchoRoute: Route {
         }
 
         val user = Hirasawa.banchoUsers[token]!!
+        user.updateKeepAlive()
 
         while (request.inputStream.available() > 1) {
             val id = osuReader.readShort()
