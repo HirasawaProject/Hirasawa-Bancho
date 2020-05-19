@@ -10,6 +10,8 @@ class BanchoUserMap {
     private val usernameCache = HashMap<String, BanchoUser>()
     private val idCache = HashMap<Int, BanchoUser>()
 
+    val idKeys get() = idCache.keys
+
     operator fun get(key: UUID): BanchoUser? {
         return uuidCache[key]
     }

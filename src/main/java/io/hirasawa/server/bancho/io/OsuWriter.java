@@ -1,5 +1,6 @@
 package io.hirasawa.server.bancho.io;
 
+import io.hirasawa.server.bancho.serialisation.SerialisedBanchoObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -95,5 +96,9 @@ public class OsuWriter {
         for (byte value : array) {
             this.writer.writeByte(value);
         }
+    }
+
+    public void writeSerialised(SerialisedBanchoObject object) {
+        object.write(this);
     }
 }
