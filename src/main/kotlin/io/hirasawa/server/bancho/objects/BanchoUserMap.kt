@@ -21,6 +21,10 @@ class BanchoUserMap {
         return idCache[key]
     }
 
+    operator fun iterator(): MutableIterator<BanchoUser> {
+        return uuidCache.values.iterator()
+    }
+
     fun add(user: BanchoUser) {
         uuidCache[user.uuid] = user
         usernameCache[user.username] = user
