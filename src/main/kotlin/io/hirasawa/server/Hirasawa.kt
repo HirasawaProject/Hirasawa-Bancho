@@ -15,14 +15,16 @@ import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.webserver.Webserver
 import java.io.File
 import java.io.FileReader
+import java.io.FileWriter
 import java.util.*
 
 class Hirasawa {
     companion object {
         private val gson = GsonBuilder()
             .registerTypeAdapter(ChatChannel::class.java, ChatChannelSerialiser())
+            .setPrettyPrinting()
             .create()
-        val config = gson.fromJson(FileReader(File("config.json")), HirasawaConfig::class.java)
+        val config = loadConfig()
         val webserver = Webserver(config.httpPort)
         val eventHandler = EventManager()
         val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
@@ -35,6 +37,18 @@ class Hirasawa {
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
             for (user in banchoUsers.values) {
                 user.sendPacket(banchoPacket)
+            }
+        }
+
+        private fun loadConfig(): HirasawaConfig {
+            if (File("config.json").exists()) {
+                return gson.fromJson(FileReader(File("config.json")), HirasawaConfig::class.java)
+            } else {
+                val config = HirasawaConfig()
+                val writer = FileWriter("config.json")
+                gson.toJson(config, writer)
+                writer.close()
+                return config
             }
         }
     }

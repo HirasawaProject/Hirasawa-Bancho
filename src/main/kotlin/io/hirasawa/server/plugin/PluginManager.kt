@@ -32,8 +32,14 @@ class PluginManager {
         return true
     }
 
-    fun loadPluginsFromDirectory(directory: File) {
-        if (!directory.isDirectory || !directory.exists()) throw FileNotFoundException()
+    fun loadPluginsFromDirectory(directory: File, autocreate: Boolean) {
+        if (!directory.exists()) {
+            if (autocreate) {
+                directory.mkdirs()
+            } else {
+                throw FileNotFoundException()
+            }
+        }
 
         for (file in directory.listFiles()) {
             if (file.name.endsWith(".jar")) {
