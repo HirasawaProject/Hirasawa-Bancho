@@ -8,6 +8,7 @@ import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.MysqlDatabase
@@ -33,6 +34,7 @@ class Hirasawa {
         val database = MysqlDatabase(config.database)
         val chatEngine = ChatEngine()
 
+        val hirasawaBot = HirasawaBot(database.getUser(2))
         val banchoUsers = BanchoUserMap()
 
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {

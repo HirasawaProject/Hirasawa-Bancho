@@ -21,11 +21,11 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      *
      * @param banchoPacket The packet to send
      */
-    fun sendPacket(banchoPacket: BanchoPacket) {
+    open fun sendPacket(banchoPacket: BanchoPacket) {
         packetCache.push(banchoPacket)
     }
 
-    /**
+    /**\
      * Sets the lastKeepAlive value to the current time
      * This value is used to timeout the user after inactivity
       */
