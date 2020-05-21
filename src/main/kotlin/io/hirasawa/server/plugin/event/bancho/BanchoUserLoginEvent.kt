@@ -9,8 +9,7 @@ import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
  * This occurs after authentication and before the client is sent the response
  *
  */
-data class BanchoUserLoginEvent(val user: User): HirasawaEvent {
-    var cancelReason = BanchoLoginCancelReason.NOT_CANCELLED
+data class BanchoUserLoginEvent(val user: User, var cancelReason: BanchoLoginCancelReason): HirasawaEvent {
     fun cancelLogin(reason: BanchoLoginCancelReason) {
         cancelReason = reason
     }
