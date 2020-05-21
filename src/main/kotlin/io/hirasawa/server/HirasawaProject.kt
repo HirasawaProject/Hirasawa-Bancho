@@ -1,13 +1,9 @@
 package io.hirasawa.server
 
 import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
-import io.hirasawa.server.bancho.packethandler.ChannelJoinPacket
-import io.hirasawa.server.bancho.packethandler.ChannelLeavePacket
-import io.hirasawa.server.bancho.packethandler.ExitPacket
-import io.hirasawa.server.bancho.packethandler.SendIrcMessagePacket
+import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
-import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.*
@@ -23,6 +19,8 @@ fun main() {
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_EXIT] = ExitPacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_USER_STATS_REQUEST] = UserStatsRequestPacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_USER_PRESENCE_REQUEST] = UserPresenceRequestPacket()
 
     for (channel in Hirasawa.config.channels) {
         Hirasawa.chatEngine[channel.name] = channel
