@@ -30,7 +30,7 @@ fun main() {
 
     Hirasawa.chatEngine.registerCommand(TestCommand())
 
-    Hirasawa.banchoUsers.add(HirasawaBot(Hirasawa.database.getUser(2)))
+    Hirasawa.banchoUsers.add(Hirasawa.hirasawaBot)
 
     // Timeout users every second
     val exec = Executors.newSingleThreadScheduledExecutor()
