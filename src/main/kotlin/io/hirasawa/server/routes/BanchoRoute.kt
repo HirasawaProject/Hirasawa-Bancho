@@ -46,7 +46,11 @@ class BanchoRoute: Route {
                 user.uuid = token
                 user.updateKeepAlive()
 
-                val loginEvent = BanchoUserLoginEvent(user)
+                var cancelReason = BanchoLoginCancelReason.NOT_CANCELLED
+                if (user.isBanned) {
+                    cancelReason = BanchoLoginCancelReason.BANNED
+                }
+                val loginEvent = BanchoUserLoginEvent(user, cancelReason)
                 Hirasawa.eventHandler.callEvent(loginEvent)
 
                 if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
