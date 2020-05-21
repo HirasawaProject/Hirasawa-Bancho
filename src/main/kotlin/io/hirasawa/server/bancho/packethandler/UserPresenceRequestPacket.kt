@@ -5,15 +5,19 @@ import io.hirasawa.server.bancho.handler.BanchoIntListHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.BanchoPacketType
-import io.hirasawa.server.bancho.packets.ChannelAvailableAutojoinPacket
-import io.hirasawa.server.bancho.packets.HandleOsuUpdatePacket
 import io.hirasawa.server.bancho.packets.UserPresencePacket
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.plugin.event.bancho.ChannelLeaveEvent
+import io.hirasawa.server.plugin.event.bancho.BanchoUserPresenceRequestEvent
 
 class UserPresenceRequestPacket: PacketHandler(BanchoPacketType.OSU_USER_PRESENCE_REQUEST) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val intList = BanchoIntListHandler(reader).intList
+
+        val event = BanchoUserPresenceRequestEvent(user, intList)
+
+        if (event.isCancelled) {
+            return
+        }
 
         for (id in intList) {
             if (id == user.id) continue // Don't send our stats
