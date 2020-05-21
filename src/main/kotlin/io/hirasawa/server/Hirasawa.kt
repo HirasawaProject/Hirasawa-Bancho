@@ -34,7 +34,7 @@ class Hirasawa {
         val database = MysqlDatabase(config.database)
         val chatEngine = ChatEngine()
 
-        val hirasawaBot = HirasawaBot(database.getUser(2))
+        val hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId))
         val banchoUsers = BanchoUserMap()
 
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
