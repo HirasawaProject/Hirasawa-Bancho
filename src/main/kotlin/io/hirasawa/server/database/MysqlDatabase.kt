@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt
 import java.lang.Exception
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 import java.util.*
 
 class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
@@ -32,6 +33,11 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         return false
     }
 
+    private fun resultSetToUser(resultSet: ResultSet): User {
+        return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
+            0, GameMode.OSU,0F,0F, UUID.randomUUID(), resultSet.getBoolean("banned"))
+    }
+
     override fun getUser(id: Int): User {
         val query = "SELECT * FROM users WHERE id = ?"
         val statement = connection.prepareStatement(query)
@@ -39,8 +45,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
-            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-                0, GameMode.OSU,0F,0F, UUID.randomUUID(), resultSet.getBoolean("banned"))
+            return resultSetToUser(resultSet)
         }
 
         throw Exception("User not found")
@@ -53,8 +58,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
-            return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-                127, GameMode.OSU,0F,0F, UUID.randomUUID(), resultSet.getBoolean("banned"))
+            return resultSetToUser(resultSet)
         }
 
         throw Exception("User not found")
@@ -62,5 +66,20 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
     override fun createPasswordHash(password: String): String {
         return BCrypt.hashpw(password, BCrypt.gensalt())
+    }
+
+    override fun getUserFriends(id: Int): ArrayList<User> {
+        val query = "SELECT * FROM friends INNER JOIN users ON friend_id = users.id WHERE user_id = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, id)
+
+        val friends = ArrayList<User>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            friends.add(resultSetToUser(resultSet))
+        }
+
+        return friends
     }
 }
