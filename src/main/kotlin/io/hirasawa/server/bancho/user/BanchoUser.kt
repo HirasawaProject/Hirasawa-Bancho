@@ -10,8 +10,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, permissions: Byte, mode: GameMode,
-                      longitude: Float, latitude: Float, rank: Int, var uuid: UUID) : User(id, username,
-        timezone, countryCode, permissions, mode, longitude, latitude, rank) {
+                      longitude: Float, latitude: Float, var uuid: UUID, banned: Boolean) : User(id, username,
+        timezone, countryCode, permissions, mode, longitude, latitude, banned) {
     val packetCache = Stack<BanchoPacket>()
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
     var lastKeepAlive = 0
