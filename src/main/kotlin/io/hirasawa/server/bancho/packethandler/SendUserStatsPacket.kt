@@ -10,6 +10,7 @@ import io.hirasawa.server.bancho.packets.ChannelJoinSuccessPacket
 import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.HandleOsuUpdatePacket
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.plugin.event.bancho.BanchoUserModeChangeEvent
 import io.hirasawa.server.plugin.event.bancho.ChannelJoinEvent
 
 class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
@@ -23,6 +24,11 @@ class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
 
         val banchoStatus = BanchoStatus(status, statustext, beatmapChecksum, mods, mode, beatmapId)
 
+        val event = BanchoUserModeChangeEvent(user, mode)
+
+        if (event.isCancelled) {
+            return
+        }
 
         user.userStats.status = banchoStatus
         user.sendPacket(HandleOsuUpdatePacket(user))
