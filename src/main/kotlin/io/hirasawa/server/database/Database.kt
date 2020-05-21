@@ -3,12 +3,14 @@ package io.hirasawa.server.database
 import io.hirasawa.server.bancho.user.User
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.ArrayList
 
 
 abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun authenticate(username: String, password: String): Boolean
     abstract fun getUser(id: Int): User
     abstract fun getUser(username: String): User
+    abstract fun getUserFriends(id: Int): ArrayList<User>
 
     fun authenticateWithMd5(username: String, password: String): Boolean {
         val messageDigest = MessageDigest.getInstance("MD5")

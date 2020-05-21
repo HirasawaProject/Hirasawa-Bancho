@@ -57,6 +57,7 @@ class BanchoRoute: Route {
                     Hirasawa.banchoUsers.add(user)
                     LoginReplyPacket(user.id).write(osuWriter)
                     ProtocolNegotiationPacket(19).write(osuWriter)
+                    FriendsListPacket(Hirasawa.database.getUserFriends(user.id)).write(osuWriter)
 
                     Hirasawa.chatEngine["#osu"]?.addUser(user)
 
