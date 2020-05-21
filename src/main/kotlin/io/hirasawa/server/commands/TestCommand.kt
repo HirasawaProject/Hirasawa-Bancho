@@ -1,17 +1,18 @@
 package io.hirasawa.server.commands
 
 import io.hirasawa.server.bancho.chat.command.ChatCommand
+import io.hirasawa.server.bancho.chat.command.CommandContext
 import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 
 class TestCommand: ChatCommand("test") {
-    override fun onCommand(sender: CommandSender, command: String, args: List<String>): Boolean {
-        if (sender is BanchoUser) {
-            sender.sendPacket(SendMessagePacket(PrivateChatMessage(sender, sender, "This is a test")))
+    override fun onCommand(context: CommandContext, command: String, args: List<String>): Boolean {
+        if (context.sender is BanchoUser) {
+            context.respond("This is a test")
         } else {
-            println("baka console")
+            context.respond("baka console")
         }
         return true
     }

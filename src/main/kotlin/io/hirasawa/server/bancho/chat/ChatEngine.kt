@@ -2,6 +2,7 @@ package io.hirasawa.server.bancho.chat
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.command.ChatCommand
+import io.hirasawa.server.bancho.chat.command.CommandContext
 import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
@@ -24,10 +25,16 @@ class ChatEngine {
     }
 
     fun handleChat(user: User, destination: String, message: String) {
-        if (destination.startsWith("#")) {
-           handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
-        } else {
-            handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
+        when {
+            destination == "!CONSOLE" -> {
+                println(message)
+            }
+            destination.startsWith("#") -> {
+                handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
+            }
+            else -> {
+                handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
+            }
         }
     }
 
@@ -45,12 +52,8 @@ class ChatEngine {
             handleGlobalChat(chatMessage)
         } else if (chatMessage is PrivateChatMessage) {
             handlePrivateChat(chatMessage)
-        }
-
-        if (chatMessage.message.startsWith("!")) {
-            // is command
-            val chatSegments = chatMessage.message.split(" ")
-            handleCommand(chatSegments, chatMessage.source)
+        } else if (chatMessage.destinationName == "CONSOLE") {
+            println(chatMessage.message)
         }
     }
 
@@ -62,13 +65,20 @@ class ChatEngine {
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
         chatMessage.channel.sendMessage(chatMessage)
+
+        if (chatMessage.message.startsWith("!")) {
+            // is command
+            val chatSegments = chatMessage.message.split(" ")
+            handleCommand(chatSegments, chatMessage.source, chatMessage.channel)
+        }
     }
 
-    fun handleCommand(chatSegments: List<String>, sender: CommandSender) {
+    fun handleCommand(chatSegments: List<String>, sender: CommandSender, channel: ChatChannel) {
         val commandName = chatSegments[0].replace("!", "")
         if (commandName in chatCommands) {
             val chatCommand = chatCommands[commandName]
-            chatCommand?.onCommand(sender, chatSegments[0], chatSegments.slice(IntRange(1, chatSegments.size - 1)))
+            val context = CommandContext(sender, channel)
+            chatCommand?.onCommand(context, chatSegments[0], chatSegments.slice(IntRange(1, chatSegments.size - 1)))
         }
     }
 
