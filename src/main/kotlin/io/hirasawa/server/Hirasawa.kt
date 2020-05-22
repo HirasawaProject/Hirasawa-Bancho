@@ -12,6 +12,7 @@ import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.MysqlDatabase
+import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.webserver.Webserver
@@ -33,6 +34,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val database = MysqlDatabase(config.database)
         val chatEngine = ChatEngine()
+        val permissionEngine = PermissionEngine()
 
         val hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId))
         val banchoUsers = BanchoUserMap()
