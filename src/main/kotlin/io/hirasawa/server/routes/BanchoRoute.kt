@@ -5,7 +5,6 @@ import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.*
-import io.hirasawa.server.bancho.serialisation.BanchoIntListWriter
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
@@ -71,8 +70,8 @@ class BanchoRoute: Route {
                     ChannelListingCompletePacket().write(osuWriter)
                     ChannelJoinSuccessPacket(Hirasawa.chatEngine["#osu"]!!).write(osuWriter)
 
-                    UserPesenceBundlePacket(Hirasawa.banchoUsers.idKeys.toList()).write(osuWriter)
-                    Hirasawa.sendBanchoPacketToAll(UserPesenceSinglePacket(user.id))
+                    UserPresenceBundlePacket(Hirasawa.banchoUsers.idKeys.toList()).write(osuWriter)
+                    Hirasawa.sendBanchoPacketToAll(UserPresenceSinglePacket(user.id))
 
                     HandleOsuUpdatePacket(user).write(osuWriter)
                     UserPresencePacket(user).write(osuWriter)
