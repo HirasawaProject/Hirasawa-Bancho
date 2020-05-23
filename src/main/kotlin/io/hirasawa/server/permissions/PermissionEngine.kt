@@ -3,14 +3,22 @@ package io.hirasawa.server.permissions
 import io.hirasawa.server.bancho.user.User
 
 class PermissionEngine {
-    val permissionGroups = ArrayList<PermissionGroup>()
+    val permissionGroups = HashMap<String, PermissionGroup>()
 
-    fun createPermissionGroup(group: PermissionGroup) {
-        permissionGroups.add(group)
+    fun addGroup(group: PermissionGroup) {
+        permissionGroups[group.name] = group
     }
 
-    fun removePermissionGroup(group: PermissionGroup) {
+    fun removeGroup(group: PermissionGroup) {
+        permissionGroups.remove(group.name)
+    }
+
+    fun removeGroup(group: String) {
         permissionGroups.remove(group)
+    }
+
+    fun getGroup(key: String): PermissionGroup {
+        return permissionGroups[key]!!
     }
 
     fun getPermissions(user: User): ArrayList<String> {

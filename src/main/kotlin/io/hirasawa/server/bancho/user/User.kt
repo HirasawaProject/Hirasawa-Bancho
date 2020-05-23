@@ -16,4 +16,12 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
     fun hasPermission(node: String): Boolean {
         return Hirasawa.permissionEngine.hasPermission(this, node)
     }
+
+    fun addGroup(group: PermissionGroup) {
+        permissionGroups.add(group)
+    }
+
+    fun removeGroup(group: PermissionGroup) {
+        permissionGroups.remove(group)
+    }
 }
