@@ -8,6 +8,7 @@ import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
+import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader

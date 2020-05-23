@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver.objects
 
+import io.hirasawa.server.polyfill.readAllBytes
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.handlers.ParameterHandler
 import java.io.ByteArrayInputStream
