@@ -83,4 +83,26 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
         return friends
     }
+
+    override fun getPermissionGroups(): HashMap<String, PermissionGroup> {
+        val query = "SELECT name, node from permission_groups LEFT JOIN permission_nodes ON group_id = " +
+                "permission_groups.id;"
+        val statement = connection.prepareStatement(query)
+
+        val groups = HashMap<String, PermissionGroup>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            val name = resultSet.getString("name")
+            val node = resultSet.getString("node")
+
+            if (name !in groups) {
+                groups[name] = PermissionGroup(name)
+            }
+            groups[name]?.permissions?.add(node)
+        }
+
+        return groups
+    }
+
 }

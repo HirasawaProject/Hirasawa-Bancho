@@ -1,9 +1,10 @@
 package io.hirasawa.server.permissions
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.user.User
 
 class PermissionEngine {
-    val permissionGroups = HashMap<String, PermissionGroup>()
+    val permissionGroups = Hirasawa.database.getPermissionGroups()
 
     fun addGroup(group: PermissionGroup) {
         permissionGroups[group.name] = group
