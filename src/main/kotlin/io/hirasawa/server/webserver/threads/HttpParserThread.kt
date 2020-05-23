@@ -1,21 +1,17 @@
 package io.hirasawa.server.webserver.threads
 
+import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
-import io.hirasawa.server.webserver.objects.ImmutableHeaders
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.routes.errors.InternalServerErrorRoute
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.DataInputStream
-import java.io.DataOutputStream
+import java.io.*
 import java.net.Socket
-import java.util.concurrent.TimeUnit
 
 class HttpParserThread(private val socket: Socket, private val webserver: Webserver) : Runnable {
     override fun run() {
@@ -29,7 +25,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             // Handle POST data
             // We only do this when we're aware of content length
             val postBuffer = ByteArrayOutputStream()
-            postBuffer.writeBytes(dataInputStream.readNBytes(immutableHeaders["Content-Length"]!!.toInt()))
+            postBuffer.write(dataInputStream.readNBytes(immutableHeaders["Content-Length"]!!.toInt()))
             postData = postBuffer.toByteArray()
         }
 

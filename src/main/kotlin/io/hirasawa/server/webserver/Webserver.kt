@@ -5,6 +5,8 @@ import io.hirasawa.server.webserver.objects.MutableHeaders
 import io.hirasawa.server.webserver.routes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -93,5 +95,10 @@ class Webserver(val port: Int) {
      */
     fun addDefaultHeader(key: String, value: String) {
         defaultHeaders[key] = value
+    }
+
+
+    private fun InputStream.readNBytes(toInt: Int): ByteArray {
+        return ByteArray(1)
     }
 }

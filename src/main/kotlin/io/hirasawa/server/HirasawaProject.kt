@@ -11,11 +11,17 @@ import io.hirasawa.server.routes.test.*
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.routes.TestRoute
 import java.io.File
+import java.io.InputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
 fun main() {
+    fun InputStream.readNBytes(payloadLength: Int): ByteArray? {
+        return kotlin.ByteArray(1)
+    }
+
+
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
