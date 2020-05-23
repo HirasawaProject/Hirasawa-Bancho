@@ -17,6 +17,7 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     val packetCache = Stack<BanchoPacket>()
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
     var lastKeepAlive = 0
+    val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
 
     /**
      * Send a packet to the user

@@ -3,6 +3,7 @@ package io.hirasawa.server.database
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.permissions.PermissionGroup
 import org.mindrot.jbcrypt.BCrypt
 import java.lang.Exception
 import java.sql.Connection
@@ -35,7 +36,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
     private fun resultSetToUser(resultSet: ResultSet): User {
         return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-            0, GameMode.OSU,0F,0F, UUID.randomUUID(), resultSet.getBoolean("banned"))
+            ArrayList<PermissionGroup>(), GameMode.OSU,0F,0F, UUID.randomUUID(), resultSet.getBoolean("banned"))
     }
 
     override fun getUser(id: Int): User {

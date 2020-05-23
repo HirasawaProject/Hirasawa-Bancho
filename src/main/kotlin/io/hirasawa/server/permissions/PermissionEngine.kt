@@ -29,4 +29,26 @@ class PermissionEngine {
         return node in getPermissions(user)
     }
 
+    fun calculateClientPermissions(user: User): Byte {
+        var clientPermission = ClientPermission.NORMAL.byte.toInt()
+        for (permission in getPermissions((user))) {
+            when(permission) {
+                "hirasawa.client.bat" -> {
+                    clientPermission += ClientPermission.BAT.byte
+                }
+                "hirasawa.client.supporter" -> {
+                    clientPermission += ClientPermission.SUPPORTER.byte
+                }
+                "hirasawa.client.moderator" -> {
+                    clientPermission += ClientPermission.MODERATOR.byte
+                }
+                "hirasawa.client.admin" -> {
+                    clientPermission += ClientPermission.ADMIN.byte
+                }
+            }
+        }
+
+        return clientPermission.toByte()
+    }
+
 }

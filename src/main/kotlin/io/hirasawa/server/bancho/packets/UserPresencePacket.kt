@@ -8,7 +8,7 @@ class UserPresencePacket(banchoUser: BanchoUser): BanchoPacket(BanchoPacketType.
         writer.writeString(banchoUser.username)
         writer.writeByte(banchoUser.timezone)
         writer.writeByte(banchoUser.countryCode)
-        writer.writeByte(banchoUser.permissions)
+        writer.writeByte(banchoUser.clientPermissions)
         writer.writeFloat(banchoUser.longitude)
         writer.writeFloat(banchoUser.latitude)
         writer.writeInt(banchoUser.userStats.rank)
