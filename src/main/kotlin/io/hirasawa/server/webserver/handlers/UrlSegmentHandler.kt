@@ -3,7 +3,7 @@ package io.hirasawa.server.webserver.handlers
 import io.hirasawa.server.webserver.objects.UrlSegment
 
 class UrlSegmentHandler(url: String) {
-    lateinit var urlSegment: UrlSegment
+    var urlSegment: UrlSegment
 
     private val routeStart = '/'
     private val paramsStart = '?'
@@ -11,7 +11,6 @@ class UrlSegmentHandler(url: String) {
     init {
         var host = ""
         var route = ""
-        var params = HashMap<String, String>()
         var parsingState = ParsingState.HOST
         var temp = ""
         for (char in url) {
@@ -38,7 +37,7 @@ class UrlSegmentHandler(url: String) {
                 }
             }
         }
-        params = ParameterHandler(temp.toByteArray()).parameters
+        val params = ParameterHandler(temp.toByteArray()).parameters
 
         urlSegment = UrlSegment(host, route, params)
     }

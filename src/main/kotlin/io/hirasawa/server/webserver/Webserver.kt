@@ -96,9 +96,4 @@ class Webserver(val port: Int) {
     fun addDefaultHeader(key: String, value: String) {
         defaultHeaders[key] = value
     }
-
-
-    private fun InputStream.readNBytes(toInt: Int): ByteArray {
-        return ByteArray(1)
-    }
 }

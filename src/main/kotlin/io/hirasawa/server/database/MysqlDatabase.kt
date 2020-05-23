@@ -15,7 +15,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
-    private lateinit var connection: Connection
+    private var connection: Connection
     init {
         Class.forName("com.mysql.jdbc.Driver")
         connection = DriverManager.getConnection(

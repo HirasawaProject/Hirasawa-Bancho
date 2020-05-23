@@ -17,11 +17,6 @@ import java.util.concurrent.TimeUnit
 
 
 fun main() {
-    fun InputStream.readNBytes(payloadLength: Int): ByteArray? {
-        return kotlin.ByteArray(1)
-    }
-
-
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
