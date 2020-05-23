@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 
 class WebserverTests: TestCase() {
-    private val port = Random.nextInt(Short.MAX_VALUE + 1)
+    private val port = Random.nextInt(2000, Short.MAX_VALUE - 1)
     private val webserver = Webserver(port)
     private var client = OkHttpClient()
     init {
