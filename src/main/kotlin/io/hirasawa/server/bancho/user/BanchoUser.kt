@@ -6,15 +6,18 @@ import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.BanchoPacket
+import io.hirasawa.server.permissions.PermissionGroup
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, permissions: Byte, mode: GameMode,
-                      longitude: Float, latitude: Float, var uuid: UUID, isBanned: Boolean) : User(id, username,
-        timezone, countryCode, permissions, mode, longitude, latitude, isBanned) {
+open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte,
+                      permissionGroups: ArrayList<PermissionGroup>, mode: GameMode, longitude: Float, latitude: Float,
+                      var uuid: UUID, isBanned: Boolean) : User(id, username,
+        timezone, countryCode, permissionGroups, mode, longitude, latitude, isBanned) {
     val packetCache = Stack<BanchoPacket>()
     val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
     var lastKeepAlive = 0
+    val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
 
     /**
      * Send a packet to the user
