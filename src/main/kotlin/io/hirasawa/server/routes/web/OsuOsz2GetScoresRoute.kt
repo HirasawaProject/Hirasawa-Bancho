@@ -35,7 +35,7 @@ class OsuOsz2GetScoresRoute: Route {
             val userScore = Hirasawa.database.getUserScore(beatmap, gamemode, user)
 
             if (userScore != null) {
-                ScoreInfoHandler(userScore, 1, false).write(response.outputStream)
+                ScoreInfoHandler(userScore, userScore.rank, false).write(response.outputStream)
             } else {
                 response.outputStream.writeBytes("\n")
             }

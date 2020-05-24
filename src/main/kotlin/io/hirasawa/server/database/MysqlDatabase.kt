@@ -130,11 +130,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     private fun resultSetToScore(resultSet: ResultSet): Score {
-        return Score(resultSet.getInt("id"), resultSetToUser(resultSet), resultSet.getInt("score"),
-            resultSet.getInt("combo"), resultSet.getInt("count50"), resultSet.getInt("count100"),
-            resultSet.getInt("count300"), resultSet.getInt("count_miss"), resultSet.getInt("count_katu"),
-            resultSet.getInt("count_geki"), resultSet.getBoolean("full_combo"), resultSet.getInt("mods"),
-            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")])
+        return resultSetToScore(resultSet, resultSetToUser(resultSet))
     }
 
     private fun resultSetToScore(resultSet: ResultSet, user: User): Score {
@@ -142,7 +138,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             resultSet.getInt("combo"), resultSet.getInt("count50"), resultSet.getInt("count100"),
             resultSet.getInt("count300"), resultSet.getInt("count_miss"), resultSet.getInt("count_katu"),
             resultSet.getInt("count_geki"), resultSet.getBoolean("full_combo"), resultSet.getInt("mods"),
-            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")])
+            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")], resultSet.getInt("rank"))
     }
 
     override fun getScore(id: Int): Score? {
