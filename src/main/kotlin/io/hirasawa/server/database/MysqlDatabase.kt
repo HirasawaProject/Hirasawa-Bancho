@@ -199,12 +199,13 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         return null
     }
 
-    override fun getBeatmapScores(beatmap: Beatmap, mode: GameMode): ArrayList<Score> {
+    override fun getBeatmapScores(beatmap: Beatmap, mode: GameMode, limit: Int): ArrayList<Score> {
         val query = "SELECT * FROM scores LEFT JOIN users ON user_id = users.id WHERE beatmap_id = ? AND " +
-                "gamemode = ? ORDER BY score DESC"
+                "gamemode = ? ORDER BY score DESC LIMIT ?"
         val statement = connection.prepareStatement(query)
         statement.setInt(1, beatmap.id)
         statement.setInt(2, mode.ordinal)
+        statement.setInt(3, limit)
 
         val scores = ArrayList<Score>()
 

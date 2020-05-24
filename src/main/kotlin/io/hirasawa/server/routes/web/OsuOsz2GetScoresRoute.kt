@@ -40,7 +40,7 @@ class OsuOsz2GetScoresRoute: Route {
                 response.outputStream.writeBytes("\n")
             }
 
-            for ((index, score) in Hirasawa.database.getBeatmapScores(beatmap, gamemode).withIndex()) {
+            for ((index, score) in Hirasawa.database.getBeatmapScores(beatmap, gamemode, 50).withIndex()) {
                 ScoreInfoHandler(score, index+1, true).write(response.outputStream)
             }
         } else {
