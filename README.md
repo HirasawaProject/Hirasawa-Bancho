@@ -8,7 +8,7 @@ Minecraft utilising events for all actions in-game
 We will also have a plugin store available at some point later down the line of development
 
 ## Requirements
-* Java 8 (Java 9 for building)
+* Java 8
 * Mysql (soon to be configurable)
 * Gradle
 
