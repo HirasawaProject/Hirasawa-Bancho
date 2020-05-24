@@ -7,10 +7,10 @@ import io.hirasawa.server.bancho.objects.BanchoUserMap
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
-import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
+import io.hirasawa.server.database.Database
 import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.plugin.PluginManager
@@ -32,7 +32,7 @@ class Hirasawa {
         val eventHandler = EventManager()
         val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
         val pluginManager = PluginManager()
-        val database = MysqlDatabase(config.database)
+        var database: Database = MysqlDatabase(config.database)
         val chatEngine = ChatEngine()
         val permissionEngine = PermissionEngine()
 

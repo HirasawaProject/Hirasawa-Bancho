@@ -106,7 +106,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     override fun getBeatmapScores(beatmap: Beatmap, mode: GameMode, limit: Int): ArrayList<Score> {
         val listedScores = ArrayList<Score>()
         for (score in scores) {
-            if (score.beatmapId == beatmap.id) {
+            if (score.beatmapId == beatmap.id && score.gameMode == mode) {
                 listedScores.add(score)
             }
         }
@@ -118,7 +118,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
 
     override fun getUserScore(beatmap: Beatmap, mode: GameMode, user: User): Score? {
         for (score in scores) {
-            if (score.user == user && score.beatmapId == beatmap.id) {
+            if (score.user == user && score.beatmapId == beatmap.id && score.gameMode == mode) {
                 return score
             }
         }
