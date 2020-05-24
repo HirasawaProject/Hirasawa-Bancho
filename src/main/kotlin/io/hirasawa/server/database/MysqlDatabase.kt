@@ -63,7 +63,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             UUID.randomUUID(), resultSet.getBoolean("users.banned"))
     }
 
-    override fun getUser(id: Int): User {
+    override fun getUser(id: Int): User? {
         val query = "SELECT * FROM users WHERE id = ?"
         val statement = connection.prepareStatement(query)
         statement.setInt(1, id)
@@ -73,10 +73,10 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             return resultSetToUser(resultSet)
         }
 
-        throw Exception("User not found")
+        return null
     }
 
-    override fun getUser(username: String): User {
+    override fun getUser(username: String): User? {
         val query = "SELECT * FROM users WHERE username = ?"
         val statement = connection.prepareStatement(query)
         statement.setString(1, username)
@@ -86,7 +86,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             return resultSetToUser(resultSet)
         }
 
-        throw Exception("User not found")
+        return null
     }
 
     override fun createPasswordHash(password: String): String {
