@@ -8,6 +8,7 @@ import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.test.*
+import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.routes.TestRoute
 import java.io.File
@@ -41,6 +42,7 @@ fun main() {
 
     webserver.addRoute("/", HttpMethod.GET, TestRoute())
     webserver.addRoute("/", HttpMethod.POST, BanchoRoute())
+    webserver.addRoute("/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
