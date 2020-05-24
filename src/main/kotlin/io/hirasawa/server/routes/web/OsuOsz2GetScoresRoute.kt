@@ -6,6 +6,9 @@ import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.handlers.GetScoresErrorHeaderHandler
 import io.hirasawa.server.handlers.GetScoresHeaderHandler
 import io.hirasawa.server.handlers.ScoreInfoHandler
+import io.hirasawa.server.plugin.event.score.ClientLeaderboardFailEvent
+import io.hirasawa.server.plugin.event.score.ClientLeaderboardLoadEvent
+import io.hirasawa.server.plugin.event.score.ClientLeaderboardPreloadEvent
 import io.hirasawa.server.webserver.Route
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
@@ -25,10 +28,18 @@ class OsuOsz2GetScoresRoute: Route {
             val beatmapSet = beatmap?.beatmapSet
             val gamemode = GameMode.values()[request.get["m"]!!.toInt()]
 
+            val preloadEvent = ClientLeaderboardPreloadEvent(user, request.get["c"]!!, gamemode)
+            Hirasawa.eventHandler.callEvent(preloadEvent)
+
             if (beatmap == null || beatmapSet == null) {
+                val failEvent = ClientLeaderboardFailEvent(user, request.get["c"]!!, gamemode)
+                Hirasawa.eventHandler.callEvent(failEvent)
                 GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
                 return
             }
+
+            val loadEvent = ClientLeaderboardLoadEvent(user, beatmap, beatmapSet, gamemode)
+            Hirasawa.eventHandler.callEvent(loadEvent)
 
             GetScoresHeaderHandler(false, beatmap, beatmapSet).write(response.outputStream)
 
