@@ -58,9 +58,9 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     private fun resultSetToUser(resultSet: ResultSet): User {
-        return BanchoUser(resultSet.getInt("id"), resultSet.getString("username"), 0, 0,
-            getPermissionGroupsFromUser(resultSet.getInt("id")), GameMode.OSU,0F,0F, UUID.randomUUID(),
-            resultSet.getBoolean("banned"))
+        return BanchoUser(resultSet.getInt("users.id"), resultSet.getString("users.username"), 0, 0,
+            getPermissionGroupsFromUser(resultSet.getInt("users.id")), GameMode.OSU,0F,0F,
+            UUID.randomUUID(), resultSet.getBoolean("users.banned"))
     }
 
     override fun getUser(id: Int): User {
@@ -134,11 +134,13 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     private fun resultSetToScore(resultSet: ResultSet, user: User): Score {
-        return Score(resultSet.getInt("id"), user, resultSet.getInt("score"),
-            resultSet.getInt("combo"), resultSet.getInt("count50"), resultSet.getInt("count100"),
-            resultSet.getInt("count300"), resultSet.getInt("count_miss"), resultSet.getInt("count_katu"),
-            resultSet.getInt("count_geki"), resultSet.getBoolean("full_combo"), resultSet.getInt("mods"),
-            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")], resultSet.getInt("rank"))
+        return Score(resultSet.getInt("scores.id"), user, resultSet.getInt("scores.score"),
+            resultSet.getInt("scores.combo"), resultSet.getInt("scores.count50"), resultSet.getInt("scores.count100"),
+            resultSet.getInt("scores.count300"), resultSet.getInt("scores.count_miss"),
+            resultSet.getInt("scores.count_katu"), resultSet.getInt("scores.count_geki"),
+            resultSet.getBoolean("scores.full_combo"), resultSet.getInt("scores.mods"),
+            resultSet.getInt("scores.timestamp"), GameMode.values()[resultSet.getInt("scores.gamemode")],
+            resultSet.getInt("scores.rank"))
     }
 
     override fun getScore(id: Int): Score? {
@@ -155,8 +157,9 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     private fun resultSetToBeatmap(resultSet: ResultSet): Beatmap {
-        return Beatmap(resultSet.getInt("id"), resultSet.getInt("mapset_id"), resultSet.getString("difficulty"),
-            resultSet.getString("hash"), resultSet.getInt("ranks"), resultSet.getFloat("offset"))
+        return Beatmap(resultSet.getInt("beatmaps.id"), resultSet.getInt("beatmaps.mapset_id"),
+            resultSet.getString("beatmaps.difficulty"), resultSet.getString("beatmaps.hash"),
+            resultSet.getInt("beatmaps.ranks"), resultSet.getFloat("beatmaps.offset"))
     }
 
     override fun getBeatmap(id: Int): Beatmap? {
