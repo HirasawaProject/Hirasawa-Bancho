@@ -24,12 +24,13 @@ class OsuOsz2GetScoresRoute: Route {
 
         if (Hirasawa.database.authenticate(request.get["us"]!!, request.get["ha"]!!)) {
             val user = Hirasawa.database.getUser(request.get["us"]!!)
-            val beatmap = Hirasawa.database.getBeatmap(request.get["c"]!!)
-            val beatmapSet = beatmap?.beatmapSet
             val gamemode = GameMode.values()[request.get["m"]!!.toInt()]
 
             val preloadEvent = ClientLeaderboardPreloadEvent(user, request.get["c"]!!, gamemode)
             Hirasawa.eventHandler.callEvent(preloadEvent)
+
+            val beatmap = Hirasawa.database.getBeatmap(request.get["c"]!!)
+            val beatmapSet = beatmap?.beatmapSet
 
             if (beatmap == null || beatmapSet == null) {
                 val failEvent = ClientLeaderboardFailEvent(user, request.get["c"]!!, gamemode)
