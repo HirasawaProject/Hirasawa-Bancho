@@ -13,8 +13,8 @@ import java.util.HashMap
 
 abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun authenticate(username: String, password: String): Boolean
-    abstract fun getUser(id: Int): User
-    abstract fun getUser(username: String): User
+    abstract fun getUser(id: Int): User?
+    abstract fun getUser(username: String): User?
     abstract fun getUserFriends(id: Int): ArrayList<User>
 
     fun authenticateWithMd5(username: String, password: String): Boolean {

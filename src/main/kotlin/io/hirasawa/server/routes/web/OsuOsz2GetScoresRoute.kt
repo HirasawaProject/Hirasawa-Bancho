@@ -32,7 +32,7 @@ class OsuOsz2GetScoresRoute: Route {
         }
 
         if (Hirasawa.database.authenticate(username, passwordHash)) {
-            val user = Hirasawa.database.getUser(username)
+            val user = Hirasawa.database.getUser(username)!!
 
             val preloadEvent = ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode)
             Hirasawa.eventHandler.callEvent(preloadEvent)

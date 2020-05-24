@@ -19,6 +19,7 @@ import io.hirasawa.server.webserver.Webserver
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.lang.Exception
 import java.util.*
 
 class Hirasawa {
@@ -36,7 +37,7 @@ class Hirasawa {
         val chatEngine = ChatEngine()
         val permissionEngine = PermissionEngine()
 
-        val hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId))
+        val hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId) ?: throw(Exception("User not found")))
         val banchoUsers = BanchoUserMap()
 
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
