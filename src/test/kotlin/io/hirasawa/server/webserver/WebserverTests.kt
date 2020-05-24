@@ -4,15 +4,15 @@ import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import junit.framework.TestCase
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.lang.Exception
 import kotlin.random.Random
 
 
-class WebserverTests: TestCase() {
+class WebserverTests {
     private val port = Random.nextInt(2000, Short.MAX_VALUE - 1)
     private val webserver = Webserver(port)
     private var client = OkHttpClient()
@@ -62,7 +62,7 @@ class WebserverTests: TestCase() {
         assertEquals("{bar=baz, foo=bar}", response.body?.string())
     }
 
-    @Test(expected=Exception::class)
+    @Test
     fun testDoesThrownErrorGiveErrorRoute() {
         webserver.addRoute("/error", HttpMethod.GET, object : Route {
             override fun handle(request: Request, response: Response) {
