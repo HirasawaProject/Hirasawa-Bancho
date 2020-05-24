@@ -22,18 +22,26 @@ class OsuOsz2GetScoresRoute: Route {
             return
         }
 
-        if (Hirasawa.database.authenticate(request.get["us"]!!, request.get["ha"]!!)) {
-            val user = Hirasawa.database.getUser(request.get["us"]!!)
-            val gamemode = GameMode.values()[request.get["m"]!!.toInt()]
+        val username = request.get["us"]
+        val passwordHash = request.get["ha"]
+        val beatmapHash = request.get["c"]
+        val gamemode = GameMode.values()[request.get["m"]?.toInt() ?: 0]
 
-            val preloadEvent = ClientLeaderboardPreloadEvent(user, request.get["c"]!!, gamemode)
+        if (username == null || passwordHash == null || beatmapHash == null) {
+            return
+        }
+
+        if (Hirasawa.database.authenticate(username, passwordHash)) {
+            val user = Hirasawa.database.getUser(username)
+
+            val preloadEvent = ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode)
             Hirasawa.eventHandler.callEvent(preloadEvent)
 
-            val beatmap = Hirasawa.database.getBeatmap(request.get["c"]!!)
+            val beatmap = Hirasawa.database.getBeatmap(beatmapHash)
             val beatmapSet = beatmap?.beatmapSet
 
             if (beatmap == null || beatmapSet == null) {
-                val failEvent = ClientLeaderboardFailEvent(user, request.get["c"]!!, gamemode)
+                val failEvent = ClientLeaderboardFailEvent(user, beatmapHash, gamemode)
                 Hirasawa.eventHandler.callEvent(failEvent)
                 GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
                 return
