@@ -140,7 +140,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             resultSet.getInt("scores.count_katu"), resultSet.getInt("scores.count_geki"),
             resultSet.getBoolean("scores.full_combo"), resultSet.getInt("scores.mods"),
             resultSet.getInt("scores.timestamp"), GameMode.values()[resultSet.getInt("scores.gamemode")],
-            resultSet.getInt("scores.rank"))
+            resultSet.getInt("scores.rank"), resultSet.getInt("beatmap_id"))
     }
 
     override fun getScore(id: Int): Score? {
