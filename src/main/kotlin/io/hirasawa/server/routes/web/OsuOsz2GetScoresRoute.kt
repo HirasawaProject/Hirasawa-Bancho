@@ -1,12 +1,11 @@
 package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.enums.BeatmapStatus
+import io.hirasawa.server.handlers.GetScoresErrorHeaderHandler
 import io.hirasawa.server.handlers.GetScoresHeaderHandler
 import io.hirasawa.server.handlers.ScoreInfoHandler
-import io.hirasawa.server.objects.Beatmap
-import io.hirasawa.server.objects.BeatmapSet
-import io.hirasawa.server.objects.Score
 import io.hirasawa.server.webserver.Route
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
@@ -21,19 +20,29 @@ class OsuOsz2GetScoresRoute: Route {
         }
 
         if (Hirasawa.database.authenticate(request.get["us"]!!, request.get["ha"]!!)) {
-            val beatmap = Beatmap(1, 1, "Test Diff", "", 2, 9.24295F)
-            val beatmapSet = BeatmapSet(1, "Artist", "Title", BeatmapStatus.RANKED)
+            val user = Hirasawa.database.getUser(request.get["us"]!!)
+            val beatmap = Hirasawa.database.getBeatmap(request.get["c"]!!)
+            val beatmapSet = beatmap?.beatmapSet
+            val gamemode = GameMode.values()[request.get["m"]!!.toInt()]
+
+            if (beatmap == null || beatmapSet == null) {
+                GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                return
+            }
+
             GetScoresHeaderHandler(false, beatmap, beatmapSet).write(response.outputStream)
 
-            val score = Score(1, Hirasawa.database.getUser("Connor"), 100, 10, 50,
-                100, 300, 0, 101, 101, true, 0, 1590276979)
+            val userScore = Hirasawa.database.getUserScore(beatmap, gamemode, user)
 
-            val score2 = Score(2, Hirasawa.database.getUser("HirasawaBot"), 10, 10, 50,
-                100, 300, 0, 101, 101, false, 0, 1590276979)
+            if (userScore != null) {
+                ScoreInfoHandler(userScore, 1, false).write(response.outputStream)
+            } else {
+                response.outputStream.writeBytes("\n")
+            }
 
-            ScoreInfoHandler(score, 1, false).write(response.outputStream)
-            ScoreInfoHandler(score, 1, true).write(response.outputStream)
-            ScoreInfoHandler(score2, 2, true).write(response.outputStream)
+            for ((index, score) in Hirasawa.database.getBeatmapScores(beatmap, gamemode).withIndex()) {
+                ScoreInfoHandler(score, index+1, true).write(response.outputStream)
+            }
         } else {
             RouteForbidden().handle(request, response)
             return

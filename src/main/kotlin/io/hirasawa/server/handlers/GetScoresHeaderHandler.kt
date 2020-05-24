@@ -1,6 +1,5 @@
 package io.hirasawa.server.handlers
 
-import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
 import java.io.DataOutputStream

@@ -4,7 +4,10 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
-import io.hirasawa.server.config.HirasawaConfig
+import io.hirasawa.server.enums.BeatmapStatus
+import io.hirasawa.server.objects.Beatmap
+import io.hirasawa.server.objects.BeatmapSet
+import io.hirasawa.server.objects.Score
 import io.hirasawa.server.permissions.PermissionGroup
 import org.mindrot.jbcrypt.BCrypt
 import java.lang.Exception
@@ -124,6 +127,113 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         }
 
         return groups
+    }
+
+    private fun resultSetToScore(resultSet: ResultSet): Score {
+        return Score(resultSet.getInt("id"), resultSetToUser(resultSet), resultSet.getInt("score"),
+            resultSet.getInt("combo"), resultSet.getInt("count50"), resultSet.getInt("count100"),
+            resultSet.getInt("count300"), resultSet.getInt("count_miss"), resultSet.getInt("count_katu"),
+            resultSet.getInt("count_geki"), resultSet.getBoolean("full_combo"), resultSet.getInt("mods"),
+            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")])
+    }
+
+    private fun resultSetToScore(resultSet: ResultSet, user: User): Score {
+        return Score(resultSet.getInt("id"), user, resultSet.getInt("score"),
+            resultSet.getInt("combo"), resultSet.getInt("count50"), resultSet.getInt("count100"),
+            resultSet.getInt("count300"), resultSet.getInt("count_miss"), resultSet.getInt("count_katu"),
+            resultSet.getInt("count_geki"), resultSet.getBoolean("full_combo"), resultSet.getInt("mods"),
+            resultSet.getInt("timestamp"), GameMode.values()[resultSet.getInt("gamemode")])
+    }
+
+    override fun getScore(id: Int): Score? {
+        val query = "SELECT * FROM scores LEFT JOIN users ON user_id = users.id WHERE scores.id = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, id)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return resultSetToScore(resultSet)
+        }
+
+        return null
+    }
+
+    private fun resultSetToBeatmap(resultSet: ResultSet): Beatmap {
+        return Beatmap(resultSet.getInt("id"), resultSet.getInt("mapset_id"), resultSet.getString("difficulty"),
+            resultSet.getString("hash"), resultSet.getInt("ranks"), resultSet.getFloat("offset"))
+    }
+
+    override fun getBeatmap(id: Int): Beatmap? {
+        val query = "SELECT * FROM beatmaps WHERE id = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, id)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return resultSetToBeatmap(resultSet)
+        }
+
+        return null
+    }
+
+    override fun getBeatmap(hash: String): Beatmap? {
+        val query = "SELECT * FROM beatmaps WHERE hash = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setString(1, hash)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return resultSetToBeatmap(resultSet)
+        }
+
+        return null
+    }
+
+    override fun getBeatmapSet(id: Int): BeatmapSet? {
+        val query = "SELECT * FROM beatmapsets WHERE id = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, id)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return BeatmapSet(resultSet.getInt("id"), resultSet.getString("artist"), resultSet.getString("title"),
+                BeatmapStatus.fromId(resultSet.getInt("status")))
+        }
+
+        return null
+    }
+
+    override fun getBeatmapScores(beatmap: Beatmap, mode: GameMode): ArrayList<Score> {
+        val query = "SELECT * FROM scores LEFT JOIN users ON user_id = users.id WHERE beatmap_id = ? AND " +
+                "gamemode = ? ORDER BY score DESC"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, beatmap.id)
+        statement.setInt(2, mode.ordinal)
+
+        val scores = ArrayList<Score>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            val score = resultSetToScore(resultSet)
+            scores.add(score)
+        }
+
+        return scores
+    }
+
+    override fun getUserScore(beatmap: Beatmap, mode: GameMode, user: User): Score? {
+        val query = "SELECT * FROM scores WHERE user_id = ? AND beatmap_id = ? AND gamemode = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, user.id)
+        statement.setInt(2, beatmap.id)
+        statement.setInt(3, mode.ordinal)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return resultSetToScore(resultSet, user)
+        }
+
+        return null
     }
 
 }
