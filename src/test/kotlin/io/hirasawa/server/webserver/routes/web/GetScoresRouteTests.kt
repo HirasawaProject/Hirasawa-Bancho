@@ -15,8 +15,10 @@ import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.*
-import junit.framework.TestCase
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
@@ -24,7 +26,13 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class GetScoresRouteTests: TestCase() {
+class GetScoresRouteTests {
+    val database = MemoryDatabase()
+    @BeforeEach
+    fun setupDb() {
+        Hirasawa.database = database
+    }
+
     private fun createUser(id: Int, username: String): User {
         return BanchoUser(id, username, 0, 0, ArrayList<PermissionGroup>(), GameMode.OSU, 0F,
             0F, UUID.randomUUID(), false)
@@ -70,10 +78,7 @@ class GetScoresRouteTests: TestCase() {
 
     @Test
     fun testDoesScoresRouteShowCorrectStatus() {
-        val database = MemoryDatabase()
         database.users.add(createUser(1, "CurrentStatus"))
-
-        Hirasawa.database = database
 
         val responseBuffer = ByteArrayOutputStream()
         requestRoute("CurrentStatus", "", GameMode.OSU, "onethatdoesn'texist", responseBuffer)
@@ -85,14 +90,11 @@ class GetScoresRouteTests: TestCase() {
 
     @Test
     fun testDoesLeaderboardShowOurScore() {
-        val database = MemoryDatabase()
         val user = createUser(1, "OurScore")
         database.users.add(user)
         database.scores.add(createScore(1, user, 1000, 1, 1, GameMode.OSU))
         database.beatmaps.add(createBeatmap(1, 1, "foo", 1))
         database.beatmapSets.add(createBeatmapSet(1, "Artist", "Song", BeatmapStatus.RANKED))
-
-        Hirasawa.database = database
 
         val responseBuffer = ByteArrayOutputStream()
         requestRoute("OurScore", "", GameMode.OSU, "foo", responseBuffer)
@@ -105,7 +107,6 @@ class GetScoresRouteTests: TestCase() {
 
     @Test
     fun testDoesLeaderboardNotShowTaikoFromOsu() {
-        val database = MemoryDatabase()
         database.users.add(createUser(1, "NotOtherMods"))
 
 
@@ -118,8 +119,6 @@ class GetScoresRouteTests: TestCase() {
 
         val taikoUser = createUser(3, "Taiko")
         database.scores.add(createScore(2, taikoUser, 1000, 1, 1, GameMode.TAIKO))
-
-        Hirasawa.database = database
 
         val standardBuffer = ByteArrayOutputStream()
         requestRoute("NotOtherMods", "", GameMode.OSU, "foo", standardBuffer)
@@ -134,7 +133,6 @@ class GetScoresRouteTests: TestCase() {
 
     @Test
     fun testDoesLeaderboardNotShowOsuFromTaiko() {
-        val database = MemoryDatabase()
         database.users.add(createUser(1, "NotOtherMods"))
 
 
@@ -147,8 +145,6 @@ class GetScoresRouteTests: TestCase() {
 
         val taikoUser = createUser(3, "Taiko")
         database.scores.add(createScore(2, taikoUser, 1000, 1, 1, GameMode.TAIKO))
-
-        Hirasawa.database = database
 
         val standardBuffer = ByteArrayOutputStream()
         requestRoute("NotOtherMods", "", GameMode.TAIKO, "foo", standardBuffer)
