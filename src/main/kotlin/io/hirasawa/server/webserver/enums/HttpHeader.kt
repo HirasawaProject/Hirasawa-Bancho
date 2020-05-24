@@ -5,7 +5,8 @@ package io.hirasawa.server.webserver.enums
  */
 enum class HttpHeader {
     CONTENT_TYPE,
-    CONTENT_SIZE;
+    CONTENT_SIZE,
+    USER_AGENT;
 
     override fun toString(): String {
         val words = this.name.split("_").map { it.toLowerCase().capitalize() }
