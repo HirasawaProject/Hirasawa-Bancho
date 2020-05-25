@@ -19,9 +19,8 @@ import java.util.*
 
 class PacketTests {
     val database = MemoryDatabase()
-    @BeforeEach
-    fun setupDb() {
-        Hirasawa.database = database
+    init {
+        Hirasawa.initDatabase(database)
     }
 
     @Test
