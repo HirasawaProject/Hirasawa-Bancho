@@ -25,9 +25,8 @@ import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
     val database = MemoryDatabase()
-    @BeforeEach
-    fun setupDb() {
-        Hirasawa.database = database
+    init {
+        Hirasawa.initDatabase(database)
     }
 
     fun requestRoute(username: String, password: String, gameMode: GameMode, beatmapHash: String,
