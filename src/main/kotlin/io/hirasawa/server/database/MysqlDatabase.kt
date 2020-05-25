@@ -238,7 +238,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
-        val query = "SELECT * FROM user_stats WHERE user_id = ? AND mode = ?"
+        val query = "SELECT * FROM user_stats WHERE user_id = ? AND gamemode = ?"
         val statement = connection.prepareStatement(query)
         statement.setInt(1, user.id)
         statement.setInt(2, gameMode.ordinal)
