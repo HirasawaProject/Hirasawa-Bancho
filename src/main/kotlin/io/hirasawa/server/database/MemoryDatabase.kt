@@ -2,6 +2,7 @@ package io.hirasawa.server.database
 
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.UserStats
+import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
@@ -24,6 +25,11 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     val beatmapSets = ArrayList<BeatmapSet>()
     val userStats = HashMap<Int, EnumMap<GameMode, UserStats>>()
 
+    init {
+        // Temporary hack to keep HirasawaBot loaded TODO auto setup database
+        users.add(BanchoUser(3, "HirasawaBOt", 0, 0, ArrayList(), 0F, 0F,
+            UUID.randomUUID(), false))
+    }
 
     override fun authenticate(username: String, password: String): Boolean {
         return true
