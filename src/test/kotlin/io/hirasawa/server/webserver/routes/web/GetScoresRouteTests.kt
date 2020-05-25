@@ -34,7 +34,7 @@ class GetScoresRouteTests {
     }
 
     private fun createUser(id: Int, username: String): User {
-        return BanchoUser(id, username, 0, 0, ArrayList<PermissionGroup>(), GameMode.OSU, 0F,
+        return BanchoUser(id, username, 0, 0, ArrayList<PermissionGroup>(), 0F,
             0F, UUID.randomUUID(), false)
     }
 
