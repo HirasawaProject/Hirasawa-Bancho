@@ -8,7 +8,8 @@ import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.permissions.PermissionGroup
 import java.lang.Exception
-import java.util.HashMap
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Very non-optimised database engine running in memory
@@ -21,7 +22,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     val scores = ArrayList<Score>()
     val beatmaps = ArrayList<Beatmap>()
     val beatmapSets = ArrayList<BeatmapSet>()
-    val userStats = HashMap<User, HashMap<GameMode, UserStats>>()
+    val userStats = HashMap<Int, EnumMap<GameMode, UserStats>>()
 
 
     override fun authenticate(username: String, password: String): Boolean {
@@ -128,6 +129,6 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     }
 
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
-        return userStats[user]?.get(gameMode)
+        return userStats[user.id]?.get(gameMode)
     }
 }

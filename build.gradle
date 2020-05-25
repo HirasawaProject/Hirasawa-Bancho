@@ -38,7 +38,7 @@ jar {
 }
 
 test {
-    useJUnit()
+    useJUnitPlatform()
 
     maxHeapSize = '1G'
 }
