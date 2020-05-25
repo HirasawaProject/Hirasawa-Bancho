@@ -1,6 +1,7 @@
 package io.hirasawa.server.database
 
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
@@ -20,7 +21,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     val scores = ArrayList<Score>()
     val beatmaps = ArrayList<Beatmap>()
     val beatmapSets = ArrayList<BeatmapSet>()
-
+    val userStats = HashMap<User, HashMap<GameMode, UserStats>>()
 
 
     override fun authenticate(username: String, password: String): Boolean {
@@ -124,5 +125,9 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         }
 
         return null
+    }
+
+    override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
+        return userStats[user]?.get(gameMode)
     }
 }

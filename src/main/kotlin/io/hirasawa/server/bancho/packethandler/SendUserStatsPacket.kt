@@ -30,7 +30,7 @@ class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
             return
         }
 
-        user.userStats.status = banchoStatus
+        user.status = banchoStatus
         user.sendPacket(HandleOsuUpdatePacket(user))
     }
 }

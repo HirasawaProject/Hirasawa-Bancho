@@ -11,11 +11,12 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte,
-                      permissionGroups: ArrayList<PermissionGroup>, mode: GameMode, longitude: Float, latitude: Float,
+                      permissionGroups: ArrayList<PermissionGroup>, longitude: Float, latitude: Float,
                       var uuid: UUID, isBanned: Boolean) : User(id, username,
-        timezone, countryCode, permissionGroups, mode, longitude, latitude, isBanned) {
+        timezone, countryCode, permissionGroups, longitude, latitude, isBanned) {
     val packetCache = Stack<BanchoPacket>()
-    val userStats = UserStats(id, BanchoStatus(), 100, 10F, 100, 100, 1, 69)
+    var status = BanchoStatus()
+    var userStats = UserStats(id)
     var lastKeepAlive = 0
     val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
 
@@ -45,6 +46,16 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     override fun sendPrivateMessage(from: User, message: String) {
         Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
     }
+
+    /**
+     * Updates user stats for the specified gamemode
+     *
+     * This can be used to switch gamemodes or just update the stats on it
+     */
+    fun updateUserStats(gameMode: GameMode) {
+        userStats = Hirasawa.database.getUserStats(this, gameMode) ?: return
+    }
+
 
 
 }

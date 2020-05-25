@@ -5,12 +5,12 @@ import io.hirasawa.server.bancho.user.BanchoUser
 class HandleOsuUpdatePacket(banchoUser: BanchoUser): BanchoPacket(BanchoPacketType.BANCHO_HANDLE_OSU_UPDATE) {
     init {
         writer.writeInt(banchoUser.id)
-        writer.writeByte(banchoUser.userStats.status.status)
-        writer.writeString(banchoUser.userStats.status.statusText)
-        writer.writeString(banchoUser.userStats.status.beatmapChecksum)
-        writer.writeInt(banchoUser.userStats.status.mods)
-        writer.writeByte(banchoUser.userStats.status.mode.ordinal.toByte())
-        writer.writeInt(banchoUser.userStats.status.beatmapId)
+        writer.writeByte(banchoUser.status.status)
+        writer.writeString(banchoUser.status.statusText)
+        writer.writeString(banchoUser.status.beatmapChecksum)
+        writer.writeInt(banchoUser.status.mods)
+        writer.writeByte(banchoUser.status.mode.ordinal.toByte())
+        writer.writeInt(banchoUser.status.beatmapId)
         writer.writeLong(banchoUser.userStats.rankedScore)
         writer.writeFloat(banchoUser.userStats.accuracy)
         writer.writeInt(banchoUser.userStats.playcount)

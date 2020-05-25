@@ -5,7 +5,7 @@ import io.hirasawa.server.bancho.packets.BanchoPacket
 import java.util.*
 
 class HirasawaBot(user: User): BanchoUser(user.id, user.username, user.timezone, user.countryCode, user.permissionGroups,
-    GameMode.OSU, user.longitude, user.latitude, UUID.randomUUID(), false) {
+    user.longitude, user.latitude, UUID.randomUUID(), false) {
     init {
         lastKeepAlive = Int.MAX_VALUE
     }
