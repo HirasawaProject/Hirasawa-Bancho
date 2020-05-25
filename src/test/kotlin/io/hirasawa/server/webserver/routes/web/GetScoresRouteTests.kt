@@ -28,9 +28,8 @@ import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
     val database = MemoryDatabase()
-    @BeforeEach
-    fun setupDb() {
-        Hirasawa.database = database
+    init {
+        Hirasawa.initDatabase(database)
     }
 
     private fun createUser(id: Int, username: String): User {

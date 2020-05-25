@@ -37,13 +37,20 @@ class Hirasawa {
         val chatEngine = ChatEngine()
         val permissionEngine = PermissionEngine()
 
-        val hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId) ?: throw(Exception("User not found")))
+        lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = BanchoUserMap()
 
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
             for (user in banchoUsers) {
                 user.sendPacket(banchoPacket)
             }
+        }
+
+        fun initDatabase(database: Database) {
+            this.database = database
+
+            this.hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId)
+                ?: throw(Exception("User not found")))
         }
 
         private fun loadConfig(): HirasawaConfig {

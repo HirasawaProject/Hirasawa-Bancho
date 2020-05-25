@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.TestCommand
+import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
 import io.hirasawa.server.webserver.enums.HttpMethod
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit
 
 
 fun main() {
+    Hirasawa.initDatabase(MysqlDatabase(Hirasawa.config.database))
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
