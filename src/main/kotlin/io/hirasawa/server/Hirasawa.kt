@@ -36,7 +36,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         var database: Database = MemoryDatabase()
         val chatEngine = ChatEngine()
-        val permissionEngine = PermissionEngine()
+        lateinit var permissionEngine: PermissionEngine
 
         lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = BanchoUserMap()
@@ -49,6 +49,8 @@ class Hirasawa {
 
         fun initDatabase(database: Database) {
             this.database = database
+
+            this.permissionEngine = PermissionEngine()
 
             this.hirasawaBot = HirasawaBot(database.getUser(Hirasawa.config.banchoBotId)
                 ?: throw(Exception("User not found")))
