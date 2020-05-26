@@ -4,13 +4,13 @@ import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
+import io.hirasawa.server.webserver.route.Route
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.lang.Exception
-import kotlin.random.Random
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -22,7 +22,8 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseGetParams() {
-        webserver.addRoute("/getparams", HttpMethod.GET, object: Route {
+        webserver.addRoute("/getparams", HttpMethod.GET, object:
+            Route {
             override fun handle(request: Request, response: Response) {
                 response.writeText(request.get.toString())
             }
@@ -40,7 +41,8 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParsePostParams() {
-        webserver.addRoute("/postparams", HttpMethod.POST, object : Route {
+        webserver.addRoute("/postparams", HttpMethod.POST, object :
+            Route {
             override fun handle(request: Request, response: Response) {
                 response.writeText(request.post.toString())
             }
@@ -64,7 +66,8 @@ class WebserverTests {
 
     @Test
     fun testDoesThrownErrorGiveErrorRoute() {
-        webserver.addRoute("/error", HttpMethod.GET, object : Route {
+        webserver.addRoute("/error", HttpMethod.GET, object :
+            Route {
             override fun handle(request: Request, response: Response) {
                 throw Exception("foo")
             }

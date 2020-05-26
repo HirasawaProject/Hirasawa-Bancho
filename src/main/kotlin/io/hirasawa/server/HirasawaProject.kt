@@ -10,7 +10,7 @@ import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
 import io.hirasawa.server.webserver.enums.HttpMethod
-import io.hirasawa.server.webserver.routes.TestRoute
+import io.hirasawa.server.webserver.internalroutes.TestRoute
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

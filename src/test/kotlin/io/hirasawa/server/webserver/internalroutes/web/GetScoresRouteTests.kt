@@ -1,4 +1,4 @@
-package io.hirasawa.server.webserver.routes.web
+package io.hirasawa.server.webserver.internalroutes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
@@ -16,7 +16,6 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

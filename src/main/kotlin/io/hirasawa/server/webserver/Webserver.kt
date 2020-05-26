@@ -2,17 +2,16 @@ package io.hirasawa.server.webserver
 
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.objects.MutableHeaders
-import io.hirasawa.server.webserver.routes.errors.RouteNotFoundRoute
+import io.hirasawa.server.webserver.route.Route
+import io.hirasawa.server.webserver.internalroutes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
-import java.io.InputStream
-import java.io.OutputStream
 import java.util.*
 import kotlin.collections.HashMap
 
 class Webserver(val port: Int) {
     private val routes = HashMap<String, EnumMap<HttpMethod, Route>>()
-    private val defaultHeaders = MutableHeaders(HashMap<String, String>())
+    private val defaultHeaders = MutableHeaders(HashMap())
 
     private var sslEnabled = false
 

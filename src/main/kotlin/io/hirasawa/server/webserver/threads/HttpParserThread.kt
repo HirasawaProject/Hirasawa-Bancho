@@ -9,7 +9,7 @@ import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.routes.errors.InternalServerErrorRoute
+import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
 import java.io.*
 import java.net.Socket
 

@@ -10,12 +10,12 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
 import io.hirasawa.server.polyfill.readNBytes
-import io.hirasawa.server.webserver.Route
+import io.hirasawa.server.webserver.route.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.routes.errors.RouteForbidden
+import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 import java.io.ByteArrayInputStream
 import java.util.*
 
