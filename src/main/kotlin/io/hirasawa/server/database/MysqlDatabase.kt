@@ -2,6 +2,7 @@ package io.hirasawa.server.database
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.enums.BeatmapStatus
@@ -59,8 +60,8 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
     private fun resultSetToUser(resultSet: ResultSet): User {
         return BanchoUser(resultSet.getInt("users.id"), resultSet.getString("users.username"), 0, 0,
-            getPermissionGroupsFromUser(resultSet.getInt("users.id")), GameMode.OSU,0F,0F,
-            UUID.randomUUID(), resultSet.getBoolean("users.banned"))
+            getPermissionGroupsFromUser(resultSet.getInt("users.id")),0F,0F, UUID.randomUUID(),
+            resultSet.getBoolean("users.banned"))
     }
 
     override fun getUser(id: Int): User? {
@@ -231,6 +232,22 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         val resultSet = statement.executeQuery()
         if (resultSet.next()) {
             return resultSetToScore(resultSet, user)
+        }
+
+        return null
+    }
+
+    override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
+        val query = "SELECT * FROM user_stats WHERE user_id = ? AND gamemode = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, user.id)
+        statement.setInt(2, gameMode.ordinal)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return UserStats(user.id, resultSet.getLong("ranked_score"), resultSet.getFloat("accuracy"),
+                resultSet.getInt("playcount"), resultSet.getLong("total_score"), resultSet.getInt("rank"),
+                resultSet.getShort("pp"), gameMode)
         }
 
         return null

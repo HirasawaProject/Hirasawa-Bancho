@@ -1,6 +1,7 @@
 package io.hirasawa.server.routes
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
@@ -43,6 +44,7 @@ class BanchoRoute: Route {
 
             if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
                 val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
+                user.updateUserStats(GameMode.OSU)
                 user.uuid = token
                 user.updateKeepAlive()
 

@@ -1,13 +1,16 @@
 package io.hirasawa.server.database
 
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.objects.UserStats
+import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.permissions.PermissionGroup
 import java.lang.Exception
-import java.util.HashMap
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Very non-optimised database engine running in memory
@@ -20,8 +23,13 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     val scores = ArrayList<Score>()
     val beatmaps = ArrayList<Beatmap>()
     val beatmapSets = ArrayList<BeatmapSet>()
+    val userStats = HashMap<Int, EnumMap<GameMode, UserStats>>()
 
-
+    init {
+        // Temporary hack to keep HirasawaBot loaded TODO auto setup database
+        users.add(BanchoUser(3, "HirasawaBOt", 0, 0, ArrayList(), 0F, 0F,
+            UUID.randomUUID(), false))
+    }
 
     override fun authenticate(username: String, password: String): Boolean {
         return true
@@ -124,5 +132,9 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         }
 
         return null
+    }
+
+    override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
+        return userStats[user.id]?.get(gameMode)
     }
 }

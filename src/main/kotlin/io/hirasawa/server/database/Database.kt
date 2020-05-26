@@ -1,6 +1,7 @@
 package io.hirasawa.server.database
 
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
@@ -34,4 +35,5 @@ abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun getBeatmapSet(id: Int): BeatmapSet?
     abstract fun getBeatmapScores(beatmap: Beatmap, mode: GameMode, limit: Int): ArrayList<Score>
     abstract fun getUserScore(beatmap: Beatmap, mode: GameMode, user: User): Score?
+    abstract fun getUserStats(user: User, gameMode: GameMode): UserStats?
 }

@@ -2,15 +2,14 @@ package io.hirasawa.server.webserver.routes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.database.MemoryDatabase
 import io.hirasawa.server.enums.BeatmapStatus
-import io.hirasawa.server.objects.Beatmap
-import io.hirasawa.server.objects.BeatmapSet
-import io.hirasawa.server.objects.Score
-import io.hirasawa.server.permissions.PermissionGroup
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
+import io.hirasawa.server.webserver.Helper
+import io.hirasawa.server.webserver.Helper.Companion.createBeatmap
+import io.hirasawa.server.webserver.Helper.Companion.createBeatmapSet
+import io.hirasawa.server.webserver.Helper.Companion.createScore
+import io.hirasawa.server.webserver.Helper.Companion.createUser
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
@@ -22,32 +21,12 @@ import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
     val database = MemoryDatabase()
     init {
         Hirasawa.initDatabase(database)
-    }
-
-    private fun createUser(id: Int, username: String): User {
-        return BanchoUser(id, username, 0, 0, ArrayList<PermissionGroup>(), GameMode.OSU, 0F,
-            0F, UUID.randomUUID(), false)
-    }
-
-    private fun createScore(id: Int, user: User, score: Int, rank: Int, beatmapId: Int, gamemode: GameMode): Score {
-        return Score(id, user, score, 100, 50, 100, 300, 0, 10,
-            10, true, 0, 0, gamemode, rank, beatmapId)
-    }
-
-    private fun createBeatmap(id: Int, mapsetId: Int, hash: String, ranks: Int): Beatmap {
-        return Beatmap(id, mapsetId, "HARD", hash, ranks, 0F)
-    }
-
-    private fun createBeatmapSet(id: Int, artist: String, title: String, status: BeatmapStatus): BeatmapSet {
-        return BeatmapSet(id, artist, title, status)
     }
 
     fun requestRoute(username: String, password: String, gameMode: GameMode, beatmapHash: String,
@@ -77,7 +56,7 @@ class GetScoresRouteTests {
 
     @Test
     fun testDoesScoresRouteShowCorrectStatus() {
-        database.users.add(createUser(1, "CurrentStatus"))
+        database.users.add(Helper.createUser(1, "CurrentStatus"))
 
         val responseBuffer = ByteArrayOutputStream()
         requestRoute("CurrentStatus", "", GameMode.OSU, "onethatdoesn'texist", responseBuffer)

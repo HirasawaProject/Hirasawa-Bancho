@@ -8,13 +8,13 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.lang.Exception
 import kotlin.random.Random
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
-    private val port = Random.nextInt(2000, Short.MAX_VALUE - 1)
-    private val webserver = Webserver(port)
+    private val webserver = Webserver(8080)
     private var client = OkHttpClient()
     init {
         webserver.start()
@@ -29,7 +29,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:$port/getparams?foo=bar&bar=baz")
+            .url("http://localhost:8080/getparams?foo=bar&bar=baz")
             .build()
 
         val response = client.newCall(request).execute()
@@ -52,7 +52,7 @@ class WebserverTests {
             .build()
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:$port/postparams")
+            .url("http://localhost:8080/postparams")
             .post(formBody)
             .build()
 
@@ -71,7 +71,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:$port/error")
+            .url("http://localhost:8080/error")
             .build()
 
         val response = client.newCall(request).execute()
