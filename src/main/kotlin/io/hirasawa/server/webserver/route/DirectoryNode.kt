@@ -7,7 +7,7 @@ import io.hirasawa.server.webserver.objects.Response
 
 class DirectoryNode(var index: Route?, val routes: HashMap<String, RouteNode>): RouteNode {
     override fun handle(method: HttpMethod, path: List<String>, request: Request, response: Response) {
-        if (routes.size == 0) {
+        if (path.isEmpty()) {
             if (index == null) {
                 RouteNotFoundRoute().handle(request, response)
             } else {
