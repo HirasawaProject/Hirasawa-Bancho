@@ -62,6 +62,11 @@ class Webserver(val port: Int) {
                 if (routeNode is DirectoryNode) {
                     routeNode.index = route
                 }
+            } else if (routeSegments.size == 1 && routeParameters.isNotEmpty()) {
+                if (routeNode is DirectoryNode) {
+                    routeNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, route)
+                    return
+                }
             } else {
                 if (routeNode is DirectoryNode) {
                     if (routeSegments[0] !in routeNode.routes) {
@@ -99,7 +104,6 @@ class Webserver(val port: Int) {
     fun runRoute(host: String, route: String, httpMethod: HttpMethod, request: Request, response: Response) {
         if (host in routes.keys) {
             fun search(routeNode: RouteNode, routeArray: List<String>) {
-                println(routeArray)
                 if (routeNode is DirectoryNode) {
                     if (routeArray.isEmpty()) {
                         return routeNode.handle(httpMethod, routeArray, request, response)
