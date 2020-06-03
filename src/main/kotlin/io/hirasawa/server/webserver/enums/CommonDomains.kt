@@ -5,5 +5,9 @@ enum class CommonDomains(val domain: String) {
     OSU_AVATAR("a.ppy.sh"),
     OSU_BEATMAPS("b.ppy.sh"),
     OSU_BANCHO("c.ppy.sh"),
-    OSU_BANCHO_SECONDARY("c1.ppy.sh"),
+    OSU_BANCHO_SECONDARY("c1.ppy.sh");
+
+    override fun toString(): String {
+        return this.domain
+    }
 }
