@@ -47,9 +47,14 @@ fun main() {
     webserver.addRoute(CommonDomains.OSU_WEB,"/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
     webserver.addRoute(CommonDomains.OSU_WEB,"/b/{beatmap}", HttpMethod.GET, BeatmapRoute())
 
-
-    webserver.cloneRoutes(CommonDomains.OSU_BANCHO, CommonDomains.OSU_BANCHO_SECONDARY)
     webserver.cloneRoutes(CommonDomains.OSU_WEB, Hirasawa.config.domain)
+
+    val alternativeBancho = listOf("c1.ppy.sh", "c2.ppy.sh", "c3.ppy.sh", "c4.ppy.sh", "c5.ppy.sh",
+        "c6.ppy.sh", "c7.ppy.sh", "c8.ppy.sh", "c9.ppy.sh", "ce.ppy.sh")
+
+    for (alternative in alternativeBancho) {
+        webserver.cloneRoutes(CommonDomains.OSU_BANCHO, alternative)
+    }
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
