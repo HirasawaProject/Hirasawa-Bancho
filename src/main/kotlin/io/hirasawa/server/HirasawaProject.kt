@@ -9,6 +9,7 @@ import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
+import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.internalroutes.TestRoute
 import java.io.File
@@ -40,9 +41,9 @@ fun main() {
 
     val webserver = Hirasawa.webserver
 
-    webserver.addRoute("osu.ppy.sh", "/", HttpMethod.GET, TestRoute())
-    webserver.addRoute("osu.ppy.sh","/", HttpMethod.POST, BanchoRoute())
-    webserver.addRoute("osu.ppy.sh","/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
+    webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, TestRoute())
+    webserver.addRoute(CommonDomains.OSU_BANCHO,"/", HttpMethod.POST, BanchoRoute())
+    webserver.addRoute(CommonDomains.OSU_WEB,"/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
     webserver.addRoute("localhost","/b/{beatmap}", HttpMethod.GET, TestRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)

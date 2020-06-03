@@ -82,6 +82,19 @@ class Webserver(val port: Int) {
     }
 
     /**
+     * Adds a route to the internal webserver
+     *
+     * You can also use parameters in the path e.g: /u/{user}
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param route The instance of the route
+     */
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
+        addRoute(host.toString(), path, httpMethod, route)
+    }
+
+    /**
      * Starts the webserver
      */
     fun start() {
