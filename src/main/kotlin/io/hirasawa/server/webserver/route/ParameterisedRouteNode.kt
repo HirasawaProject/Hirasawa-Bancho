@@ -5,7 +5,7 @@ import io.hirasawa.server.webserver.internalroutes.errors.BadRequestRoute
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 
-class ParameterisedRouteNode(val keys: ArrayList<String>, val route: Route): RouteNode {
+class ParameterisedRouteNode(val keys: ArrayList<String>, val route: RouteContainerNode): RouteNode {
     override fun handle(method: HttpMethod, path: List<String>, request: Request, response: Response) {
         if (path.size < request.routeParameters.size) {
             BadRequestRoute().handle(request, response)
@@ -16,6 +16,6 @@ class ParameterisedRouteNode(val keys: ArrayList<String>, val route: Route): Rou
             request.routeParameters[key] = path[index]
         }
 
-        route.handle(request, response)
+        route.handle(method, path, request, response)
     }
 }

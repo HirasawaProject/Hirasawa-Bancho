@@ -5,10 +5,7 @@ import io.hirasawa.server.webserver.internalroutes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.objects.MutableHeaders
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.route.DirectoryNode
-import io.hirasawa.server.webserver.route.ParameterisedRouteNode
-import io.hirasawa.server.webserver.route.Route
-import io.hirasawa.server.webserver.route.RouteNode
+import io.hirasawa.server.webserver.route.*
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.util.*
@@ -41,7 +38,7 @@ class Webserver(val port: Int) {
      */
     fun addRoute(host: String, path: String, httpMethod: HttpMethod, route: Route) {
         if (host !in routes.keys) {
-            routes[host] = DirectoryNode(null, HashMap())
+            routes[host] = DirectoryNode(RouteContainerNode(), HashMap())
         }
 
         val routeSegments = ArrayList<String>()
@@ -60,17 +57,19 @@ class Webserver(val port: Int) {
         fun addRoute(routeSegments: List<String>, routeNode: RouteNode) {
             if (routeSegments.isEmpty()) {
                 if (routeNode is DirectoryNode) {
-                    routeNode.index = route
+                    routeNode.index.methods[httpMethod] = route
                 }
             } else if (routeSegments.size == 1 && routeParameters.isNotEmpty()) {
                 if (routeNode is DirectoryNode) {
-                    routeNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, route)
+                    val routeContainerNode = RouteContainerNode()
+                    routeContainerNode.methods[httpMethod] = route
+                    routeNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, routeContainerNode)
                     return
                 }
             } else {
                 if (routeNode is DirectoryNode) {
                     if (routeSegments[0] !in routeNode.routes) {
-                        routeNode.routes[routeSegments[0]] = DirectoryNode(null, HashMap())
+                        routeNode.routes[routeSegments[0]] = DirectoryNode(RouteContainerNode(), HashMap())
                     }
 
                     addRoute(routeSegments.drop(1), routeNode.routes[routeSegments[0]]!!)
