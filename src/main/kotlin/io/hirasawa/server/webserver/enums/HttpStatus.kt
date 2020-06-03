@@ -3,6 +3,7 @@ package io.hirasawa.server.webserver.enums
 enum class HttpStatus(val code: Int) {
     OK(200),
 
+    BAD_REQUEST(400),
     FORBIDDEN(403),
     NOT_FOUND(404),
 

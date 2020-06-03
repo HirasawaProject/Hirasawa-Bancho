@@ -9,11 +9,11 @@ import io.hirasawa.server.handlers.ScoreInfoHandler
 import io.hirasawa.server.plugin.event.score.ClientLeaderboardFailEvent
 import io.hirasawa.server.plugin.event.score.ClientLeaderboardLoadEvent
 import io.hirasawa.server.plugin.event.score.ClientLeaderboardPreloadEvent
-import io.hirasawa.server.webserver.Route
+import io.hirasawa.server.webserver.route.Route
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.routes.errors.RouteForbidden
+import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 
 class OsuOsz2GetScoresRoute: Route {
     override fun handle(request: Request, response: Response) {

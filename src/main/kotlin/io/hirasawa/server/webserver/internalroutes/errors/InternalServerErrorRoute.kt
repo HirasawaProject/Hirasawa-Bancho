@@ -1,6 +1,6 @@
-package io.hirasawa.server.webserver.routes.errors
+package io.hirasawa.server.webserver.internalroutes.errors
 
-import io.hirasawa.server.webserver.Route
+import io.hirasawa.server.webserver.route.Route
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response

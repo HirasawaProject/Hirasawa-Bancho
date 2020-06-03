@@ -11,6 +11,7 @@ data class Request(
     val headers: ImmutableHeaders,
     val inputStream: ByteArrayInputStream
 ) {
+    val routeParameters = HashMap<String, String>()
     val post: HashMap<String, String> by lazy {
         ParameterHandler(inputStream.readAllBytes()).parameters
     }
