@@ -86,4 +86,46 @@ class WebserverTests {
         assert(body.contains("Internal Server Error"))
         assert(body.contains("GET (/error)"))
     }
+
+    @Test
+    fun testDoesWebserverParseParameterisedRouteNodes() {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText(request.routeParameters.toString())
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8080/params/101/Hirasawa")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals("{number=101, name=Hirasawa}", response.body?.string())
+    }
+
+    @Test
+    fun testDoesWebserverErrorOnIncorrectParameterisedRouteNode() {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText(request.routeParameters.toString())
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8080/params/101")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val body = response.body?.string()!!
+
+        assertEquals(HttpStatus.BAD_REQUEST.code, response.code)
+        assertEquals("198", response.headers["Content-Size"])
+        assert(body.contains("Bad Request"))
+        assert(body.contains("GET (/params/101)"))
+    }
 }

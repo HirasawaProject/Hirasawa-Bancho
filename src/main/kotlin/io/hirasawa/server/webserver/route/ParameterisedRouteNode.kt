@@ -7,7 +7,7 @@ import io.hirasawa.server.webserver.objects.Response
 
 class ParameterisedRouteNode(val keys: ArrayList<String>, val route: RouteContainerNode): RouteNode {
     override fun handle(method: HttpMethod, path: List<String>, request: Request, response: Response) {
-        if (path.size < request.routeParameters.size) {
+        if (path.size < keys.size) {
             BadRequestRoute().handle(request, response)
             return
         }
