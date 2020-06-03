@@ -22,7 +22,7 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseGetParams() {
-        webserver.addRoute("/getparams", HttpMethod.GET, object:
+        webserver.addRoute("localhost", "/getparams", HttpMethod.GET, object:
             Route {
             override fun handle(request: Request, response: Response) {
                 response.writeText(request.get.toString())
@@ -41,7 +41,7 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParsePostParams() {
-        webserver.addRoute("/postparams", HttpMethod.POST, object :
+        webserver.addRoute("localhost", "/postparams", HttpMethod.POST, object :
             Route {
             override fun handle(request: Request, response: Response) {
                 response.writeText(request.post.toString())
@@ -66,7 +66,7 @@ class WebserverTests {
 
     @Test
     fun testDoesThrownErrorGiveErrorRoute() {
-        webserver.addRoute("/error", HttpMethod.GET, object :
+        webserver.addRoute("localhost", "/error", HttpMethod.GET, object :
             Route {
             override fun handle(request: Request, response: Response) {
                 throw Exception("foo")
