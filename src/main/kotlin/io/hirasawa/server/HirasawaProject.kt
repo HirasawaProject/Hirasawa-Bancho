@@ -40,9 +40,10 @@ fun main() {
 
     val webserver = Hirasawa.webserver
 
-    webserver.addRoute("/", HttpMethod.GET, TestRoute())
-    webserver.addRoute("/", HttpMethod.POST, BanchoRoute())
-    webserver.addRoute("/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
+    webserver.addRoute("osu.ppy.sh", "/", HttpMethod.GET, TestRoute())
+    webserver.addRoute("osu.ppy.sh","/", HttpMethod.POST, BanchoRoute())
+    webserver.addRoute("osu.ppy.sh","/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
+    webserver.addRoute("localhost","/b/{beatmap}", HttpMethod.GET, TestRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
