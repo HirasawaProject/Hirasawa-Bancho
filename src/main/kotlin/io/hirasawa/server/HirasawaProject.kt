@@ -44,7 +44,7 @@ fun main() {
     webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, TestRoute())
     webserver.addRoute(CommonDomains.OSU_BANCHO,"/", HttpMethod.POST, BanchoRoute())
     webserver.addRoute(CommonDomains.OSU_WEB,"/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
-    webserver.addRoute("localhost","/b/{beatmap}", HttpMethod.GET, TestRoute())
+    webserver.addRoute(Hirasawa.config.domain,"/b/{beatmap}", HttpMethod.GET, TestRoute())
 
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
