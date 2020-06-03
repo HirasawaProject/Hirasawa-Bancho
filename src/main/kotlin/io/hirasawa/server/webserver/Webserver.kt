@@ -161,4 +161,24 @@ class Webserver(val port: Int) {
     fun addDefaultHeader(key: String, value: String) {
         defaultHeaders[key] = value
     }
+
+    /**
+     * Makes a host a alias of another host and make it share the same routes
+     *
+     * @param from The original domain
+     * @param to The aliased domain
+     */
+    fun cloneRoutes(from: String, to: String) {
+        routes[to] = routes[from] ?: return
+    }
+
+    /**
+     * Makes a host a alias of another host and make it share the same routes
+     *
+     * @param from The original domain
+     * @param to The aliased domain
+     */
+    fun cloneRoutes(from: Any, to: Any) {
+        cloneRoutes(from.toString(), to.toString())
+    }
 }
