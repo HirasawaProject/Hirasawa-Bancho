@@ -1,0 +1,16 @@
+10.0.10.26: GET localhost /
+10.0.10.26: GET localhost /favicon.ico
+10.0.10.26: GET localhost /
+10.0.10.26: GET localhost /b/1
+foo 10.0.10.26: GET localhost /b/1
+foo 10.0.10.26: GET localhost /favicon.ico
+[2020-06-04T15:52:35.603Z] 10.0.10.26: GET localhost /b/1
+[Value(HourOfDay,2)':'Value(MinuteOfHour,2)':'Value(SecondOfMinute,2)' 'Value(DayOfYear,2)'/'Value(MinuteOfHour,2)'/'Localized(WeekBasedYear,4,19,EXCEEDS_PAD)] 10.0.10.26: GET localhost /b/1
+[2020-06-04T15:59:21.593Z] 0:0:0:0:0:0:0:1: GET localhost /b/233
+[Localized(SHORT,SHORT)] 0:0:0:0:0:0:0:1: GET localhost /b/233
+[{04/06/20 17:03}] 0:0:0:0:0:0:0:1: GET localhost /b/233
+
+
+
+[04/06/20 17:03] 0:0:0:0:0:0:0:1: GET localhost /b/233
+[04/06/20 17:04] 10.0.10.26: GET localhost /

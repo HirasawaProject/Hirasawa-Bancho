@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver
 
+import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.internalroutes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.objects.MutableHeaders
@@ -8,6 +9,7 @@ import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.*
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
+import java.io.File
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -17,6 +19,7 @@ class Webserver(val port: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
+    val logger = FileLogger(File("logs/webserver.txt"))
 
     private var sslEnabled = false
 

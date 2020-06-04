@@ -31,6 +31,15 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val urlSegment = UrlSegmentHandler(headerHandler.route).urlSegment
 
+        val host = headerHandler.headers["host"]?.split(":")?.first() ?: ""
+
+        try {
+            webserver.logger.log("${socket.inetAddress.hostAddress}: ${headerHandler.httpMethod} $host ${urlSegment.route}")
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+
         val dataOutputStream = DataOutputStream(socket.getOutputStream())
 
         val responseBuffer = ByteArrayOutputStream()
@@ -38,8 +47,6 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders,
             ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
-
-        val host = headerHandler.headers["host"]?.split(":")?.first() ?: ""
 
         try {
             webserver.runRoute(host, urlSegment.route, headerHandler.httpMethod,

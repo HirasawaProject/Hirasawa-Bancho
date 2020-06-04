@@ -1,7 +1,7 @@
 package io.hirasawa.server.logger
 
-class ConsoleLogger: Logger {
+class ConsoleLogger: Logger() {
     override fun log(message: Any) {
-        println(message.toString())
+        println("$timestamp $message")
     }
 }
