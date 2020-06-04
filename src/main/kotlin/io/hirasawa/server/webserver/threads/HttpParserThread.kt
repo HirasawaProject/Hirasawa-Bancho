@@ -7,11 +7,12 @@ import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
+import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
 import java.io.*
 import java.net.Socket
+
 
 class HttpParserThread(private val socket: Socket, private val webserver: Webserver) : Runnable {
     override fun run() {
@@ -31,6 +32,15 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val urlSegment = UrlSegmentHandler(headerHandler.route).urlSegment
 
+        val host = headerHandler.headers["host"]?.split(":")?.first() ?: ""
+
+        try {
+            webserver.accessLogger.log("${socket.inetAddress.hostAddress}: ${headerHandler.httpMethod} $host ${urlSegment.route}")
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+
         val dataOutputStream = DataOutputStream(socket.getOutputStream())
 
         val responseBuffer = ByteArrayOutputStream()
@@ -39,13 +49,14 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             ByteArrayInputStream(postData))
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
-        val host = headerHandler.headers["host"]?.split(":")?.first() ?: ""
-
         try {
             webserver.runRoute(host, urlSegment.route, headerHandler.httpMethod,
                 request, response)
         } catch (e: Exception) {
-            e.printStackTrace()
+            val stringWriter = StringWriter()
+            e.printStackTrace(PrintWriter(stringWriter))
+            webserver.errorLogger.log(stringWriter)
+
 
             // Clean up after errored route
             responseBuffer.reset()

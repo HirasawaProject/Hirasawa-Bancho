@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver
 
+import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
@@ -10,11 +11,14 @@ import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.io.File
 import java.lang.Exception
+import java.nio.file.Files
+import kotlin.math.log
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
-    private val webserver = Webserver(8080)
+    private val webserver = Webserver(8181)
     private var client = OkHttpClient()
     init {
         webserver.start()
@@ -30,7 +34,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/getparams?foo=bar&bar=baz")
+            .url("http://localhost:8181/getparams?foo=bar&bar=baz")
             .build()
 
         val response = client.newCall(request).execute()
@@ -54,7 +58,7 @@ class WebserverTests {
             .build()
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/postparams")
+            .url("http://localhost:8181/postparams")
             .post(formBody)
             .build()
 
@@ -73,18 +77,23 @@ class WebserverTests {
             }
         })
 
+        val errorLogBefore = Files.readAllLines(File("logs/webserver/error.txt").toPath())
+
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/error")
+            .url("http://localhost:8181/error")
             .build()
 
         val response = client.newCall(request).execute()
 
         val body = response.body?.string()!!
 
+        val errorLogAfter = Files.readAllLines(File("logs/webserver/error.txt").toPath())
+
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.code, response.code)
         assertEquals("185", response.headers["Content-Size"])
         assert(body.contains("Internal Server Error"))
         assert(body.contains("GET (/error)"))
+        assert(errorLogBefore.size < errorLogAfter.size)
     }
 
     @Test
@@ -97,7 +106,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/params/101/Hirasawa")
+            .url("http://localhost:8181/params/101/Hirasawa")
             .build()
 
         val response = client.newCall(request).execute()
@@ -116,7 +125,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/params/101")
+            .url("http://localhost:8181/params/101")
             .build()
 
         val response = client.newCall(request).execute()
@@ -127,5 +136,18 @@ class WebserverTests {
         assertEquals("198", response.headers["Content-Size"])
         assert(body.contains("Bad Request"))
         assert(body.contains("GET (/params/101)"))
+    }
+
+    @Test
+    fun doesLogIncreaseWhenLogging() {
+        val file = "test/doesLogIncreaseWhenLogging.txt"
+        val logger = FileLogger(File(file))
+
+        val logBefore = Files.readAllLines(File(file).toPath())
+        logger.log("This is a test")
+        val logAfter = Files.readAllLines(File(file).toPath())
+
+        assert(logBefore.size < logAfter.size)
+        assert("This is a test" in logAfter.last())
     }
 }
