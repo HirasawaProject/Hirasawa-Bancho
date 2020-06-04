@@ -10,7 +10,9 @@ import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.io.File
 import java.lang.Exception
+import java.nio.file.Files
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -73,6 +75,8 @@ class WebserverTests {
             }
         })
 
+        val errorLogBefore = Files.readAllLines(File("logs/webserver/error.txt").toPath())
+
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/error")
             .build()
@@ -81,10 +85,13 @@ class WebserverTests {
 
         val body = response.body?.string()!!
 
+        val errorLogAfter = Files.readAllLines(File("logs/webserver/error.txt").toPath())
+
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.code, response.code)
         assertEquals("185", response.headers["Content-Size"])
         assert(body.contains("Internal Server Error"))
         assert(body.contains("GET (/error)"))
+        assert(errorLogBefore.size < errorLogAfter.size)
     }
 
     @Test
