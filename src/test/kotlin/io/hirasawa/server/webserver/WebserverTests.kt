@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver
 
+import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.TestInstance
 import java.io.File
 import java.lang.Exception
 import java.nio.file.Files
+import kotlin.math.log
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -134,5 +136,18 @@ class WebserverTests {
         assertEquals("198", response.headers["Content-Size"])
         assert(body.contains("Bad Request"))
         assert(body.contains("GET (/params/101)"))
+    }
+
+    @Test
+    fun doesLogIncreaseWhenLogging() {
+        val file = "test/doesLogIncreaseWhenLogging.txt"
+        val logger = FileLogger(File(file))
+
+        val logBefore = Files.readAllLines(File(file).toPath())
+        logger.log("This is a test")
+        val logAfter = Files.readAllLines(File(file).toPath())
+
+        assert(logBefore.size < logAfter.size)
+        assert("This is a test" in logAfter.last())
     }
 }
