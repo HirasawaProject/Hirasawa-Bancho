@@ -14,7 +14,7 @@ import java.lang.Exception
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
-    private val webserver = Webserver(8080)
+    private val webserver = Webserver(8181)
     private var client = OkHttpClient()
     init {
         webserver.start()
@@ -30,7 +30,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/getparams?foo=bar&bar=baz")
+            .url("http://localhost:8181/getparams?foo=bar&bar=baz")
             .build()
 
         val response = client.newCall(request).execute()
@@ -54,7 +54,7 @@ class WebserverTests {
             .build()
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/postparams")
+            .url("http://localhost:8181/postparams")
             .post(formBody)
             .build()
 
@@ -74,7 +74,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/error")
+            .url("http://localhost:8181/error")
             .build()
 
         val response = client.newCall(request).execute()
@@ -97,7 +97,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/params/101/Hirasawa")
+            .url("http://localhost:8181/params/101/Hirasawa")
             .build()
 
         val response = client.newCall(request).execute()
@@ -116,7 +116,7 @@ class WebserverTests {
         })
 
         val request = okhttp3.Request.Builder()
-            .url("http://localhost:8080/params/101")
+            .url("http://localhost:8181/params/101")
             .build()
 
         val response = client.newCall(request).execute()
