@@ -1,6 +1,7 @@
 package io.hirasawa.server.plugin
 
 import com.google.gson.Gson
+import io.hirasawa.server.logger.PluginLogger
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -16,6 +17,9 @@ class PluginManager {
     val loadedPlugins = HashMap<String, HirasawaPlugin>()
 
     fun loadPlugin(hirasawaPlugin: HirasawaPlugin, pluginDescriptor: PluginDescriptor) {
+        hirasawaPlugin.pluginDescriptor = pluginDescriptor
+        hirasawaPlugin.logger = PluginLogger(pluginDescriptor)
+
         loadedPlugins[pluginDescriptor.name] = hirasawaPlugin
         hirasawaPlugin.onEnable()
     }
