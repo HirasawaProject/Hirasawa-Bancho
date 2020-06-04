@@ -19,7 +19,8 @@ class Webserver(val port: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
-    val logger = FileLogger(File("logs/webserver.txt"))
+    val accessLogger = FileLogger(File("logs/webserver/access.txt"))
+    val errorLogger = FileLogger(File("logs/webserver/error.txt"))
 
     private var sslEnabled = false
 
