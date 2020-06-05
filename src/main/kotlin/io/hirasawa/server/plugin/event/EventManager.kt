@@ -1,13 +1,10 @@
 package io.hirasawa.server.plugin.event
 
-import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaMethod
 
 class EventManager {
-    val registeredEvents = HashMap<EventPriority, ArrayList<KFunction<*>>>()
+    val registeredEvents = HashMap<EventPriority, ArrayList<RegisteredListenerFunction>>()
 
     init {
         for (priority in EventPriority.values()) {
@@ -30,7 +27,8 @@ class EventManager {
         for (function in kClass.functions) {
             val eventHandler = function.findAnnotation<EventHandler>()
             if (eventHandler != null) {
-                this.registeredEvents[eventHandler.eventPriority]?.add(function)
+                val registeredFunction = RegisteredListenerFunction(eventListener, function)
+                this.registeredEvents[eventHandler.eventPriority]?.add(registeredFunction)
             }
         }
     }
