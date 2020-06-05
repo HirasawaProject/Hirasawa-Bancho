@@ -1,26 +1,24 @@
 package io.hirasawa.server.plugin.event
 
-import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
-import kotlin.reflect.jvm.javaMethod
 
 class EventManager {
-    val registeredEvents = HashMap<EventPriority, ArrayList<KFunction<*>>>()
+    val registeredEvents = HashMap<EventPriority, HashMap<String, ArrayList<RegisteredListenerFunction>>>()
 
     init {
         for (priority in EventPriority.values()) {
-            registeredEvents[priority] = ArrayList()
+            registeredEvents[priority] = HashMap()
         }
     }
 
     fun callEvent(hirasawaEvent: HirasawaEvent) {
         for (priority in EventPriority.values()) {
-            if (priority in registeredEvents.keys) {
-                for (function in registeredEvents[priority]!!) {
-                    function.call(hirasawaEvent)
-                }
+
+            val listeners = registeredEvents[priority]?.get(hirasawaEvent::class.qualifiedName) ?: continue
+
+            for (function in listeners) {
+                function.call(hirasawaEvent)
             }
         }
     }
@@ -30,7 +28,13 @@ class EventManager {
         for (function in kClass.functions) {
             val eventHandler = function.findAnnotation<EventHandler>()
             if (eventHandler != null) {
-                this.registeredEvents[eventHandler.eventPriority]?.add(function)
+                val registeredFunction = RegisteredListenerFunction(eventListener, function)
+                if (registeredFunction.eventClass !in this.registeredEvents[eventHandler.eventPriority]!!.keys) {
+                    this.registeredEvents[eventHandler.eventPriority]?.set(registeredFunction.eventClass, ArrayList())
+                }
+
+                this.registeredEvents[eventHandler.eventPriority]?.get(registeredFunction.eventClass)
+                    ?.add(registeredFunction)
             }
         }
     }
