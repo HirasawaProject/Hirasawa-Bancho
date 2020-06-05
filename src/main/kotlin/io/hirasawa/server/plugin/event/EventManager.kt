@@ -18,6 +18,9 @@ class EventManager {
             val listeners = registeredEvents[priority]?.get(hirasawaEvent::class.qualifiedName) ?: continue
 
             for (function in listeners) {
+                if (hirasawaEvent is Cancelable) {
+                    if (hirasawaEvent.isCancelled && !function.annotation.bypassCancel) continue
+                }
                 function.call(hirasawaEvent)
             }
         }
