@@ -1,10 +1,7 @@
 package io.hirasawa.server.plugin
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.plugin.event.EventHandler
-import io.hirasawa.server.plugin.event.EventListener
-import io.hirasawa.server.plugin.event.EventPriority
-import io.hirasawa.server.plugin.event.HirasawaEvent
+import io.hirasawa.server.plugin.event.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -34,7 +31,38 @@ class EventTests {
         assertEquals(2, event.test)
     }
 
+    @Test
+    fun testCanBypassEventCancellation() {
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler(EventPriority.HIGHEST)
+            fun onTestEvent(testEvent: TestCanceledEvent) {
+                testEvent.isCancelled = true
+            }
+        })
+
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler(EventPriority.NORMAL, true)
+            fun onTestEvent(testEvent: TestCanceledEvent) {
+                testEvent.test = 1
+            }
+        })
+
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler(EventPriority.LOW)
+            fun onTestEvent(testEvent: TestCanceledEvent) {
+                testEvent.test = 2
+            }
+        })
+
+        val event = TestCanceledEvent(0)
+
+        Hirasawa.eventHandler.callEvent(event)
+
+        assertEquals(1, event.test)
+    }
+
 
 
     class TestEvent(var test: Int): HirasawaEvent
+    class TestCanceledEvent(var test: Int): HirasawaEvent, Cancelable()
 }
