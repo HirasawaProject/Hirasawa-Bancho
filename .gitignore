@@ -113,4 +113,5 @@ gradle-app.setting
 
 plugins
 logs
+test
 config.json
