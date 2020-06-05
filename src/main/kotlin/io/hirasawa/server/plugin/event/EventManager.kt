@@ -4,20 +4,21 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
 class EventManager {
-    val registeredEvents = HashMap<EventPriority, ArrayList<RegisteredListenerFunction>>()
+    val registeredEvents = HashMap<EventPriority, HashMap<String, ArrayList<RegisteredListenerFunction>>>()
 
     init {
         for (priority in EventPriority.values()) {
-            registeredEvents[priority] = ArrayList()
+            registeredEvents[priority] = HashMap()
         }
     }
 
     fun callEvent(hirasawaEvent: HirasawaEvent) {
         for (priority in EventPriority.values()) {
-            if (priority in registeredEvents.keys) {
-                for (function in registeredEvents[priority]!!) {
-                    function.call(hirasawaEvent)
-                }
+
+            val listeners = registeredEvents[priority]?.get(hirasawaEvent::class.qualifiedName) ?: continue
+
+            for (function in listeners) {
+                function.call(hirasawaEvent)
             }
         }
     }
@@ -28,7 +29,12 @@ class EventManager {
             val eventHandler = function.findAnnotation<EventHandler>()
             if (eventHandler != null) {
                 val registeredFunction = RegisteredListenerFunction(eventListener, function)
-                this.registeredEvents[eventHandler.eventPriority]?.add(registeredFunction)
+                if (registeredFunction.eventClass !in this.registeredEvents[eventHandler.eventPriority]!!.keys) {
+                    this.registeredEvents[eventHandler.eventPriority]?.set(registeredFunction.eventClass, ArrayList())
+                }
+
+                this.registeredEvents[eventHandler.eventPriority]?.get(registeredFunction.eventClass)
+                    ?.add(registeredFunction)
             }
         }
     }
