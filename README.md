@@ -14,6 +14,10 @@ We will also have a plugin store available at some point later down the line of 
 
 In terms of hardware requirements I've gotten this to run on a Pi Zero
 
+## Building
+Building Hirasawa is very easy, all you need to do is run
+`gradle build` and the jar will be built under `build/libs/HirasawaProjectXXXX.jar`
+
 ## Contribution
 Please wait while I get the bulk of the system frame done first and then I can outline how you can help with development
 
