@@ -60,7 +60,7 @@ class OsuSubmitModular: Route {
 
 
 
-    fun decrypt(key: ByteArray, iv: ByteArray, data: ByteArray): String {
+    private fun decrypt(key: ByteArray, iv: ByteArray, data: ByteArray): String {
         val aes = PaddedBufferedBlockCipher(CBCBlockCipher(RijndaelEngine(256)), ZeroBytePadding())
         aes.init(false, ParametersWithIV(KeyParameter(key), iv))
         return String(cipherData(aes, data)!!)
