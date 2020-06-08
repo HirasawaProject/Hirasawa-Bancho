@@ -33,7 +33,7 @@ class ScoreHandler(encodedScore: String) {
     init {
         val scoreArray = encodedScore.split(separator)
         fileChecksum = scoreArray[0]
-        username = scoreArray[1]
+        username = scoreArray[1].trim()
         scoreChecksum = scoreArray[2]
         count300 = scoreArray[3].toInt()
         count100 = scoreArray[4].toInt()

@@ -30,16 +30,27 @@ class OsuSubmitModular: Route {
 
         val decryptedScore = decrypt(key, iv, encodedScore)
 
-        val handler = ScoreHandler(decryptedScore).score
+        val handler = ScoreHandler(decryptedScore)
 
-        if (handler?.user == null) {
+        if (handler.score == null) {
             response.writeText("error: pass")
             return
         }
 
-        if (Hirasawa.database.authenticateWithMd5(handler.user.username, request.post["pass"] ?: "")) {
-            // Add to database
+        if (Hirasawa.database.authenticate(handler.username, request.post["pass"] ?: "")) {
+            val score = handler.score!!
+            val topScore = Hirasawa.database.getUserScore(score.beatmap, score.gameMode, score.user)
 
+            if (topScore != null) {
+                if (score.score <= topScore.score) {
+                    // Does this score beat our last? If not quit
+                    return
+                }
+
+                Hirasawa.database.removeScore(topScore)
+            }
+
+            Hirasawa.database.submitScore(handler.score!!)
         } else {
             response.writeText("error: pass")
         }

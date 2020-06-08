@@ -137,4 +137,12 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
         return userStats[user.id]?.get(gameMode)
     }
+
+    override fun submitScore(score: Score) {
+        scores.add(score)
+    }
+
+    override fun removeScore(score: Score) {
+        scores.remove(score)
+    }
 }
