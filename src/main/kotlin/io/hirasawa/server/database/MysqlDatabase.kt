@@ -274,7 +274,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(14, score.gameMode.ordinal)
         statement.setInt(15, 0)
 
-        statement.executeUpdate()
+        score.id = statement.executeUpdate()
     }
 
     override fun updateScore(newScore: Score) {

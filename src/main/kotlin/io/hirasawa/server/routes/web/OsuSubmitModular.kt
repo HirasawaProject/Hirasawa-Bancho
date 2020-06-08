@@ -15,6 +15,7 @@ import org.bouncycastle.crypto.paddings.ZeroBytePadding
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.encoders.Base64
+import java.time.Instant
 
 
 class OsuSubmitModular: Route {
@@ -41,6 +42,8 @@ class OsuSubmitModular: Route {
             val score = handler.score!!
             val topScore = Hirasawa.database.getUserScore(score.beatmap, score.gameMode, score.user)
 
+            score.timestamp = Instant.now().epochSecond.toInt()
+
             if (topScore != null) {
                 if (score.score <= topScore.score) {
                     // Does this score beat our last? If not quit
@@ -50,7 +53,7 @@ class OsuSubmitModular: Route {
                 Hirasawa.database.removeScore(topScore)
             }
 
-            Hirasawa.database.submitScore(handler.score!!)
+            Hirasawa.database.submitScore(score)
 
             Hirasawa.database.processLeaderboard(score.beatmap, score.gameMode)
         } else {
