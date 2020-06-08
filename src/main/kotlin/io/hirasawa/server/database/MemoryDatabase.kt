@@ -137,4 +137,34 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
         return userStats[user.id]?.get(gameMode)
     }
+
+    override fun submitScore(score: Score) {
+        scores.add(score)
+    }
+
+    override fun removeScore(score: Score) {
+        scores.remove(score)
+    }
+
+    override fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode) {
+
+    }
+
+    override fun updateScore(newScore: Score) {
+        for (score in scores) {
+            if (score.id == newScore.id) {
+                scores.remove(score)
+                scores.add(newScore)
+            }
+        }
+    }
+
+    override fun updateBeatmap(newBeatmap: Beatmap) {
+        for (beatmap in beatmaps) {
+            if (beatmap.id == newBeatmap.id) {
+                beatmaps.remove(beatmap)
+                beatmaps.add(newBeatmap)
+            }
+        }
+    }
 }

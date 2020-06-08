@@ -10,6 +10,7 @@ import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.BeatmapRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
+import io.hirasawa.server.routes.web.OsuSubmitModular
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.internalroutes.TestRoute
@@ -45,6 +46,8 @@ fun main() {
     webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, TestRoute())
     webserver.addRoute(CommonDomains.OSU_BANCHO,"/", HttpMethod.POST, BanchoRoute())
     webserver.addRoute(CommonDomains.OSU_WEB,"/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
+    webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular.php", HttpMethod.POST, OsuSubmitModular())
+    webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular-selector.php", HttpMethod.POST, OsuSubmitModular())
     webserver.addRoute(CommonDomains.OSU_WEB,"/b/{beatmap}", HttpMethod.GET, BeatmapRoute())
 
     webserver.cloneRoutes(CommonDomains.OSU_WEB, Hirasawa.config.domain)

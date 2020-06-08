@@ -11,7 +11,6 @@ import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.permissions.PermissionGroup
 import org.mindrot.jbcrypt.BCrypt
-import java.lang.Exception
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
@@ -251,6 +250,94 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         }
 
         return null
+    }
+
+    override fun submitScore(score: Score) {
+        val query = "INSERT INTO scores (user_id, score, combo, count50, count100, count300, count_miss, count_katu," +
+                "count_geki, full_combo, mods, timestamp, beatmap_id, gamemode, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?" +
+                ", ?, ?, ?, ?, ?, ?, ?)"
+        val statement = connection.prepareStatement(query)
+
+        statement.setInt(1, score.user.id)
+        statement.setInt(2, score.score)
+        statement.setInt(3, score.combo)
+        statement.setInt(4, score.count50)
+        statement.setInt(5, score.count100)
+        statement.setInt(6, score.count300)
+        statement.setInt(7, score.countMiss)
+        statement.setInt(8, score.countKatu)
+        statement.setInt(9, score.countGeki)
+        statement.setBoolean(10, score.fullCombo)
+        statement.setInt(11, score.mods)
+        statement.setInt(12, score.timestamp)
+        statement.setInt(13, score.beatmapId)
+        statement.setInt(14, score.gameMode.ordinal)
+        statement.setInt(15, 0)
+
+        score.id = statement.executeUpdate()
+    }
+
+    override fun updateScore(newScore: Score) {
+        val query = "UPDATE scores SET user_id = ?, score = ?, combo = ?, count50 = ?, count100 = ?, count300 = ? , " +
+                "count_miss = ?, count_katu = ?, count_geki = ?, full_combo = ?, mods = ?, timestamp = ?, " +
+                "beatmap_id = ?, gamemode = ?, rank = ? WHERE id = ?"
+        val statement = connection.prepareStatement(query)
+
+        statement.setInt(1, newScore.user.id)
+        statement.setInt(2, newScore.score)
+        statement.setInt(3, newScore.combo)
+        statement.setInt(4, newScore.count50)
+        statement.setInt(5, newScore.count100)
+        statement.setInt(6, newScore.count300)
+        statement.setInt(7, newScore.countMiss)
+        statement.setInt(8, newScore.countKatu)
+        statement.setInt(9, newScore.countGeki)
+        statement.setBoolean(10, newScore.fullCombo)
+        statement.setInt(11, newScore.mods)
+        statement.setInt(12, newScore.timestamp)
+        statement.setInt(13, newScore.beatmapId)
+        statement.setInt(14, newScore.gameMode.ordinal)
+        statement.setInt(15, newScore.rank)
+        statement.setInt(16, newScore.id)
+
+        statement.executeUpdate()
+    }
+
+    override fun removeScore(score: Score) {
+        val query = "DELETE FROM scores WHERE id = ?"
+        val statement = connection.prepareStatement(query)
+
+        statement.setInt(1, score.id)
+
+        statement.executeUpdate()
+    }
+
+    override fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode) {
+        var rank = 1
+        val scores = getBeatmapScores(beatmap, gameMode, Int.MAX_VALUE)
+        for (score in scores) {
+            if (!score.user.isBanned) {
+                score.rank = rank++
+                updateScore(score)
+            }
+        }
+
+        beatmap.ranks = scores.size
+
+        updateBeatmap(beatmap)
+    }
+
+    override fun updateBeatmap(newBeatmap: Beatmap) {
+        val query = "UPDATE beatmaps SET mapset_id = ?, difficulty = ?, hash = ?, ranks = ?, offset = ?"
+        val statement = connection.prepareStatement(query)
+
+        statement.setInt(1, newBeatmap.mapsetId)
+        statement.setString(2, newBeatmap.difficulty)
+        statement.setString(3, newBeatmap.hash)
+        statement.setInt(4, newBeatmap.ranks)
+        statement.setFloat(5, newBeatmap.offset)
+
+        statement.executeUpdate()
     }
 
 }
