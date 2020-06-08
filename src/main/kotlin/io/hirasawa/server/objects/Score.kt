@@ -4,9 +4,9 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.User
 
-data class Score(val id: Int, val user: User, val score: Int, val combo: Int, val count50: Int, val count100: Int,
-                 val count300: Int, val countMiss: Int, val countKatu: Int, val countGeki: Int, val fullCombo: Boolean,
-                 val mods: Int, val timestamp: Int, val gameMode: GameMode, val rank: Int, val beatmapId: Int) {
+data class Score(var id: Int, var user: User, var score: Int, var combo: Int, var count50: Int, var count100: Int,
+                 var count300: Int, var countMiss: Int, var countKatu: Int, var countGeki: Int, var fullCombo: Boolean,
+                 var mods: Int, var timestamp: Int, var gameMode: GameMode, var rank: Int, var beatmapId: Int) {
     val beatmap: Beatmap by lazy {
         Hirasawa.database.getBeatmap(beatmapId)!!
     }
