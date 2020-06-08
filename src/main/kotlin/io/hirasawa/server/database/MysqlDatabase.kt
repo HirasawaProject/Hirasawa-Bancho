@@ -300,8 +300,6 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(15, newScore.rank)
         statement.setInt(16, newScore.id)
 
-        println(statement)
-
         statement.executeUpdate()
     }
 
