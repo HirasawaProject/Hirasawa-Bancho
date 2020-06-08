@@ -1,5 +1,7 @@
 package io.hirasawa.server.routes.web
 
+import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.handlers.ScoreHandler
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 import io.hirasawa.server.webserver.objects.Request
@@ -23,10 +25,23 @@ class OsuSubmitModular: Route {
         }
 
         val iv = Base64.decode(request.post["iv"])
-        val score = Base64.decode(request.post["score"])
+        val encodedScore = Base64.decode(request.post["score"])
         val key = "osu!-scoreburgr---------${request.post["osuver"]}".toByteArray()
 
-        println(decrypt(key, iv, score))
+        val decryptedScore = decrypt(key, iv, encodedScore)
+
+        val handler = ScoreHandler(decryptedScore).score
+
+        if (handler?.user == null) {
+            response.writeText("error: unknown")
+            return
+        }
+
+        if (Hirasawa.database.authenticateWithMd5(handler.user.username, request.post["pass"] ?: "")) {
+            // Add to database
+        } else {
+            response.writeText("error: pass")
+        }
     }
 
 
