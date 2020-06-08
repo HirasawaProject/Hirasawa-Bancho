@@ -51,6 +51,8 @@ class OsuSubmitModular: Route {
             }
 
             Hirasawa.database.submitScore(handler.score!!)
+
+            Hirasawa.database.processLeaderboard(score.beatmap, score.gameMode)
         } else {
             response.writeText("error: pass")
         }

@@ -38,4 +38,7 @@ abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun getUserStats(user: User, gameMode: GameMode): UserStats?
     abstract fun submitScore(score: Score)
     abstract fun removeScore(score: Score)
+    abstract fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode)
+    abstract fun updateScore(score: Score)
+    abstract fun updateBeatmap(beatmap: Beatmap)
 }
