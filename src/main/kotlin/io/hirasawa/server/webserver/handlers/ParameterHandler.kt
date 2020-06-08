@@ -49,7 +49,9 @@ class ParameterHandler(parameterByteArray: ByteArray) {
         }
 
         // Do last entry
-        parameters[keyTemp] = temp
+        if (keyTemp.isNotEmpty()) {
+            parameters[keyTemp] = temp
+        }
     }
 
     enum class ParsingState {
