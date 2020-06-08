@@ -33,12 +33,13 @@ class OsuSubmitModular: Route {
         val handler = ScoreHandler(decryptedScore).score
 
         if (handler?.user == null) {
-            response.writeText("error: unknown")
+            response.writeText("error: pass")
             return
         }
 
         if (Hirasawa.database.authenticateWithMd5(handler.user.username, request.post["pass"] ?: "")) {
             // Add to database
+
         } else {
             response.writeText("error: pass")
         }
