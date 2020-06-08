@@ -12,15 +12,7 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher
 import org.bouncycastle.crypto.paddings.ZeroBytePadding
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
-import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.util.encoders.Base64
-import java.io.UnsupportedEncodingException
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
-import java.security.Security
-import javax.crypto.*
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 
 class OsuSubmitModular: Route {
