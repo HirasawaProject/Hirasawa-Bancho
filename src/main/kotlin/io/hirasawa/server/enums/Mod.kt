@@ -30,5 +30,26 @@ enum class Mod(val id: Int) {
     KEY_COOP(1 shl 25),
     KEY1(1 shl 26),
     KEY3(1 shl 27),
-    KEY2(1 shl 28)
+    KEY2(1 shl 28);
+
+    private infix fun within(id: Int): Boolean {
+        return (id and this.id) > 0
+    }
+
+    operator fun plus(mod: Mod): Int {
+        return this.id + mod.id
+    }
+
+    companion object {
+        fun idToModArray(id: Int): ArrayList<Mod> {
+            val mods = ArrayList<Mod>()
+            for (mod in Mod.values()) {
+                if (mod within id) {
+                    mods.add(mod)
+                }
+            }
+
+            return mods
+        }
+    }
 }
