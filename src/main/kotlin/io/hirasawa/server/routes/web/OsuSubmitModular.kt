@@ -2,6 +2,7 @@ package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.handlers.ScoreHandler
+import io.hirasawa.server.plugin.event.web.ScoreSubmitEvent
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 import io.hirasawa.server.webserver.objects.Request
@@ -40,6 +41,14 @@ class OsuSubmitModular: Route {
 
         if (Hirasawa.database.authenticate(handler.username, request.post["pass"] ?: "")) {
             val score = handler.score!!
+
+            val event = ScoreSubmitEvent(score)
+            Hirasawa.eventHandler.callEvent(event)
+
+            if (event.isCancelled) {
+                return
+            }
+
             val topScore = Hirasawa.database.getUserScore(score.beatmap, score.gameMode, score.user)
 
             score.timestamp = Instant.now().epochSecond.toInt()
