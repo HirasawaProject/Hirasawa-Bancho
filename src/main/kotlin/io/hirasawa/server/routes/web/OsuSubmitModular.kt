@@ -1,6 +1,7 @@
 package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.handlers.ScoreHandler
 import io.hirasawa.server.plugin.event.web.ScoreSubmitEvent
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -47,6 +48,13 @@ class OsuSubmitModular: Route {
 
             if (event.isCancelled) {
                 return
+            }
+
+            val mods = Mod.idToModArray(score.mods)
+            for (mod in Hirasawa.config.blacklistedMods) {
+                if (mod in mods) {
+                    return
+                }
             }
 
             val topScore = Hirasawa.database.getUserScore(score.beatmap, score.gameMode, score.user)
