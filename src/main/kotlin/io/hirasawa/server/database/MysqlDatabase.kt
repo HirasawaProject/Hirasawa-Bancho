@@ -328,7 +328,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     }
 
     override fun updateBeatmap(newBeatmap: Beatmap) {
-        val query = "UPDATE beatmaps SET mapset_id = ?, difficulty = ?, hash = ?, ranks = ?, offset = ?"
+        val query = "UPDATE beatmaps SET mapset_id = ?, difficulty = ?, hash = ?, ranks = ?, offset = ? WHERE id = ?"
         val statement = connection.prepareStatement(query)
 
         statement.setInt(1, newBeatmap.mapsetId)
@@ -336,6 +336,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setString(3, newBeatmap.hash)
         statement.setInt(4, newBeatmap.ranks)
         statement.setFloat(5, newBeatmap.offset)
+        statement.setInt(6, newBeatmap.id)
 
         statement.executeUpdate()
     }
