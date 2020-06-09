@@ -4,7 +4,6 @@ import io.hirasawa.server.webserver.objects.MutableHeaders
 
 
 class MultipartFormHandler(byteArray: ByteArray, boundary: String) {
-    private val boundaryEnd = "$boundary--"
     private val newLine = '\n'
     private val headerSeparator = ':'
     val elements = HashMap<String, String>()
@@ -48,9 +47,10 @@ class MultipartFormHandler(byteArray: ByteArray, boundary: String) {
                     }
                 }
                 ParsingState.CONTENT -> {
+                    elementLine.add(byte)
                     if (newChar == newLine) {
                         val stringContent = String(elementLine.toByteArray())
-                        if (stringContent == boundary || stringContent == boundaryEnd) {
+                        if (boundary in stringContent) {
                             // Process end of content
 
                             // Extra data from headers, there's probably a better way
@@ -71,9 +71,9 @@ class MultipartFormHandler(byteArray: ByteArray, boundary: String) {
                             }
 
                             if (isFile) {
-                                files[elementName] = elementContent.toByteArray()
+                                files[elementName] = elementContent.dropLast(2).toByteArray()
                             } else {
-                                elements[elementName] = String(elementContent.toByteArray())
+                                elements[elementName] = String(elementContent.dropLast(2).toByteArray())
                             }
 
                             // clear data
@@ -86,8 +86,6 @@ class MultipartFormHandler(byteArray: ByteArray, boundary: String) {
                             elementContent.addAll(elementLine)
                         }
                         elementLine.clear()
-                    } else {
-                        elementLine.add(byte)
                     }
                 }
             }
