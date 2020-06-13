@@ -12,8 +12,8 @@ import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.Database
 import io.hirasawa.server.database.MemoryDatabase
-import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.permissions.PermissionEngine
+import io.hirasawa.server.pipeline.PipelineManager
 import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.webserver.Webserver
@@ -36,6 +36,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         var database: Database = MemoryDatabase()
         val chatEngine = ChatEngine()
+        val pipeline = PipelineManager()
         lateinit var permissionEngine: PermissionEngine
 
         lateinit var hirasawaBot: HirasawaBot
