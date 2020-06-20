@@ -17,6 +17,7 @@ import org.bouncycastle.crypto.paddings.ZeroBytePadding
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.encoders.Base64
+import java.lang.Exception
 import java.time.Instant
 
 
@@ -70,9 +71,37 @@ class OsuSubmitModular: Route {
                 Hirasawa.database.removeScore(topScore)
             }
 
-            Hirasawa.database.submitScore(score)
+            Hirasawa.pipeline.queue(Runnable {
+                Hirasawa.database.submitScore(score)
+                Hirasawa.database.processLeaderboard(score.beatmap, score.gameMode)
 
-            Hirasawa.database.processLeaderboard(score.beatmap, score.gameMode)
+                try {
+                    var rankedScore = 0L
+                    var scoreCount = 0
+                    var accuracyTotal = 0F
+                    for (userScore in Hirasawa.database.getUserScores(score.gameMode, score.user)) {
+                        scoreCount++
+                        rankedScore += userScore.score
+                        accuracyTotal += userScore.accuracy
+                    }
+
+                    val accuracy = accuracyTotal / scoreCount
+
+                    val userStats = Hirasawa.database.getUserStats(score.user, score.gameMode) ?: return@Runnable
+
+                    userStats.totalScore += score.score
+                    userStats.rankedScore = rankedScore
+                    userStats.accuracy = accuracy
+                    userStats.playcount++
+
+                    Hirasawa.database.updateUserStats(userStats)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+            })
+
+
         } else {
             response.writeText("error: pass")
         }

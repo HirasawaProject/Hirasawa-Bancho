@@ -140,7 +140,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             resultSet.getInt("scores.count_katu"), resultSet.getInt("scores.count_geki"),
             resultSet.getBoolean("scores.full_combo"), resultSet.getInt("scores.mods"),
             resultSet.getInt("scores.timestamp"), GameMode.values()[resultSet.getInt("scores.gamemode")],
-            resultSet.getInt("scores.rank"), resultSet.getInt("beatmap_id"))
+            resultSet.getInt("scores.rank"), resultSet.getInt("beatmap_id"), 1F)
     }
 
     override fun getScore(id: Int): Score? {
@@ -234,6 +234,22 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         }
 
         return null
+    }
+
+    override fun getUserScores(mode: GameMode, user: User): ArrayList<Score> {
+        val query = "SELECT * FROM scores WHERE user_id = ? AND gamemode = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, user.id)
+        statement.setInt(2, mode.ordinal)
+
+        val scores = ArrayList<Score>()
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            scores.add(resultSetToScore(resultSet, user))
+        }
+
+        return scores
     }
 
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
@@ -337,6 +353,22 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(4, newBeatmap.ranks)
         statement.setFloat(5, newBeatmap.offset)
         statement.setInt(6, newBeatmap.id)
+
+        statement.executeUpdate()
+    }
+
+    override fun updateUserStats(userStats: UserStats) {
+        val query = "UPDATE user_stats SET ranked_score = ?, accuracy = ?, playcount = ?, rank = ?, pp = ? " +
+                "WHERE user_id = ? AND gamemode = ?"
+        val statement = connection.prepareStatement(query)
+
+        statement.setLong(1, userStats.rankedScore)
+        statement.setFloat(2, userStats.accuracy)
+        statement.setInt(3, userStats.playcount)
+        statement.setInt(4, userStats.rank)
+        statement.setShort(5, userStats.pp)
+        statement.setInt(6, userStats.userId)
+        statement.setInt(7, userStats.gameMode.ordinal)
 
         statement.executeUpdate()
     }

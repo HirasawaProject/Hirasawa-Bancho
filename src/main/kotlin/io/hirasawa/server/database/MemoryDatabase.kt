@@ -134,6 +134,17 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         return null
     }
 
+    override fun getUserScores(mode: GameMode, user: User): ArrayList<Score> {
+        val scores = ArrayList<Score>()
+        for (score in scores) {
+            if (score.user.id == user.id && score.gameMode == mode) {
+                scores.add(score)
+            }
+        }
+
+        return scores
+    }
+
     override fun getUserStats(user: User, gameMode: GameMode): UserStats? {
         return userStats[user.id]?.get(gameMode)
     }
@@ -166,5 +177,9 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
                 beatmaps.add(newBeatmap)
             }
         }
+    }
+
+    override fun updateUserStats(stats: UserStats) {
+        userStats[stats.userId]?.set(stats.gameMode, stats)
     }
 }
