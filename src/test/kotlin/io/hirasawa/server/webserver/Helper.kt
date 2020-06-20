@@ -21,7 +21,7 @@ class Helper {
 
         fun createScore(id: Int, user: User, score: Int, rank: Int, beatmapId: Int, gamemode: GameMode): Score {
             return Score(id, user, score, 100, 50, 100, 300, 0, 10,
-                10, true, 0, 0, gamemode, rank, beatmapId)
+                10, true, 0, 0, gamemode, rank, beatmapId, 1F)
         }
 
         fun createBeatmap(id: Int, mapsetId: Int, hash: String, ranks: Int): Beatmap {

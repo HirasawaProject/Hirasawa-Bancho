@@ -179,7 +179,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         }
     }
 
-    override fun updateUserStats(stats: UserStats) {
-        userStats[stats.userId]?.set(stats.gameMode, stats)
+    override fun updateUserStats(userStats: UserStats) {
+        this.userStats[userStats.userId]?.set(userStats.gameMode, userStats)
     }
 }
