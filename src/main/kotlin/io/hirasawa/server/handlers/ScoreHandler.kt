@@ -56,9 +56,42 @@ class ScoreHandler(encodedScore: String) {
 
         if (user != null && beatmap != null) {
             score = Score(-1, user, countScore, combo, count50, count100, count300, countMiss, countKatu, countGeki,
-                fullCombo, mods, -1, mode, -1, beatmap.id)
+                fullCombo, mods, -1, mode, -1, beatmap.id, calculateAccuracy())
+        }
+    }
+
+    private fun calculateAccuracy(): Float {
+        // Ported from old closed-source nosue! project keeping variable names the same
+        // TODO redo with better readability
+        var accuracy = 0F
+        when(mode) {
+            GameMode.OSU -> {
+                val totalPoints = (count300 * 300) + (count100 * 100) + (count50 * 50)
+                val totalHits = count300 + count100 + count50
+
+                accuracy = totalPoints / (totalHits * 300F)
+            }
+            GameMode.TAIKO -> {
+                accuracy += count300 * 100
+                accuracy += count100 * 50
+
+                accuracy /= (count300 + count100)
+            }
+            GameMode.CATCH_THE_BEAT -> {
+                val totalPoints = count300 + count100 + count50
+                val totalHits = count300 + count100 + count50 + countMiss
+
+                accuracy = totalPoints / (totalHits * 300F)
+            }
+            GameMode.MANIA -> {
+                val totalPoints = (count300 * 300F) + (count100 * 100F) + (count50 * 50F) + (countGeki * 300)
+                    + (countKatu * 200)
+                val totalHits = count300 + count100 + count50 + countGeki + countKatu + countMiss
+
+                accuracy = totalPoints / totalHits
+            }
         }
 
-
+        return accuracy
     }
 }

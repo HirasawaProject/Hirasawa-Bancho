@@ -35,10 +35,12 @@ abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun getBeatmapSet(id: Int): BeatmapSet?
     abstract fun getBeatmapScores(beatmap: Beatmap, mode: GameMode, limit: Int): ArrayList<Score>
     abstract fun getUserScore(beatmap: Beatmap, mode: GameMode, user: User): Score?
+    abstract fun getUserScores(mode: GameMode, user: User): ArrayList<Score>
     abstract fun getUserStats(user: User, gameMode: GameMode): UserStats?
     abstract fun submitScore(score: Score)
     abstract fun removeScore(score: Score)
     abstract fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode)
     abstract fun updateScore(newScore: Score)
     abstract fun updateBeatmap(newBeatmap: Beatmap)
+    abstract fun updateUserStats(userStats: UserStats)
 }
