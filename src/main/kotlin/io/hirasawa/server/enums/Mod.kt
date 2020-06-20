@@ -30,7 +30,8 @@ enum class Mod(val id: Int) {
     KEY_COOP(1 shl 25),
     KEY1(1 shl 26),
     KEY3(1 shl 27),
-    KEY2(1 shl 28);
+    KEY2(1 shl 28),
+    SCORE_V2(1 shl 29);
 
     private infix fun within(id: Int): Boolean {
         return (id and this.id) > 0
