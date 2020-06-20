@@ -67,15 +67,15 @@ class ScoreHandler(encodedScore: String) {
         when(mode) {
             GameMode.OSU -> {
                 val totalPoints = (count300 * 300) + (count100 * 100) + (count50 * 50)
-                val totalHits = count300 + count100 + count50
+                val totalHits = count300 + count100 + count50 + countMiss
 
                 accuracy = totalPoints / (totalHits * 300F)
             }
             GameMode.TAIKO -> {
-                accuracy += count300 * 100
-                accuracy += count100 * 50
+                val totalPoints = ((count100 * 0.5F) + count300) * 300
+                val totalHits = count300 + count100 + countMiss
 
-                accuracy /= (count300 + count100)
+                accuracy = totalPoints / (totalHits * 300F)
             }
             GameMode.CATCH_THE_BEAT -> {
                 val totalPoints = count300 + count100 + count50
