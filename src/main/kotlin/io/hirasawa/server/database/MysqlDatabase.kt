@@ -140,7 +140,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             resultSet.getInt("scores.count_katu"), resultSet.getInt("scores.count_geki"),
             resultSet.getBoolean("scores.full_combo"), resultSet.getInt("scores.mods"),
             resultSet.getInt("scores.timestamp"), GameMode.values()[resultSet.getInt("scores.gamemode")],
-            resultSet.getInt("scores.rank"), resultSet.getInt("beatmap_id"), 1F)
+            resultSet.getInt("scores.rank"), resultSet.getInt("beatmap_id"), resultSet.getFloat("accuracy"))
     }
 
     override fun getScore(id: Int): Score? {
@@ -270,8 +270,8 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
 
     override fun submitScore(score: Score) {
         val query = "INSERT INTO scores (user_id, score, combo, count50, count100, count300, count_miss, count_katu," +
-                "count_geki, full_combo, mods, timestamp, beatmap_id, gamemode, rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?" +
-                ", ?, ?, ?, ?, ?, ?, ?)"
+                "count_geki, full_combo, mods, timestamp, beatmap_id, gamemode, rank, accuracy) VALUES (?, ?, ?, ?, ?, " +
+                "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         val statement = connection.prepareStatement(query)
 
         statement.setInt(1, score.user.id)
@@ -289,6 +289,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(13, score.beatmapId)
         statement.setInt(14, score.gameMode.ordinal)
         statement.setInt(15, 0)
+        statement.setFloat(16, score.accuracy)
 
         score.id = statement.executeUpdate()
     }
@@ -296,7 +297,7 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
     override fun updateScore(newScore: Score) {
         val query = "UPDATE scores SET user_id = ?, score = ?, combo = ?, count50 = ?, count100 = ?, count300 = ? , " +
                 "count_miss = ?, count_katu = ?, count_geki = ?, full_combo = ?, mods = ?, timestamp = ?, " +
-                "beatmap_id = ?, gamemode = ?, rank = ? WHERE id = ?"
+                "beatmap_id = ?, gamemode = ?, rank = ?, accuracy = ? WHERE id = ?"
         val statement = connection.prepareStatement(query)
 
         statement.setInt(1, newScore.user.id)
@@ -314,7 +315,8 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(13, newScore.beatmapId)
         statement.setInt(14, newScore.gameMode.ordinal)
         statement.setInt(15, newScore.rank)
-        statement.setInt(16, newScore.id)
+        statement.setFloat(16, newScore.accuracy)
+        statement.setInt(17, newScore.id)
 
         statement.executeUpdate()
     }
