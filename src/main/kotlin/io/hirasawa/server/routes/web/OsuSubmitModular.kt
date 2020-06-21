@@ -52,7 +52,7 @@ class OsuSubmitModular: Route {
             }
 
             val mods = Mod.idToModArray(score.mods)
-            for (mod in Hirasawa.config.blacklistedMods) {
+            for (mod in Hirasawa.config.blockedMods) {
                 if (mod in mods) {
                     return
                 }

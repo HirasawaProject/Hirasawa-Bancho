@@ -6,7 +6,7 @@ import io.hirasawa.server.enums.Mod
 
 data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val database: DatabaseCredentials,
                            val channels: List<ChatChannel>, val banchoUserTimeout: Int, val banchoBotId: Int,
-                           val domain: String, val blacklistedMods: List<Mod>) {
+                           val domain: String, val blockedMods: List<Mod>) {
     constructor(): this(
         8080,
         4430,
