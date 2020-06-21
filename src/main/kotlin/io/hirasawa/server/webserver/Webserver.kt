@@ -28,7 +28,7 @@ class Webserver(val port: Int) {
         addDefaultHeader("server", "Hirasawa")
         // This one is only temporary, in the future will automatically set the content-type depending on if it's sent
         // to a renderer or if it's just binary data
-        addDefaultHeader("content-type", "text/html")
+        addDefaultHeader("content-type", "text/html; charset=utf-8")
     }
 
     /**
