@@ -144,12 +144,12 @@ class WebserverTests {
 
     @Test
     fun doesLogIncreaseWhenLogging() {
-        val file = "test/doesLogIncreaseWhenLogging.txt"
-        val logger = FileLogger(File(file))
+        val file = createTempFile()
+        val logger = FileLogger(file)
 
-        val logBefore = Files.readAllLines(File(file).toPath())
+        val logBefore = Files.readAllLines(file.toPath())
         logger.log("This is a test")
-        val logAfter = Files.readAllLines(File(file).toPath())
+        val logAfter = Files.readAllLines(file.toPath())
 
         assert(logBefore.size < logAfter.size)
         assert("This is a test" in logAfter.last())
