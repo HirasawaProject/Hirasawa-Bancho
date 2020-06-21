@@ -5,6 +5,7 @@ import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
+import io.hirasawa.server.commands.HelpCommand
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.routes.BanchoRoute
@@ -34,6 +35,7 @@ fun main() {
     }
 
     Hirasawa.chatEngine.registerCommand(TestCommand())
+    Hirasawa.chatEngine.registerCommand(HelpCommand())
 
     Hirasawa.banchoUsers.add(Hirasawa.hirasawaBot)
 

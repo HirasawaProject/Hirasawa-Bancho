@@ -35,6 +35,7 @@ class PermissionEngine {
     }
 
     fun hasPermission(user: User, node: String): Boolean {
+        if (node.isEmpty()) return true
         return node in getPermissions(user)
     }
 
