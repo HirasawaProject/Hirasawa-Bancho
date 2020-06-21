@@ -41,8 +41,35 @@ class Webserver(val port: Int) {
      * @param route The instance of the route
      */
     fun addRoute(host: String, path: String, httpMethod: HttpMethod, route: Route) {
-        if (host !in routes.keys) {
-            routes[host] = DirectoryNode(RouteContainerNode(), HashMap())
+        addNode(host, path, httpMethod, RouteTailNode(route))
+    }
+
+    /**
+     * Adds a route to the internal webserver
+     *
+     * You can also use parameters in the path e.g: /u/{user}
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param route The instance of the route
+     */
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
+        addRoute(host.toString(), path, httpMethod, route)
+    }
+
+    /**
+     * Add a node to the route tree
+     *
+     * This allows custom nodes to be added that are more simple than the default features
+     * @paramhost The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param routeNode The route node to be inserted
+     */
+    fun addNode(host: Any, path: String, httpMethod: HttpMethod, routeNode: RouteNode) {
+        val hostString = host.toString()
+        if (hostString !in routes.keys) {
+            routes[hostString] = DirectoryNode(RouteContainerNode(), HashMap())
         }
 
         val routeSegments = ArrayList<String>()
@@ -58,43 +85,43 @@ class Webserver(val port: Int) {
             }
         }
 
-        fun addRoute(routeSegments: List<String>, routeNode: RouteNode) {
+        fun addNode(routeSegments: List<String>, currentNode: RouteNode) {
             if (routeSegments.isEmpty()) {
-                if (routeNode is DirectoryNode) {
-                    routeNode.index.methods[httpMethod] = route
+                if (currentNode is DirectoryNode) {
+                    currentNode.index.methods[httpMethod] = routeNode
                 }
             } else if (routeSegments.size == 1 && routeParameters.isNotEmpty()) {
-                if (routeNode is DirectoryNode) {
+                if (currentNode is DirectoryNode) {
                     val routeContainerNode = RouteContainerNode()
-                    routeContainerNode.methods[httpMethod] = route
-                    routeNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, routeContainerNode)
+                    routeContainerNode.methods[httpMethod] = routeNode
+                    currentNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, routeContainerNode)
                     return
                 }
             } else {
-                if (routeNode is DirectoryNode) {
-                    if (routeSegments[0] !in routeNode.routes) {
-                        routeNode.routes[routeSegments[0]] = DirectoryNode(RouteContainerNode(), HashMap())
+                if (currentNode is DirectoryNode) {
+                    if (routeSegments[0] !in currentNode.routes) {
+                        currentNode.routes[routeSegments[0]] = DirectoryNode(RouteContainerNode(), HashMap())
                     }
 
-                    addRoute(routeSegments.drop(1), routeNode.routes[routeSegments[0]]!!)
+                    addNode(routeSegments.drop(1), currentNode.routes[routeSegments[0]]!!)
                 }
             }
         }
 
-        addRoute(routeSegments, routes[host]!!)
+        addNode(routeSegments, routes[hostString]!!)
     }
 
     /**
-     * Adds a route to the internal webserver
+     * Add an asset as a route
      *
-     * You can also use parameters in the path e.g: /u/{user}
-     * @param host The domain the route should run under
+     * This allows accessing of files via the webserver, to allow access to stuff like images, HTML and the like
+     * @paramhost The domain the route should run under
      * @param path The url path, eg /
      * @param httpMethod The type of HTTP request, eg GET, POST
-     * @param route The instance of the route
+     * @param assetLocation Where the asset exists on disk
      */
-    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
-        addRoute(host.toString(), path, httpMethod, route)
+    fun addAsset(host: Any, path: String, httpMethod: HttpMethod, assetLocation: String) {
+        this.addNode(host, path, httpMethod, AssetNode(assetLocation))
     }
 
     /**

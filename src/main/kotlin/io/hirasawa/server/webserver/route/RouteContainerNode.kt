@@ -7,7 +7,7 @@ import io.hirasawa.server.webserver.objects.Response
 import kotlin.collections.HashMap
 
 class RouteContainerNode: RouteNode {
-    val methods = HashMap<HttpMethod, Route>()
+    val methods = HashMap<HttpMethod, RouteNode>()
     override fun handle(method: HttpMethod, path: List<String>, request: Request, response: Response) {
         if (method !in methods) {
             if (method == HttpMethod.GET) {
@@ -18,6 +18,6 @@ class RouteContainerNode: RouteNode {
             }
         }
 
-        methods[method]?.handle(request, response) ?: RouteNotFoundRoute().handle(request, response)
+        methods[method]?.handle(method, path, request, response) ?: RouteNotFoundRoute().handle(request, response)
     }
 }
