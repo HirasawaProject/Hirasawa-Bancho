@@ -112,6 +112,19 @@ class Webserver(val port: Int) {
     }
 
     /**
+     * Add an asset as a route
+     *
+     * This allows accessing of files via the webserver, to allow access to stuff like images, HTML and the like
+     * @paramhost The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param assetLocation Where the asset exists on disk
+     */
+    fun addAsset(host: Any, path: String, httpMethod: HttpMethod, assetLocation: String) {
+        this.addNode(host, path, httpMethod, AssetNode(assetLocation))
+    }
+
+    /**
      * Starts the webserver
      */
     fun start() {

@@ -161,7 +161,7 @@ class WebserverTests {
         val tempFile = createTempFile()
         Files.write(tempFile.toPath(), fileText.toByteArray())
 
-        webserver.addNode("localhost", "/asset/text", HttpMethod.GET, AssetNode(tempFile.absolutePath))
+        webserver.addAsset("localhost", "/asset/text", HttpMethod.GET, tempFile.absolutePath)
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/asset/text")
@@ -182,7 +182,7 @@ class WebserverTests {
         val tempFile = createTempFile()
         Files.write(tempFile.toPath(), pngData)
 
-        webserver.addNode("localhost", "/asset/png", HttpMethod.GET, AssetNode(tempFile.absolutePath))
+        webserver.addAsset("localhost", "/asset/png", HttpMethod.GET, tempFile.absolutePath)
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/asset/png")
