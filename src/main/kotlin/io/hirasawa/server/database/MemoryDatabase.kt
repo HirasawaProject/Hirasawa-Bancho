@@ -149,6 +149,10 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         return userStats[user.id]?.get(gameMode)
     }
 
+    override fun getUserStats(gameMode: GameMode, sort: String): ArrayList<UserStats> {
+        TODO("Not yet implemented")
+    }
+
     override fun submitScore(score: Score) {
         scores.add(score)
     }
@@ -181,5 +185,9 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
 
     override fun updateUserStats(userStats: UserStats) {
         this.userStats[userStats.userId]?.set(userStats.gameMode, userStats)
+    }
+
+    override fun processGlobalLeaderboard(gameMode: GameMode) {
+        TODO("Not yet implemented")
     }
 }

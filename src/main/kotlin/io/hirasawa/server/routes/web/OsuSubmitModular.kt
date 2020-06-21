@@ -99,6 +99,9 @@ class OsuSubmitModular: Route {
                     e.printStackTrace()
                 }
 
+
+                Hirasawa.database.processGlobalLeaderboard(score.gameMode)
+
             })
 
 
