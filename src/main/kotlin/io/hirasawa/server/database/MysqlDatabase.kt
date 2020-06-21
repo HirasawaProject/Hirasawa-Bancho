@@ -268,6 +268,24 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         return null
     }
 
+    override fun getUserStats(gameMode: GameMode, sort: String): ArrayList<UserStats> {
+        val query = "SELECT * FROM user_stats WHERE gamemode = ? ORDER BY ? DESC"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, gameMode.ordinal)
+        statement.setString(2, sort)
+
+        val userStats = ArrayList<UserStats>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            userStats.add(UserStats(resultSet.getInt("user_id"), resultSet.getLong("ranked_score"),
+                resultSet.getFloat("accuracy"), resultSet.getInt("playcount"), resultSet.getLong("total_score"),
+                resultSet.getInt("rank"), resultSet.getShort("pp"), gameMode))
+        }
+
+        return userStats
+    }
+
     override fun submitScore(score: Score) {
         val query = "INSERT INTO scores (user_id, score, combo, count50, count100, count300, count_miss, count_katu," +
                 "count_geki, full_combo, mods, timestamp, beatmap_id, gamemode, rank, accuracy) VALUES (?, ?, ?, ?, ?, " +
@@ -373,6 +391,16 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         statement.setInt(7, userStats.gameMode.ordinal)
 
         statement.executeUpdate()
+    }
+
+    override fun processGlobalLeaderboard(gameMode: GameMode) {
+        var rank = 1
+        for (userStats in getUserStats(gameMode, sort = "ranked_score")) {
+            if (getUser(userStats.userId)?.isBanned == false) {
+                userStats.rank = rank++
+                updateUserStats(userStats)
+            }
+        }
     }
 
 }
