@@ -1,13 +1,17 @@
 package io.hirasawa.server.webserver
 
 import io.hirasawa.server.logger.FileLogger
+import io.hirasawa.server.webserver.enums.ContentType
+import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
+import io.hirasawa.server.webserver.route.AssetNode
 import io.hirasawa.server.webserver.route.Route
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
+import org.bouncycastle.util.encoders.Base64
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -149,5 +153,45 @@ class WebserverTests {
 
         assert(logBefore.size < logAfter.size)
         assert("This is a test" in logAfter.last())
+    }
+
+    @Test
+    fun doesAssetNodeWorkWithTextFiles() {
+        val fileText = "This is a test text file"
+        val tempFile = createTempFile()
+        Files.write(tempFile.toPath(), fileText.toByteArray())
+
+        webserver.addNode("localhost", "/asset/text", HttpMethod.GET, AssetNode(tempFile.absolutePath))
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/asset/text")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        assertEquals(fileText, response.body?.string())
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals(ContentType.TEXT_PLAN.toString(), response.headers["content-type"])
+    }
+
+    @Test
+    fun doesAssetNodeWorkWithPngFiles() {
+        // Data taken from https://png-pixel.com/
+        val pngData = Base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
+                "AAABJRU5ErkJggg==")
+        val tempFile = createTempFile()
+        Files.write(tempFile.toPath(), pngData)
+
+        webserver.addNode("localhost", "/asset/png", HttpMethod.GET, AssetNode(tempFile.absolutePath))
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/asset/png")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        assertEquals(String(pngData), response.body?.string())
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals(ContentType.IMAGE_PNG.toString(), response.headers["content-type"])
     }
 }
