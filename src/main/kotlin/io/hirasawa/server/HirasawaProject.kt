@@ -15,6 +15,7 @@ import io.hirasawa.server.routes.web.OsuSubmitModular
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.internalroutes.TestRoute
+import io.hirasawa.server.webserver.route.AssetNode
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

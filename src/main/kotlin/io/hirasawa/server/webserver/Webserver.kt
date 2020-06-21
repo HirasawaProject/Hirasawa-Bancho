@@ -67,8 +67,9 @@ class Webserver(val port: Int) {
      * @param routeNode The route node to be inserted
      */
     fun addNode(host: Any, path: String, httpMethod: HttpMethod, routeNode: RouteNode) {
-        if (host !in routes.keys) {
-            routes[host.toString()] = DirectoryNode(RouteContainerNode(), HashMap())
+        val hostString = host.toString()
+        if (hostString !in routes.keys) {
+            routes[hostString] = DirectoryNode(RouteContainerNode(), HashMap())
         }
 
         val routeSegments = ArrayList<String>()
@@ -107,7 +108,7 @@ class Webserver(val port: Int) {
             }
         }
 
-        addNode(routeSegments, routes[host]!!)
+        addNode(routeSegments, routes[hostString]!!)
     }
 
     /**
