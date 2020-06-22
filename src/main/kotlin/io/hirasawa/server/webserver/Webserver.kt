@@ -15,14 +15,14 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Webserver(val port: Int) {
+class Webserver(val httpPort: Int, val httpsPort: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
     val accessLogger = FileLogger(File("logs/webserver/access.txt"))
     val errorLogger = FileLogger(File("logs/webserver/error.txt"))
 
-    private var sslEnabled = false
+    private var sslEnabled = true
 
     init {
         addDefaultHeader("server", "Hirasawa")
@@ -129,9 +129,9 @@ class Webserver(val port: Int) {
      */
     fun start() {
         if (sslEnabled) {
-            Thread(HttpsServerThread(4430)).start()
+            Thread(HttpsServerThread(httpsPort)).start()
         }
-        Thread(HttpServerThread(port, this)).start()
+        Thread(HttpServerThread(httpPort, this)).start()
     }
 
     /**

@@ -7,6 +7,9 @@ import java.util.concurrent.Executors
 class HttpServerThread(val port: Int, private val webserver: Webserver): Runnable {
     private val threadPool = Executors.newFixedThreadPool(10)
     override fun run() {
+        if (port <= 0) {
+            return
+        }
         val server = ServerSocket(port)
 
         while (true) {
