@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 
 
 fun main() {
+    println("Starting Hirasawa v${Hirasawa.version}")
     Hirasawa.initDatabase(MysqlDatabase(Hirasawa.config.database))
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
