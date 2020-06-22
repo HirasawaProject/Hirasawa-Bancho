@@ -5,6 +5,7 @@ import java.io.DataOutputStream
 
 data class Response (var httpStatus: HttpStatus, val outputStream: DataOutputStream,
                      val headers: MutableHeaders) {
+    var isLoggingEnabled = true
     fun writeText(text: String) {
         outputStream.writeBytes(text)
     }
