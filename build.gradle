@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.hirasawa'
-version '1.0-SNAPSHOT'
+version 'Testing'
 
 sourceCompatibility = 1.8
 
@@ -36,6 +36,8 @@ compileTestKotlin {
 jar {
     manifest {
         attributes 'Main-Class': 'io.hirasawa.server.HirasawaProjectKt'
+        attributes 'Implementation-Version': project.version
+        attributes 'Implementation-Name': 'Hirasawa'
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
@@ -44,4 +46,10 @@ test {
     useJUnitPlatform()
 
     maxHeapSize = '1G'
+}
+
+task prod {
+    doLast {
+        project.version = new Date().format('yyyyMMdd')
+    }
 }

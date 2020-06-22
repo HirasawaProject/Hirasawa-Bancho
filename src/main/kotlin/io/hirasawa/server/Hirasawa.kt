@@ -37,6 +37,7 @@ class Hirasawa {
         var database: Database = MemoryDatabase()
         val chatEngine = ChatEngine()
         val pipeline = PipelineManager()
+        val version = Hirasawa::class.java.`package`.implementationVersion
         lateinit var permissionEngine: PermissionEngine
 
         lateinit var hirasawaBot: HirasawaBot
