@@ -22,7 +22,7 @@ class Webserver(val port: Int) {
     val accessLogger = FileLogger(File("logs/webserver/access.txt"))
     val errorLogger = FileLogger(File("logs/webserver/error.txt"))
 
-    private var sslEnabled = false
+    private var sslEnabled = true
 
     init {
         addDefaultHeader("server", "Hirasawa")
@@ -129,7 +129,7 @@ class Webserver(val port: Int) {
      */
     fun start() {
         if (sslEnabled) {
-            Thread(HttpsServerThread(4430)).start()
+            Thread(HttpsServerThread(443)).start()
         }
         Thread(HttpServerThread(port, this)).start()
     }
