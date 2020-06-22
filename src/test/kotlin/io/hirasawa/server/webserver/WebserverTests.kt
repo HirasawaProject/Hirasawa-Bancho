@@ -22,7 +22,7 @@ import kotlin.math.log
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
-    private val webserver = Webserver(8181)
+    private val webserver = Webserver(8181, 0)
     private var client = OkHttpClient()
     init {
         webserver.start()

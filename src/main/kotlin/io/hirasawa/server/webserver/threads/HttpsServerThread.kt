@@ -9,6 +9,10 @@ import javax.net.ssl.SSLServerSocketFactory
 class HttpsServerThread(val port: Int): Runnable {
     private val threadPool = Executors.newFixedThreadPool(10)
     override fun run() {
+        if (port <= 0) {
+            return
+        }
+
         if (!File("keystore.jks").exists()) {
             println("You are missing the keystore.jks file, this is required for HTTPS connections.")
             println("Falling back to HTTP only mode!")
