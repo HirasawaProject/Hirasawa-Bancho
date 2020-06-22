@@ -15,7 +15,7 @@ import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Webserver(val port: Int) {
+class Webserver(val httpPort: Int, val httpsPort: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
@@ -129,9 +129,9 @@ class Webserver(val port: Int) {
      */
     fun start() {
         if (sslEnabled) {
-            Thread(HttpsServerThread(443)).start()
+            Thread(HttpsServerThread(httpsPort)).start()
         }
-        Thread(HttpServerThread(port, this)).start()
+        Thread(HttpServerThread(httpPort, this)).start()
     }
 
     /**

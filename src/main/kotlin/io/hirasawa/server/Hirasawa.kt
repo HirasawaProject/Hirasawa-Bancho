@@ -30,7 +30,7 @@ class Hirasawa {
             .setPrettyPrinting()
             .create()
         val config = loadConfig()
-        val webserver = Webserver(config.httpPort)
+        val webserver = Webserver(config.httpPort, config.httpsPort)
         val eventHandler = EventManager()
         val packetRouter = HashMap<BanchoPacketType, PacketHandler>()
         val pluginManager = PluginManager()
