@@ -194,4 +194,50 @@ class WebserverTests {
         assertEquals(HttpStatus.OK.code, response.code)
         assertEquals(ContentType.IMAGE_PNG.toString(), response.headers["content-type"])
     }
+
+    @Test
+    fun doesAccessingRouteIncreaseAccessLog() {
+        webserver.addRoute("localhost", "/logtestenabled", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                // empty
+            }
+        })
+
+        val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/logtestenabled")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val accessLogAfter = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assert(accessLogBefore.size < accessLogAfter.size)
+    }
+
+    @Test
+    fun doesAccessingRouteWithDisabledLoggingNotIncreaseAccessLog() {
+        webserver.addRoute("localhost", "/logtestdisabled", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.isLoggingEnabled = false
+            }
+        })
+
+        val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/logtestdisabled")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val accessLogAfter = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals(accessLogBefore.size, accessLogAfter.size)
+    }
 }
