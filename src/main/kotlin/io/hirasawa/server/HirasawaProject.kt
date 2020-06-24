@@ -27,6 +27,7 @@ fun main() {
     println("Starting Hirasawa v${Hirasawa.version}")
     Hirasawa.initDatabase(MysqlDatabase(Hirasawa.config.database))
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE_PRIVATE] = SendIrcMessagePrivatePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_LEAVE] = ChannelLeavePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_EXIT] = ExitPacket()
