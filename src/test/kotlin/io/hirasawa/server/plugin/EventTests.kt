@@ -68,8 +68,27 @@ class EventTests {
         assertEquals(1, event.test)
     }
 
+    @Test
+    fun testCanEventListenerBeRemoved() {
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler(EventPriority.HIGHEST)
+            fun onTestEvent(testEvent: SecondaryTestEvent) {
+                testEvent.test = 1
+            }
+        }, this.plugin)
+
+        Hirasawa.eventHandler.removeEvents(plugin)
+
+        val event = SecondaryTestEvent(0)
+
+        Hirasawa.eventHandler.callEvent(event)
+
+        assertEquals(0, event.test)
+    }
+
 
 
     class TestEvent(var test: Int): HirasawaEvent
     class TestCanceledEvent(var test: Int): HirasawaEvent, Cancelable()
+    class SecondaryTestEvent(var test: Int): HirasawaEvent
 }
