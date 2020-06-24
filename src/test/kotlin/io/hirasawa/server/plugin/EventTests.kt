@@ -7,7 +7,14 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EventTests {
+    private val plugin = object: HirasawaPlugin() {
+        override fun onEnable() {}
+
+        override fun onDisable() {}
+    }
+
     @Test
     fun testCanCallAndListenToCustomEventsWithPriority() {
         Hirasawa.eventHandler.registerEvent(object: EventListener {
@@ -15,14 +22,14 @@ class EventTests {
             fun onTestEvent(testEvent: TestEvent) {
                 testEvent.test = 1
             }
-        })
+        }, this.plugin)
 
         Hirasawa.eventHandler.registerEvent(object: EventListener {
             @EventHandler(EventPriority.LOW)
             fun onTestEvent(testEvent: TestEvent) {
                 testEvent.test = 2
             }
-        })
+        }, this.plugin)
 
         val event = TestEvent(0)
 
@@ -38,21 +45,21 @@ class EventTests {
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.isCancelled = true
             }
-        })
+        }, this.plugin)
 
         Hirasawa.eventHandler.registerEvent(object: EventListener {
             @EventHandler(EventPriority.NORMAL, true)
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.test = 1
             }
-        })
+        }, this.plugin)
 
         Hirasawa.eventHandler.registerEvent(object: EventListener {
             @EventHandler(EventPriority.LOW)
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.test = 2
             }
-        })
+        }, this.plugin)
 
         val event = TestCanceledEvent(0)
 
