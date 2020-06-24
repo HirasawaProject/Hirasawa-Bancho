@@ -8,6 +8,8 @@ import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.HelpCommand
 import io.hirasawa.server.commands.TestCommand
 import io.hirasawa.server.database.MysqlDatabase
+import io.hirasawa.server.plugin.InternalPlugin
+import io.hirasawa.server.plugin.PluginDescriptor
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.BeatmapRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
@@ -36,8 +38,8 @@ fun main() {
         Hirasawa.chatEngine[channel.name] = channel
     }
 
-    Hirasawa.chatEngine.registerCommand(TestCommand())
-    Hirasawa.chatEngine.registerCommand(HelpCommand())
+    Hirasawa.pluginManager.loadPlugin(InternalPlugin(), PluginDescriptor("Internal Plugin", Hirasawa.version,
+        "Hirasawa", ""))
 
     Hirasawa.banchoUsers.add(Hirasawa.hirasawaBot)
 

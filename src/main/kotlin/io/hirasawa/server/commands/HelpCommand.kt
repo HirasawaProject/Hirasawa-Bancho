@@ -11,13 +11,13 @@ class HelpCommand: ChatCommand("help", "Lists the commands you are able to do") 
 
         if (context.sender is User) {
             for (chatCommand in commands.values) {
-                if (context.sender.hasPermission(chatCommand.permission)) {
-                    context.respond(getCommandString(chatCommand))
+                if (context.sender.hasPermission(chatCommand.first.permission)) {
+                    context.respond(getCommandString(chatCommand.first))
                 }
             }
         } else {
             for (chatCommand in commands.values) {
-                context.respond(getCommandString(chatCommand))
+                context.respond(getCommandString(chatCommand.first))
             }
         }
 

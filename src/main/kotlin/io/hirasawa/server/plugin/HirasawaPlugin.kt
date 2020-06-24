@@ -15,7 +15,7 @@ abstract class HirasawaPlugin: IHirasawaPlugin {
      * @param eventListener The event listener instance to be registered
      */
     fun registerEvent(eventListener: EventListener) {
-        Hirasawa.eventHandler.registerEvent(eventListener)
+        Hirasawa.eventHandler.registerEvent(eventListener, this)
     }
 
     /**
@@ -24,6 +24,6 @@ abstract class HirasawaPlugin: IHirasawaPlugin {
      * @param chatCommand The command instance to be registered
      */
     fun registerCommand(chatCommand: ChatCommand) {
-        Hirasawa.chatEngine.chatCommands[chatCommand.name] = chatCommand
+        Hirasawa.chatEngine.chatCommands[chatCommand.name] = Pair(chatCommand, this)
     }
 }

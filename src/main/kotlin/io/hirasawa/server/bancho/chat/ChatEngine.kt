@@ -9,12 +9,13 @@ import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
 import kotlin.collections.HashMap
 
 class ChatEngine {
     val chatChannels = HashMap<String, ChatChannel>()
-    val chatCommands = HashMap<String, ChatCommand>()
+    val chatCommands = HashMap<String, Pair<ChatCommand, HirasawaPlugin>>()
 
     operator fun set(key: String, value: ChatChannel) {
         chatChannels[key] = value
@@ -76,14 +77,24 @@ class ChatEngine {
     fun handleCommand(chatSegments: List<String>, sender: CommandSender, channel: ChatChannel) {
         val commandName = chatSegments[0].replace("!", "")
         if (commandName in chatCommands) {
-            val chatCommand = chatCommands[commandName]
+            val chatCommand = chatCommands[commandName]?.first
             val context = CommandContext(sender, channel)
             chatCommand?.onCommand(context, chatSegments[0], chatSegments.slice(IntRange(1, chatSegments.size - 1)))
         }
     }
 
 
-    fun registerCommand(command: ChatCommand) {
-        chatCommands[command.name] = command
+    fun registerCommand(command: ChatCommand, plugin: HirasawaPlugin) {
+        chatCommands[command.name] = Pair(command, plugin)
+    }
+
+    fun removeCommands(plugin: HirasawaPlugin) {
+        val iterator = chatCommands.iterator()
+        while (iterator.hasNext()) {
+            val pair = iterator.next().value
+            if (pair.second == plugin) {
+                iterator.remove()
+            }
+        }
     }
 }
