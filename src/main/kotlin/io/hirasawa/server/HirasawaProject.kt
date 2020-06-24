@@ -69,6 +69,11 @@ fun main() {
 
     webserver.start()
 
+    if (Hirasawa.isUpdateRequired) {
+        println("You are running an outdated version of Hirasawa, please update by going to the following link")
+        println(Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl)
+    }
+
 
     // Hardcoded fake channel to get console responses
     val consoleChatChannel = ChatChannel("!CONSOLE", "", false)

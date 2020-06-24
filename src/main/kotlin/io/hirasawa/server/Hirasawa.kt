@@ -1,6 +1,7 @@
 package io.hirasawa.server
 
 import com.google.gson.GsonBuilder
+import com.sun.org.apache.xpath.internal.operations.Bool
 import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.chat.ChatEngine
 import io.hirasawa.server.bancho.objects.BanchoUserMap
@@ -16,6 +17,7 @@ import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.pipeline.PipelineManager
 import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
+import io.hirasawa.server.update.UpdateChecker
 import io.hirasawa.server.webserver.Webserver
 import java.io.File
 import java.io.FileReader
@@ -39,6 +41,8 @@ class Hirasawa {
         val pipeline = PipelineManager()
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
+        val updateChecker = UpdateChecker()
+        val isUpdateRequired get() = updateChecker.checkUpdate()
 
         lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = BanchoUserMap()
