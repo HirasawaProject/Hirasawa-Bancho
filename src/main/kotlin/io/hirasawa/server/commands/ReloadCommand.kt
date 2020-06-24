@@ -9,6 +9,9 @@ import java.io.File
 
 class ReloadCommand: ChatCommand("reload", "Reloads the loaded plugins", "hirasawa.command.reload") {
     override fun onCommand(context: CommandContext, command: String, args: List<String>): Boolean {
+        context.respond("WARNING! This command could cause memory leaks and other weird behaviour, don't rely on " +
+                "this on production servers")
+
         val pluginNames = Hirasawa.pluginManager.loadedPlugins.keys.toMutableList()
         for (pluginName in pluginNames) {
             Hirasawa.pluginManager.unloadPlugin(pluginName)
