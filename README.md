@@ -1,9 +1,18 @@
 # Hirasawa Project
 Hirasawa Project is a WIP server for osu! supporting custom plugins written in Kotlin
 
+The idea is to have a vanilla Bancho experience with a basic web experience which is fully customisable via plugins
+
 ## Plugins
-We will be supporting plugins to extend the functionality of the server in a similar way to how Bukkit handles it for
-Minecraft utilising events for all actions in-game
+We support plugins to extend the functionality of the server similarly to how Bukkit handles it forMinecraft utilising 
+events for all actions in-game
+
+Plugins currently have access to:
+* Add chat commands
+* Register to the event system
+* Register web routes
+
+Alongside having access to the same systems Hirasawa uses natively
 
 We will also have a plugin store available at some point later down the line of development
 
@@ -15,11 +24,15 @@ We will also have a plugin store available at some point later down the line of 
 In terms of hardware requirements I've gotten this to run on a Pi Zero
 
 ## Building
-Building Hirasawa is very easy, all you need to do is run
-`gradle build` and the jar will be built under `build/libs/HirasawaProjectXXXX.jar`
+Building Hirasawa is very easy, for building testing builds `gradle build` will output to 
+`build/libs/HirasawaProject-Testing.jar`
+
+If you want to build a production jar `gradle prod build` will output to `build/libs/HirasawaProject-VERSION.jar` using
+a generated version number based on the date, Hirasawa will also be aware of the version internally
 
 ## Contribution
-Please wait while I get the bulk of the system frame done first and then I can outline how you can help with development
+Hirasawa is completely open to contribution, please feel free to open tickets or work on what we currently have in the
+backlog
 
 ## Licencing
 Hirasawa Project is licenced under the MIT licence so do with it as you please
