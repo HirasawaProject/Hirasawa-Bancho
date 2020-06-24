@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 
 class UpdateChecker {
     var isUpdateRequired = false
+    var latestRelease: Releases? = null
 
     fun checkUpdate(): Boolean {
         val currentVersion = Hirasawa.version.toFloatOrNull() ?: return false
@@ -25,7 +26,7 @@ class UpdateChecker {
 
         val releases = gson.fromJson<Releases>(response.body?.string(), Releases::class.java)
         isUpdateRequired = currentVersion < releases.tagName.toFloat()
-        println(isUpdateRequired)
+        latestRelease = releases
 
         return isUpdateRequired
     }

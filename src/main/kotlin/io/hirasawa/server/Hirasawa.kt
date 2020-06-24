@@ -42,7 +42,7 @@ class Hirasawa {
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
-        val isUpdateRequired get() = updateChecker.isUpdateRequired
+        val isUpdateRequired get() = updateChecker.checkUpdate()
 
         lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = BanchoUserMap()
