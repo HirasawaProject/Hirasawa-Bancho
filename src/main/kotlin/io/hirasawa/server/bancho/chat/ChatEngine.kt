@@ -7,6 +7,7 @@ import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.plugin.HirasawaPlugin
@@ -34,7 +35,14 @@ class ChatEngine {
                 handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
             }
             else -> {
-                handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
+                if (destination == "BanchoBot" && Hirasawa.hirasawaBot.username != destination) {
+                    // Redirect /bb commands to the "real" BanchoBot
+                    val banchoUser = Hirasawa.banchoUsers[user.id]
+                    banchoUser?.sendPacket(ChannelRevokedPacket(destination))
+                    handleChat(user, Hirasawa.hirasawaBot.username, message)
+                } else {
+                    handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
+                }
             }
         }
     }
