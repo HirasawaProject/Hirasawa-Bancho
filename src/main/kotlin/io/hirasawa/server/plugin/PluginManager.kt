@@ -1,6 +1,7 @@
 package io.hirasawa.server.plugin
 
 import com.google.gson.Gson
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.logger.PluginLogger
 import java.io.File
 import java.io.FileNotFoundException
@@ -29,8 +30,10 @@ class PluginManager {
             return false;
         }
 
-        val plugin = loadedPlugins[name]
-        plugin?.onDisable()
+        val plugin = loadedPlugins[name] ?: return false
+        Hirasawa.eventHandler.removeEvents(plugin)
+        Hirasawa.chatEngine.removeCommands(plugin)
+        plugin.onDisable()
         loadedPlugins.remove(name)
 
         return true
