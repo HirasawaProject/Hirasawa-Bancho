@@ -9,6 +9,8 @@ import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.AssetNode
 import io.hirasawa.server.webserver.route.Route
+import kotlinx.html.body
+import kotlinx.html.p
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import org.bouncycastle.util.encoders.Base64
@@ -239,5 +241,38 @@ class WebserverTests {
 
         assertEquals(HttpStatus.OK.code, response.code)
         assertEquals(accessLogBefore.size, accessLogAfter.size)
+    }
+
+    @Test
+    fun doesHtmlDslWork() {
+        webserver.addRoute("localhost", "/htmldsl", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeRawHtml {
+                    body {
+                        p {
+                            text("Hello world")
+                        }
+                    }
+                }
+            }
+        })
+
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/htmldsl")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val body = response.body?.string()!!
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals("73", response.headers["Content-Size"])
+        assert(body.contains("<!DOCTYPE html>"))
+        assert(body.contains("<html>"))
+        assert(body.contains("<body>"))
+        assert(body.contains("<p>"))
+        assert(body.contains("Hello world"))
     }
 }
