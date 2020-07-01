@@ -3,12 +3,11 @@ package io.hirasawa.server.plugin
 import com.google.gson.Gson
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.logger.PluginLogger
+import io.hirasawa.server.plugin.event.plugin.PluginLoadEvent
+import io.hirasawa.server.plugin.event.plugin.PluginUnloadEvent
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
-import java.lang.Exception
-import java.lang.instrument.IllegalClassFormatException
-import java.lang.reflect.Constructor
 import java.net.URLClassLoader
 import java.util.jar.JarFile
 import kotlin.reflect.full.createInstance
@@ -21,6 +20,9 @@ class PluginManager {
         hirasawaPlugin.pluginDescriptor = pluginDescriptor
         hirasawaPlugin.logger = PluginLogger(pluginDescriptor)
 
+        val event = PluginLoadEvent(pluginDescriptor)
+        Hirasawa.eventHandler.callEvent(event)
+
         loadedPlugins[pluginDescriptor.name] = hirasawaPlugin
         hirasawaPlugin.onEnable()
     }
@@ -31,6 +33,10 @@ class PluginManager {
         }
 
         val plugin = loadedPlugins[name] ?: return false
+
+        val event = PluginUnloadEvent(plugin.pluginDescriptor)
+        Hirasawa.eventHandler.callEvent(event)
+
         Hirasawa.eventHandler.removeEvents(plugin)
         Hirasawa.chatEngine.removeCommands(plugin)
         plugin.onDisable()
