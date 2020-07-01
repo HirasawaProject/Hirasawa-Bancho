@@ -162,6 +162,11 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
             resultSet.getInt("beatmaps.ranks"), resultSet.getFloat("beatmaps.offset"))
     }
 
+    private fun resultSetToBeatmapSet(resultSet: ResultSet): BeatmapSet {
+        return BeatmapSet(resultSet.getInt("beatmapsets.id"), resultSet.getString("beatmapsets.artist"),
+            resultSet.getString("beatmapsets.title"), BeatmapStatus.fromId(resultSet.getInt("beatmapsets.status")))
+    }
+
     override fun getBeatmap(id: Int): Beatmap? {
         val query = "SELECT * FROM beatmaps WHERE id = ?"
         val statement = connection.prepareStatement(query)
@@ -401,6 +406,49 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
                 updateUserStats(userStats)
             }
         }
+    }
+
+    override fun getBeatmapSets(page: Int, limit: Int): ArrayList<BeatmapSet> {
+        val query = "SELECT * FROM beatmapsets LIMIT ?,?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, page * limit)
+        statement.setInt(2, (page + 1) * limit)
+
+        val beatmapSets = ArrayList<BeatmapSet>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            beatmapSets.add(resultSetToBeatmapSet(resultSet))
+        }
+
+        return beatmapSets
+    }
+
+    override fun getBeatmapSetAmount(): Int {
+        val query = "SELECT COUNT(*) FROM beatmapsets"
+        val statement = connection.prepareStatement(query)
+
+        val resultSet = statement.executeQuery()
+        if (resultSet.next()) {
+            return resultSet.getInt("count(*)")
+        } else {
+            return 0
+        }
+    }
+
+    override fun getBeatmatSetDifficulties(beatmapSet: BeatmapSet): ArrayList<Beatmap> {
+        val query = "SELECT * FROM beatmaps WHERE mapset_id = ?"
+        val statement = connection.prepareStatement(query)
+        statement.setInt(1, beatmapSet.id)
+
+        val beatmaps = ArrayList<Beatmap>()
+
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            beatmaps.add(resultSetToBeatmap(resultSet))
+        }
+
+        return beatmaps
     }
 
 }

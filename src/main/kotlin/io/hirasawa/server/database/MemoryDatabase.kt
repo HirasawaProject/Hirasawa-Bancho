@@ -190,4 +190,16 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
     override fun processGlobalLeaderboard(gameMode: GameMode) {
         TODO("Not yet implemented")
     }
+
+    override fun getBeatmapSets(page: Int, limit: Int): ArrayList<BeatmapSet> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBeatmapSetAmount(): Int {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBeatmatSetDifficulties(beatmapSet: BeatmapSet): ArrayList<Beatmap> {
+        TODO("Not yet implemented")
+    }
 }
