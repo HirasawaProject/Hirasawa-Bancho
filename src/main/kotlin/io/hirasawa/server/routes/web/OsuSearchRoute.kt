@@ -18,8 +18,8 @@ class OsuSearchRoute: Route {
             return
         }
 
-        val username = request.get["us"]
-        val password = request.get["ha"]
+        val username = request.get["u"]
+        val password = request.get["p"]
 
         if (username == null || password == null) {
             return
