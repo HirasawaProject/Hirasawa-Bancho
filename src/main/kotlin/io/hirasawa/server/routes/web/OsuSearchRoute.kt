@@ -18,12 +18,12 @@ class OsuSearchRoute: Route {
             return
         }
 
-        val username = request.get["u"]
-        val password = request.get["p"]
+        val username = request.get["u"] ?: return
+        val password = request.get["h"] ?: return
+        val query = request.get["q"] ?: return
+        val requestType = request.get["r"] ?: return
+        val mode = request.get["m"] ?: return
 
-        if (username == null || password == null) {
-            return
-        }
 
         if (!Hirasawa.database.authenticate(username, password)) {
             return
