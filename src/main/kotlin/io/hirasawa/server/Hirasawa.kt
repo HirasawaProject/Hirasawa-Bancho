@@ -1,7 +1,6 @@
 package io.hirasawa.server
 
 import com.google.gson.GsonBuilder
-import com.sun.org.apache.xpath.internal.operations.Bool
 import io.hirasawa.server.bancho.chat.ChatChannel
 import io.hirasawa.server.bancho.chat.ChatEngine
 import io.hirasawa.server.bancho.objects.BanchoUserMap
@@ -13,6 +12,7 @@ import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.Database
 import io.hirasawa.server.database.MemoryDatabase
+import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.pipeline.PipelineManager
 import io.hirasawa.server.plugin.PluginManager
@@ -54,6 +54,10 @@ class Hirasawa {
         }
 
         fun initDatabase(database: Database) {
+            val dbc = Hirasawa.config.database
+            org.jetbrains.exposed.sql.Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
+                driver = "com.mysql.jdbc.Driver", user = dbc.username, password = dbc.password)
+
             this.database = database
 
             this.permissionEngine = PermissionEngine()
