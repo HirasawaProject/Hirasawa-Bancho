@@ -45,7 +45,7 @@ abstract class Database(protected val credentials: DatabaseCredentials) {
     abstract fun updateBeatmap(newBeatmap: Beatmap)
     abstract fun updateUserStats(userStats: UserStats)
     abstract fun processGlobalLeaderboard(gameMode: GameMode)
-    abstract fun getBeatmapSets(page: Int, limit: Int): ArrayList<BeatmapSet>
+    abstract fun getBeatmapSets(page: Int, limit: Int, sort: String, search: String): ArrayList<BeatmapSet>
     abstract fun getBeatmapSetAmount(): Int
     abstract fun getBeatmatSetDifficulties(beatmapSet: BeatmapSet): ArrayList<Beatmap>
 }

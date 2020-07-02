@@ -191,7 +191,7 @@ class MemoryDatabase(): Database(DatabaseCredentials()) {
         TODO("Not yet implemented")
     }
 
-    override fun getBeatmapSets(page: Int, limit: Int): ArrayList<BeatmapSet> {
+    override fun getBeatmapSets(page: Int, limit: Int, sort: String, search: String): ArrayList<BeatmapSet> {
         TODO("Not yet implemented")
     }
 

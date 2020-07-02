@@ -1,6 +1,8 @@
 package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.handlers.OsuSearchBeatmapHandler
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.webserver.enums.ContentType
@@ -20,20 +22,53 @@ class OsuSearchRoute: Route {
 
         val username = request.get["u"] ?: return
         val password = request.get["h"] ?: return
-        val query = request.get["q"] ?: return
-        val requestType = request.get["r"] ?: return
-        val mode = request.get["m"] ?: return
+        val query = request.get["q"]?.replace("+", " ") ?: return
+        val requestType = RequestType.fromId(request.get["r"]?.toInt() ?: return) // TODO support request type
+        val mode = request.get["m"] ?: return // TODO support gamemode
 
 
         if (!Hirasawa.database.authenticate(username, password)) {
             return
         }
 
-        val beatmaps = Hirasawa.database.getBeatmapSets(0, 100)
+        var beatmapSort = "id"
+        var beatmapQuery = ""
+
+        when (query) {
+            "Newest" -> {
+                beatmapSort = "id"
+            }
+            "Top Rated" -> {
+                beatmapSort = "id"
+            }
+            "Most Played" -> {
+                beatmapSort = "id"
+            }
+            else -> {
+                beatmapQuery = query
+            }
+        }
+
+        val beatmaps = Hirasawa.database.getBeatmapSets(0, 100, beatmapSort, beatmapQuery)
 
         response.writeText("${Hirasawa.database.getBeatmapSetAmount()}\n")
         for (beatmap in beatmaps) {
             OsuSearchBeatmapHandler(beatmap).write(response.outputStream)
+        }
+    }
+
+    private enum class RequestType(val id: Int) {
+        ALL(4),
+        RANKED(0),
+        RANKED_PLAYED(7),
+        LOVED(8),
+        QUALIFIED(3),
+        PENDING(2),
+        GRAVEYARD(5);
+
+        companion object {
+            private val map = RequestType.values().associateBy(RequestType::id)
+            fun fromId(type: Int) = map[type]
         }
     }
 }

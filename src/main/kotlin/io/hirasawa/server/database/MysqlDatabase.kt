@@ -408,11 +408,14 @@ class MysqlDatabase(credentials: DatabaseCredentials) : Database(credentials) {
         }
     }
 
-    override fun getBeatmapSets(page: Int, limit: Int): ArrayList<BeatmapSet> {
-        val query = "SELECT * FROM beatmapsets LIMIT ?,?"
+    override fun getBeatmapSets(page: Int, limit: Int, sort: String, search: String):
+            ArrayList<BeatmapSet> {
+        val query = "SELECT * FROM beatmapsets WHERE title LIKE ? ORDER BY ? DESC LIMIT ?,?"
         val statement = connection.prepareStatement(query)
-        statement.setInt(1, page * limit)
-        statement.setInt(2, (page + 1) * limit)
+        statement.setString(1, "%$search%")
+        statement.setString(2, sort)
+        statement.setInt(3, page * limit)
+        statement.setInt(4, (page + 1) * limit)
 
         val beatmapSets = ArrayList<BeatmapSet>()
 
