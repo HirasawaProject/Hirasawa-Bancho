@@ -13,13 +13,12 @@ import io.hirasawa.server.plugin.PluginDescriptor
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.BeatmapDownloadRoute
 import io.hirasawa.server.routes.BeatmapRoute
+import io.hirasawa.server.routes.HomeRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
 import io.hirasawa.server.routes.web.OsuSearchRoute
 import io.hirasawa.server.routes.web.OsuSubmitModular
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
-import io.hirasawa.server.webserver.internalroutes.TestRoute
-import io.hirasawa.server.webserver.route.AssetNode
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -52,7 +51,7 @@ fun main() {
 
     val webserver = Hirasawa.webserver
 
-    webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, TestRoute())
+    webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, HomeRoute())
     webserver.addRoute(CommonDomains.OSU_BANCHO,"/", HttpMethod.POST, BanchoRoute())
     webserver.addRoute(CommonDomains.OSU_WEB,"/web/osu-osz2-getscores.php", HttpMethod.GET, OsuOsz2GetScoresRoute())
     webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular.php", HttpMethod.POST, OsuSubmitModular())
