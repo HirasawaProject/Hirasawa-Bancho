@@ -21,6 +21,7 @@ import java.util.*
 
 class BanchoRoute: Route {
     override fun handle(request: Request, response: Response) {
+        response.isLoggingEnabled = false
         if (request.headers["User-Agent"] != "osu!") {
             // Only osu! should be able to contact Bancho
             // Tell RouteForbidden to handle this request for us
