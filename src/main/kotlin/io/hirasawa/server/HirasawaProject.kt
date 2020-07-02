@@ -13,6 +13,7 @@ import io.hirasawa.server.plugin.PluginDescriptor
 import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.routes.BeatmapRoute
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
+import io.hirasawa.server.routes.web.OsuSearchRoute
 import io.hirasawa.server.routes.web.OsuSubmitModular
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
@@ -56,6 +57,7 @@ fun main() {
     webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular.php", HttpMethod.POST, OsuSubmitModular())
     webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular-selector.php", HttpMethod.POST, OsuSubmitModular())
     webserver.addRoute(CommonDomains.OSU_WEB,"/b/{beatmap}", HttpMethod.GET, BeatmapRoute())
+    webserver.addRoute(CommonDomains.OSU_WEB, "/web/osu-search.php", HttpMethod.GET, OsuSearchRoute())
 
     webserver.cloneRoutes(CommonDomains.OSU_WEB, Hirasawa.config.domain)
 
