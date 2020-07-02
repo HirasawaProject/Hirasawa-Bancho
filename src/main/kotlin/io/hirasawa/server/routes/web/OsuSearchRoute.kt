@@ -25,6 +25,7 @@ class OsuSearchRoute: Route {
         val query = request.get["q"]?.replace("+", " ") ?: return
         val requestType = RequestType.fromId(request.get["r"]?.toInt() ?: return) // TODO support request type
         val mode = request.get["m"] ?: return // TODO support gamemode
+        val page = request.get["p"]?.toInt() ?: 1
 
 
         if (!Hirasawa.database.authenticate(username, password)) {
@@ -49,7 +50,7 @@ class OsuSearchRoute: Route {
             }
         }
 
-        val beatmaps = Hirasawa.database.getBeatmapSets(0, 100, beatmapSort, beatmapQuery)
+        val beatmaps = Hirasawa.database.getBeatmapSets(page * 100, (page + 1) * 100, beatmapSort, beatmapQuery)
 
         response.writeText("${Hirasawa.database.getBeatmapSetAmount()}\n")
         for (beatmap in beatmaps) {
