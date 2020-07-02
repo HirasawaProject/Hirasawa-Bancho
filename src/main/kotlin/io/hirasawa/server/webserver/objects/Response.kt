@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver.objects
 
+import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpStatus
 import kotlinx.html.HTML
 import kotlinx.html.dom.create
@@ -20,5 +21,10 @@ data class Response (var httpStatus: HttpStatus, val outputStream: DataOutputStr
         val html = document.create.html{ block() }
         outputStream.writeBytes("<!DOCTYPE html>\n")
         outputStream.writeBytes(html.serialize())
+    }
+
+    fun redirect(url: String) {
+        httpStatus = HttpStatus.TEMPORARY_REDIRECT
+        headers[HttpHeader.LOCATION] = url
     }
 }
