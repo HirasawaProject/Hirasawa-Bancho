@@ -2,7 +2,6 @@ package io.hirasawa.server.webserver.internalroutes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.database.MemoryDatabase
 import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
 import io.hirasawa.server.webserver.Helper
@@ -23,9 +22,8 @@ import java.io.DataOutputStream
 import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
-    val database = MemoryDatabase()
     init {
-        Hirasawa.initDatabase(database)
+        Hirasawa.initDatabase(memoryDatabase = true)
     }
 
     fun requestRoute(username: String, password: String, gameMode: GameMode, beatmapHash: String,
@@ -55,10 +53,10 @@ class GetScoresRouteTests {
 
     @Test
     fun testDoesScoresRouteShowCorrectStatus() {
-        database.users.add(Helper.createUser(1, "CurrentStatus"))
+        val user = createUser("DSRSCS")
 
         val responseBuffer = ByteArrayOutputStream()
-        requestRoute("CurrentStatus", "", GameMode.OSU, "onethatdoesn'texist", responseBuffer)
+        requestRoute(user.username, "", GameMode.OSU, "onethatdoesn'texist", responseBuffer)
 
         val responseString = String(responseBuffer.toByteArray())
 
@@ -67,68 +65,65 @@ class GetScoresRouteTests {
 
     @Test
     fun testDoesLeaderboardShowOurScore() {
-        val user = createUser(1, "OurScore")
-        database.users.add(user)
-        database.scores.add(createScore(1, user, 1000, 1, 1, GameMode.OSU))
-        database.beatmaps.add(createBeatmap(1, 1, "foo", 1))
-        database.beatmapSets.add(createBeatmapSet(1, "Artist", "Song", BeatmapStatus.RANKED))
+        val user = createUser("DLSOS")
+
+        val beatmapSet = createBeatmapSet("Artist", "Song", BeatmapStatus.RANKED)
+        val beatmap = createBeatmap(beatmapSet.id, "DLSOS", 1)
+        createScore(user, 1000, 1, beatmap.id, GameMode.OSU)
 
         val responseBuffer = ByteArrayOutputStream()
-        requestRoute("OurScore", "", GameMode.OSU, "foo", responseBuffer)
+        requestRoute(user.username, "", GameMode.OSU, "DLSOS", responseBuffer)
 
         val responseString = String(responseBuffer.toByteArray())
 
-        assert(responseString.contains("1|OurScore|1000|100|50|100|300|0|10|10|1|0|1|1|0|1")) // User score
-        assert(responseString.contains("1|OurScore|1000|100|50|100|300|0|10|10|1|0|1|1|0|0")) // Leaderboard score
+        assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|1")) // User score
+        assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|0")) // Leaderboard score
     }
 
     @Test
     fun testDoesLeaderboardNotShowTaikoFromOsu() {
-        database.users.add(createUser(1, "NotOtherMods"))
+        val otherMods = createUser("DLNSTFO")
+
+        val beatmapSet = createBeatmapSet("Artist", "Song", BeatmapStatus.RANKED)
+        val beatmap = createBeatmap(beatmapSet.id, "DLNSTFO", 1)
 
 
-        database.beatmaps.add(createBeatmap(1, 1, "foo", 1))
-        database.beatmapSets.add(createBeatmapSet(1, "Artist", "Song", BeatmapStatus.RANKED))
+        val standardUser = createUser("DLNSTFOOsu")
+        createScore(standardUser, 1000, 1, beatmap.id, GameMode.OSU)
 
-
-        val standardUser = createUser(2, "osu")
-        database.scores.add(createScore(1, standardUser, 1000, 1, 1, GameMode.OSU))
-
-        val taikoUser = createUser(3, "Taiko")
-        database.scores.add(createScore(2, taikoUser, 1000, 1, 1, GameMode.TAIKO))
+        val taikoUser = createUser("DLNSTFOTaiko")
+        createScore(taikoUser, 1000, 1, beatmap.id, GameMode.TAIKO)
 
         val standardBuffer = ByteArrayOutputStream()
-        requestRoute("NotOtherMods", "", GameMode.OSU, "foo", standardBuffer)
+        requestRoute(otherMods.username, "", GameMode.OSU, "DLNSTFO", standardBuffer)
 
         val responseString = String(standardBuffer.toByteArray())
 
-        println(responseString)
-
-        assert(responseString.contains("osu"))
-        assertFalse(responseString.contains("Taiko"))
+        assert(responseString.contains(standardUser.username))
+        assertFalse(responseString.contains(taikoUser.username))
     }
 
     @Test
     fun testDoesLeaderboardNotShowOsuFromTaiko() {
-        database.users.add(createUser(1, "NotOtherMods"))
+        val otherMods = createUser("DLNSOFT")
 
 
-        database.beatmaps.add(createBeatmap(1, 1, "foo", 1))
-        database.beatmapSets.add(createBeatmapSet(1, "Artist", "Song", BeatmapStatus.RANKED))
+        val beatmapSet = createBeatmapSet("Artist", "Song", BeatmapStatus.RANKED)
+        val beatmap = createBeatmap(beatmapSet.id, "DLNSOFT", 1)
 
 
-        val standardUser = createUser(2, "osu")
-        database.scores.add(createScore(1, standardUser, 1000, 1, 1, GameMode.OSU))
+        val standardUser = createUser("DLNSOFTOsu")
+        createScore(standardUser, 1000, 1, beatmap.id, GameMode.OSU)
 
-        val taikoUser = createUser(3, "Taiko")
-        database.scores.add(createScore(2, taikoUser, 1000, 1, 1, GameMode.TAIKO))
+        val taikoUser = createUser("DLNSOFTTaiko")
+        createScore(taikoUser, 1000, 1, beatmap.id, GameMode.TAIKO)
 
         val standardBuffer = ByteArrayOutputStream()
-        requestRoute("NotOtherMods", "", GameMode.TAIKO, "foo", standardBuffer)
+        requestRoute(otherMods.username, "", GameMode.TAIKO, "DLNSOFT", standardBuffer)
 
         val responseString = String(standardBuffer.toByteArray())
 
-        assert(responseString.contains("Taiko"))
-        assertFalse(responseString.contains("osu"))
+        assert(responseString.contains(taikoUser.username))
+        assertFalse(responseString.contains(standardUser.username))
     }
 }

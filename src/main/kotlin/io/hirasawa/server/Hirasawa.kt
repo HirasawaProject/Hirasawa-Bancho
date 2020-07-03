@@ -23,7 +23,9 @@ import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.update.UpdateChecker
 import io.hirasawa.server.webserver.Webserver
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.io.File
@@ -64,10 +66,30 @@ class Hirasawa {
             }
         }
 
-        fun initDatabase() {
-            val dbc = Hirasawa.config.database
-            Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
-                driver = "com.mysql.jdbc.Driver", user = dbc.username, password = dbc.password)
+        fun initDatabase(memoryDatabase: Boolean = false) {
+            if (memoryDatabase) {
+                Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
+                // TODO switch transaction with SOON^TM database migration system
+                transaction {
+                    SchemaUtils.create(BeatmapsetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
+                        PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable)
+
+                    if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0) {
+                        UsersTable.insert {
+                            it[UsersTable.id] = EntityID(Hirasawa.config.banchoBotId, UsersTable)
+                            it[UsersTable.username] = "HirasawaBot"
+                            it[UsersTable.password] = ""
+                            it[UsersTable.banned] = false
+                            it[UsersTable.mutedUntil] = 0
+                        }
+                    }
+                }
+            } else {
+                val dbc = Hirasawa.config.database
+                Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
+                    driver = "com.mysql.jdbc.Driver", user = dbc.username, password = dbc.password)
+            }
+
 
             val permissionGroups = HashMap<String, PermissionGroup>()
 
