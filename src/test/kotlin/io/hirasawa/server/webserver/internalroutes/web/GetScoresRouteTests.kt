@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
+import java.lang.Exception
 import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
@@ -72,9 +73,11 @@ class GetScoresRouteTests {
         createScore(user, 1000, 1, beatmap.id, GameMode.OSU)
 
         val responseBuffer = ByteArrayOutputStream()
-        requestRoute(user.username, "", GameMode.OSU, "DLSOS", responseBuffer)
+        requestRoute(user.username, "", GameMode.OSU, beatmap.hash, responseBuffer)
 
         val responseString = String(responseBuffer.toByteArray())
+
+        throw Exception(responseString)
 
         assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|1")) // User score
         assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|0")) // Leaderboard score
