@@ -77,6 +77,8 @@ class GetScoresRouteTests {
 
         val responseString = String(responseBuffer.toByteArray())
 
+        println(responseString)
+
         assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|1")) // User score
         assert(responseString.contains("1|${user.username}|1000|0|50|100|300|0|12|11|1|0|4|1|0|0")) // Leaderboard score
     }
