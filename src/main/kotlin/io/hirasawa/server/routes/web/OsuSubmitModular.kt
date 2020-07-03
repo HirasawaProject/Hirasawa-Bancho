@@ -1,8 +1,12 @@
 package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.objects.UserStats
+import io.hirasawa.server.database.tables.ScoresTable
+import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.handlers.ScoreHandler
+import io.hirasawa.server.objects.Score
 import io.hirasawa.server.plugin.event.web.ScoreSubmitEvent
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
@@ -17,6 +21,9 @@ import org.bouncycastle.crypto.paddings.ZeroBytePadding
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.encoders.Base64
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 import java.time.Instant
 
@@ -41,7 +48,7 @@ class OsuSubmitModular: Route {
             return
         }
 
-        if (Hirasawa.database.authenticate(handler.username, request.post["pass"] ?: "")) {
+        if (Hirasawa.authenticate(handler.username, request.post["pass"] ?: "")) {
             val score = handler.score!!
 
             val event = ScoreSubmitEvent(score)
@@ -58,7 +65,12 @@ class OsuSubmitModular: Route {
                 }
             }
 
-            val topScore = Hirasawa.database.getUserScore(score.beatmap, score.gameMode, score.user)
+            val topScore = Hirasawa.databaseToObject<Score>(Score::class, transaction {
+                ScoresTable.select {
+                    (ScoresTable.beatmapId eq score.beatmapId) and (ScoresTable.gamemode eq score.gameMode.ordinal) and
+                            (ScoresTable.userId eq score.user.id)
+                }.firstOrNull()
+            })
 
             score.timestamp = Instant.now().epochSecond.toInt()
 
@@ -68,18 +80,44 @@ class OsuSubmitModular: Route {
                     return
                 }
 
-                Hirasawa.database.removeScore(topScore)
+                transaction {
+                    ScoresTable.deleteWhere(1) { ScoresTable.id eq score.id }
+                }
             }
 
             Hirasawa.pipeline.queue(Runnable {
-                Hirasawa.database.submitScore(score)
-                Hirasawa.database.processLeaderboard(score.beatmap, score.gameMode)
+                transaction {
+                    ScoresTable.insert {
+                        it[ScoresTable.userId] = score.user.id
+                        it[ScoresTable.score] = score.score
+                        it[ScoresTable.combo] = score.combo
+                        it[ScoresTable.count50] = score.count50
+                        it[ScoresTable.count100] = score.count100
+                        it[ScoresTable.count300] = score.count300
+                        it[ScoresTable.countMiss] = score.countMiss
+                        it[ScoresTable.countKatu] = score.countKatu
+                        it[ScoresTable.countGeki] = score.countGeki
+                        it[ScoresTable.fullCombo] = score.fullCombo
+                        it[ScoresTable.mods] = score.mods
+                        it[ScoresTable.timestamp] = score.timestamp
+                        it[ScoresTable.beatmapId] = score.beatmapId
+                        it[ScoresTable.gamemode] = score.gameMode.ordinal
+                        it[ScoresTable.rank] = score.rank
+                        it[ScoresTable.accuracy] = score.accuracy
+                    }
+                }
+                Hirasawa.processLeaderboard(score.beatmap, score.gameMode)
 
                 try {
                     var rankedScore = 0L
                     var scoreCount = 0
                     var accuracyTotal = 0F
-                    for (userScore in Hirasawa.database.getUserScores(score.gameMode, score.user)) {
+                    transaction {
+                        ScoresTable.select {
+                            (ScoresTable.gamemode eq score.gameMode.ordinal) and (ScoresTable.userId eq score.user.id)
+                        }
+                    }.forEach {
+                        val userScore = Score(it)
                         scoreCount++
                         rankedScore += userScore.score
                         accuracyTotal += userScore.accuracy
@@ -87,20 +125,31 @@ class OsuSubmitModular: Route {
 
                     val accuracy = accuracyTotal / scoreCount
 
-                    val userStats = Hirasawa.database.getUserStats(score.user, score.gameMode) ?: return@Runnable
+                    val userStats = UserStats(transaction {
+                        UserStatsTable.select {
+                            (UserStatsTable.userId eq score.user.id) and
+                                    (UserStatsTable.gamemode eq score.gameMode.ordinal)
+                        }.first()
+                    })
 
                     userStats.totalScore += score.score
                     userStats.rankedScore = rankedScore
                     userStats.accuracy = accuracy
                     userStats.playcount++
 
-                    Hirasawa.database.updateUserStats(userStats)
+                    UserStatsTable.update({ (UserStatsTable.userId eq userStats.userId) and
+                            (UserStatsTable.gamemode eq userStats.gameMode.ordinal) }) {
+                        it[UserStatsTable.totalScore] = userStats.totalScore
+                        it[UserStatsTable.rankedScore] = userStats.rankedScore
+                        it[UserStatsTable.accuracy] = userStats.accuracy
+                        it[UserStatsTable.playcount] = userStats.playcount
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
 
 
-                Hirasawa.database.processGlobalLeaderboard(score.gameMode)
+                Hirasawa.processGlobalLeaderboard(score.gameMode)
 
             })
 

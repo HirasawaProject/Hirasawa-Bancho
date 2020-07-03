@@ -4,35 +4,25 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
-import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.SendUserStatsPacket
-import io.hirasawa.server.database.MemoryDatabase
 import io.hirasawa.server.webserver.Helper.Companion.createUser
 import io.hirasawa.server.webserver.Helper.Companion.createUserStats
 import io.hirasawa.server.webserver.Helper.Companion.userToBanchoUser
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.*
 
 class PacketTests {
-    val database = MemoryDatabase()
     init {
-        Hirasawa.initDatabase(database)
+        Hirasawa.initDatabase(memoryDatabase = true)
     }
 
     @Test
     fun testDoesChangingGamemodeSwitchUserStats() {
-        val user = createUser(1, "Username")
-        val osuStats = createUserStats(1, GameMode.OSU)
-        val taikoStats = createUserStats(1, GameMode.TAIKO)
-
-        database.users.add(user)
-        database.userStats[user.id] = EnumMap(GameMode::class.java)
-        database.userStats[user.id]?.set(GameMode.OSU, osuStats)
-        database.userStats[user.id]?.set(GameMode.TAIKO, taikoStats)
+        val user = createUser("DCGSUS")
+        val osuStats = createUserStats(user.id, GameMode.OSU)
+        val taikoStats = createUserStats(user.id, GameMode.TAIKO)
 
         val payload = ByteArrayOutputStream()
         val writer = OsuWriter(payload)
