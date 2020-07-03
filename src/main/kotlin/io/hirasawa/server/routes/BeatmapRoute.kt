@@ -19,12 +19,12 @@ class BeatmapRoute: Route {
         val beatmapId = request.routeParameters["beatmap"]?.toInt() ?: return
         val mode = GameMode.values()[request.get["m"]?.toInt() ?: 0]
 
-        val beatmap = Beatmap(transaction {
+        val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
             BeatmapsTable.select {
                 BeatmapsTable.id eq beatmapId
-            }.first()
+            }.firstOrNull()
         })
-        val beatmapset = beatmap.beatmapSet
+        val beatmapset = beatmap?.beatmapSet
 
         response.writeRawHtml {
             head {

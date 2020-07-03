@@ -20,7 +20,6 @@ import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -51,10 +50,10 @@ class OsuOsz2GetScoresRoute: Route {
             val preloadEvent = ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode)
             Hirasawa.eventHandler.callEvent(preloadEvent)
 
-            val beatmap = Beatmap(transaction {
-                BeatmapsTable.select { BeatmapsTable.hash eq beatmapHash }.first()
+            val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
+                BeatmapsTable.select { BeatmapsTable.hash eq beatmapHash }.firstOrNull()
             })
-            val beatmapSet = beatmap.beatmapSet
+            val beatmapSet = beatmap?.beatmapSet
 
             if (beatmap == null || beatmapSet == null) {
                 val failEvent = ClientLeaderboardFailEvent(user, beatmapHash, gamemode)
@@ -68,11 +67,11 @@ class OsuOsz2GetScoresRoute: Route {
 
             GetScoresHeaderHandler(false, beatmap, beatmapSet).write(response.outputStream)
 
-            val userScore = Score(transaction {
-                ScoresTable.select {
+            val userScore = Hirasawa.databaseToObject<Score>(Score::class, transaction {
+                (ScoresTable innerJoin UsersTable).select {
                     (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq gamemode.ordinal) and
                             (ScoresTable.userId eq user.id)
-                }.first()
+                }.firstOrNull()
             })
 
             if (userScore != null) {
@@ -82,7 +81,7 @@ class OsuOsz2GetScoresRoute: Route {
             }
 
             transaction {
-                ScoresTable.select {
+                (ScoresTable leftJoin UsersTable).select {
                     (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq gamemode.ordinal)
                 }.limit(50).sortedByDescending { ScoresTable.score }
             }.forEachIndexed { index, element ->

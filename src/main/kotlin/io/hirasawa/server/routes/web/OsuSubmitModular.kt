@@ -65,11 +65,11 @@ class OsuSubmitModular: Route {
                 }
             }
 
-            val topScore = Score(transaction {
+            val topScore = Hirasawa.databaseToObject<Score>(Score::class, transaction {
                 ScoresTable.select {
                     (ScoresTable.beatmapId eq score.beatmapId) and (ScoresTable.gamemode eq score.gameMode.ordinal) and
                             (ScoresTable.userId eq score.user.id)
-                }.first()
+                }.firstOrNull()
             })
 
             score.timestamp = Instant.now().epochSecond.toInt()
@@ -129,8 +129,8 @@ class OsuSubmitModular: Route {
                         UserStatsTable.select {
                             (UserStatsTable.userId eq score.user.id) and
                                     (UserStatsTable.gamemode eq score.gameMode.ordinal)
-                        }
-                    }.first())
+                        }.first()
+                    })
 
                     userStats.totalScore += score.score
                     userStats.rankedScore = rankedScore

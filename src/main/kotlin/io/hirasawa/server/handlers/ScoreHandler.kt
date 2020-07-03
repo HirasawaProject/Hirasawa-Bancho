@@ -1,5 +1,6 @@
 package io.hirasawa.server.handlers
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.BeatmapsTable
@@ -54,15 +55,15 @@ class ScoreHandler(encodedScore: String) {
         date = scoreArray[16]
         version = scoreArray[17]
 
-        val user = BanchoUser(transaction {
+        val user = Hirasawa.databaseToObject<BanchoUser>(BanchoUser::class, transaction {
             UsersTable.select {
                 UsersTable.username eq username
             }
-        }.first())
-        val beatmap = Beatmap(transaction {
+        }.firstOrNull())
+        val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
             BeatmapsTable.select {
                 BeatmapsTable.hash eq fileChecksum
-            }.first()
+            }.firstOrNull()
         })
 
         if (user != null && beatmap != null) {

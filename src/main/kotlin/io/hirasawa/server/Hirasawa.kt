@@ -23,11 +23,8 @@ import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.update.UpdateChecker
 import io.hirasawa.server.webserver.Webserver
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.mindrot.jbcrypt.BCrypt
 import java.io.File
 import java.io.FileReader
@@ -36,6 +33,9 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createType
+import kotlin.reflect.typeOf
 
 class Hirasawa {
     companion object {
@@ -66,7 +66,7 @@ class Hirasawa {
 
         fun initDatabase() {
             val dbc = Hirasawa.config.database
-            val db = org.jetbrains.exposed.sql.Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
+            Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
                 driver = "com.mysql.jdbc.Driver", user = dbc.username, password = dbc.password)
 
             val permissionGroups = HashMap<String, PermissionGroup>()
@@ -83,10 +83,10 @@ class Hirasawa {
             val hirasawaBotUser = BanchoUser(transaction {
                 UsersTable.select {
                     UsersTable.id eq Hirasawa.config.banchoBotId
-                }.first()
+                }.firstOrNull() ?: throw(Exception("User not found"))
             })
 
-            this.hirasawaBot = HirasawaBot(hirasawaBotUser ?: throw(Exception("User not found")))
+            this.hirasawaBot = HirasawaBot(hirasawaBotUser)
         }
 
         private fun loadConfig(): HirasawaConfig {
@@ -112,8 +112,8 @@ class Hirasawa {
 
         fun authenticate(username: String, password: String): Boolean {
             val result = transaction {
-                UsersTable.select { UsersTable.username eq username }.first()
-            }
+                UsersTable.select { UsersTable.username eq username }.firstOrNull()
+            } ?: return false
 
             return BCrypt.checkpw(password, result[UsersTable.password])
         }
@@ -167,6 +167,26 @@ class Hirasawa {
                     }
                 }
             }
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> databaseToObject(dataType: KClass<*>, resultRow: ResultRow?): T? {
+            if (resultRow == null) {
+                return null
+            }
+            for (constructor in dataType.constructors) {
+                if (constructor.parameters.first().type == ResultRow::class.createType()) {
+                    val instance = constructor.call(resultRow)
+                    if (instance::class.createType() == dataType.createType()) {
+                        return instance as T
+                    } else {
+                        return null
+                    }
+
+                }
+            }
+
+            return null
         }
     }
 }
