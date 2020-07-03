@@ -2,18 +2,29 @@ package io.hirasawa.server.routes
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.database.tables.BeatmapsTable
+import io.hirasawa.server.database.tables.ScoresTable
+import io.hirasawa.server.objects.Beatmap
+import io.hirasawa.server.objects.Score
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.Route
 import kotlinx.html.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class BeatmapRoute: Route {
     override fun handle(request: Request, response: Response) {
-        val beatmapId = request.routeParameters["beatmap"]!!
+        val beatmapId = request.routeParameters["beatmap"]?.toInt() ?: return
         val mode = GameMode.values()[request.get["m"]?.toInt() ?: 0]
 
-        val beatmap = Hirasawa.database.getBeatmap(beatmapId.toInt())
-        val beatmapset = beatmap?.beatmapSet
+        val beatmap = Beatmap(transaction {
+            BeatmapsTable.select {
+                BeatmapsTable.id eq beatmapId
+            }.first()
+        })
+        val beatmapset = beatmap.beatmapSet
 
         response.writeRawHtml {
             head {
@@ -67,7 +78,12 @@ class BeatmapRoute: Route {
                             }
                         }
 
-                        for (score in Hirasawa.database.getBeatmapScores(beatmap, mode, 50)) {
+                        transaction {
+                            ScoresTable.select {
+                                (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq mode.ordinal)
+                            }.limit(50).sortedByDescending { ScoresTable.score }
+                        }.forEach {
+                            val score = Score(it)
                             tr {
                                 td {
                                     text(score.rank)

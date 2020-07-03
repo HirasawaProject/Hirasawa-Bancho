@@ -5,9 +5,6 @@ import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
-import io.hirasawa.server.commands.HelpCommand
-import io.hirasawa.server.commands.TestCommand
-import io.hirasawa.server.database.MysqlDatabase
 import io.hirasawa.server.plugin.InternalPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
 import io.hirasawa.server.routes.BanchoRoute
@@ -26,7 +23,7 @@ import java.util.concurrent.TimeUnit
 
 fun main() {
     println("Starting Hirasawa v${Hirasawa.version}")
-    Hirasawa.initDatabase(MysqlDatabase(Hirasawa.config.database))
+    Hirasawa.initDatabase()
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE] = SendIrcMessagePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_IRC_MESSAGE_PRIVATE] = SendIrcMessagePrivatePacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_CHANNEL_JOIN] = ChannelJoinPacket()

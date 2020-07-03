@@ -2,8 +2,11 @@ package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.database.tables.BeatmapsetsTable
 import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.handlers.OsuSearchBeatmapHandler
+import io.hirasawa.server.objects.Beatmap
+import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -11,6 +14,9 @@ import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.Route
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class OsuSearchRoute: Route {
     override fun handle(request: Request, response: Response) {
@@ -28,31 +34,39 @@ class OsuSearchRoute: Route {
         val page = request.get["p"]?.toInt() ?: 1
 
 
-        if (!Hirasawa.database.authenticate(username, password)) {
+        if (!Hirasawa.authenticate(username, password)) {
             return
         }
 
-        var beatmapSort = "id"
+        var beatmapSort = BeatmapsetsTable.id
         var beatmapQuery = ""
 
         when (query) {
             "Newest" -> {
-                beatmapSort = "id"
+                beatmapSort = BeatmapsetsTable.id
             }
             "Top Rated" -> {
-                beatmapSort = "id"
+                beatmapSort = BeatmapsetsTable.id
             }
             "Most Played" -> {
-                beatmapSort = "id"
+                beatmapSort = BeatmapsetsTable.id
             }
             else -> {
                 beatmapQuery = query
             }
         }
 
-        val beatmaps = Hirasawa.database.getBeatmapSets(page * 100, (page + 1) * 100, beatmapSort, beatmapQuery)
+        val beatmaps = ArrayList<BeatmapSet>()
 
-        response.writeText("${Hirasawa.database.getBeatmapSetAmount()}\n")
+        transaction {
+            BeatmapsetsTable.select {
+                (BeatmapsetsTable.title like "%$beatmapQuery%") or (BeatmapsetsTable.artist like "%$beatmapQuery%")
+            }.limit(page * 100, (page + 1) * 100).sortedBy { beatmapSort }.forEach {
+                beatmaps.add(BeatmapSet(it))
+            }
+        }
+
+        response.writeText("${beatmaps.size}\n")
         for (beatmap in beatmaps) {
             OsuSearchBeatmapHandler(beatmap).write(response.outputStream)
         }
