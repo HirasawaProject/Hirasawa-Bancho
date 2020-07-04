@@ -16,6 +16,7 @@ import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
+import io.hirasawa.server.osuapi.OsuApi
 import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.permissions.PermissionGroup
 import io.hirasawa.server.pipeline.PipelineManager
@@ -52,6 +53,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val chatEngine = ChatEngine()
         val pipeline = PipelineManager()
+        val osuApi = OsuApi(config.osuApiKey)
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
