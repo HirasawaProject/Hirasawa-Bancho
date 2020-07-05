@@ -8,7 +8,8 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-data class BeatmapSet(val id: Int, val artist: String, val title: String, val status: BeatmapStatus) {
+data class BeatmapSet(val id: Int, val artist: String, val title: String, val status: BeatmapStatus, val osuId: Int,
+                      val mapperName: String, val genreId: Int, val languageId: Int, val rating: Float) {
     val difficulties: ArrayList<Beatmap> by lazy {
         val difficulties = ArrayList<Beatmap>()
         transaction {
@@ -20,5 +21,7 @@ data class BeatmapSet(val id: Int, val artist: String, val title: String, val st
     }
 
     constructor(result: ResultRow): this(result[BeatmapsetsTable.id].value, result[BeatmapsetsTable.artist],
-        result[BeatmapsetsTable.title], BeatmapStatus.fromId(result[BeatmapsetsTable.status]))
+        result[BeatmapsetsTable.title], BeatmapStatus.fromId(result[BeatmapsetsTable.status]),
+        result[BeatmapsetsTable.osuId], result[BeatmapsetsTable.mapperName], result[BeatmapsetsTable.genreId],
+        result[BeatmapsetsTable.languageId], result[BeatmapsetsTable.rating])
 }
