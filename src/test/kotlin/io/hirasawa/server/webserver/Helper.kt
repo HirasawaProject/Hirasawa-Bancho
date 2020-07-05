@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 class Helper {
     companion object {
@@ -64,6 +65,22 @@ class Helper {
                     it[BeatmapsTable.hash] = hash
                     it[BeatmapsTable.ranks] = ranks
                     it[BeatmapsTable.offset] = 0F
+                    it[BeatmapsTable.osuId] = Random.nextInt()
+                    it[BeatmapsTable.totalLength] = 0
+                    it[BeatmapsTable.hitLength] = 0
+                    it[BeatmapsTable.circleSize] = 0F
+                    it[BeatmapsTable.overallDifficulty] = 0F
+                    it[BeatmapsTable.approachRate] = 0F
+                    it[BeatmapsTable.healthDrain] = 0F
+                    it[BeatmapsTable.gamemode] = GameMode.OSU.ordinal
+                    it[BeatmapsTable.countNormal] = 0
+                    it[BeatmapsTable.countSlider] = 0
+                    it[BeatmapsTable.countSpinner] = 0
+                    it[BeatmapsTable.bpm] = 0F
+                    it[BeatmapsTable.hasStoryboard] = false
+                    it[BeatmapsTable.maxCombo] = 0
+                    it[BeatmapsTable.playCount] = 0
+                    it[BeatmapsTable.passCount] = 0
                 }
 
                 BeatmapsTable.select { BeatmapsTable.id eq beatmapId }.first()
@@ -76,6 +93,11 @@ class Helper {
                     it[BeatmapsetsTable.artist] = artist
                     it[BeatmapsetsTable.title] = title
                     it[BeatmapsetsTable.status] = status.id
+                    it[BeatmapsetsTable.osuId] = Random.nextInt()
+                    it[BeatmapsetsTable.mapperName] = "Unknown"
+                    it[BeatmapsetsTable.genreId] = 0
+                    it[BeatmapsetsTable.languageId] = 0
+                    it[BeatmapsetsTable.rating] = 0F
                 }
 
                 BeatmapsetsTable.select { BeatmapsetsTable.id eq mapsetId }.first()
