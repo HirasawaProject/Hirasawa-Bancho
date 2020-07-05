@@ -16,7 +16,7 @@ data class Beatmap(var id: Int, var mapsetId: Int, var difficulty: String, var h
     val beatmapSet by lazy {
         BeatmapSet(transaction {
             BeatmapsetsTable.select {
-                BeatmapsetsTable.id eq mapsetId
+                BeatmapsetsTable.osuId eq mapsetId
             }.first()
         })
     }

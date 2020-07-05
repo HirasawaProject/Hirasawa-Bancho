@@ -21,7 +21,7 @@ class BeatmapRoute: Route {
 
         val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
             BeatmapsTable.select {
-                BeatmapsTable.id eq beatmapId
+                BeatmapsTable.osuId eq beatmapId
             }.firstOrNull()
         })
         val beatmapset = beatmap?.beatmapSet

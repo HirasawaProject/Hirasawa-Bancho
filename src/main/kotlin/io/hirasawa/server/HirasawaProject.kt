@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
+import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.plugin.InternalPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
 import io.hirasawa.server.routes.BanchoRoute
@@ -17,6 +18,8 @@ import io.hirasawa.server.routes.web.OsuSearchRoute
 import io.hirasawa.server.routes.web.OsuSubmitModular
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
