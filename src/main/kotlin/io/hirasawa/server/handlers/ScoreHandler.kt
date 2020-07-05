@@ -58,8 +58,8 @@ class ScoreHandler(encodedScore: String) {
         val user = Hirasawa.databaseToObject<BanchoUser>(BanchoUser::class, transaction {
             UsersTable.select {
                 UsersTable.username eq username
-            }
-        }.firstOrNull())
+            }.firstOrNull()
+        })
         val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
             BeatmapsTable.select {
                 BeatmapsTable.hash eq fileChecksum
