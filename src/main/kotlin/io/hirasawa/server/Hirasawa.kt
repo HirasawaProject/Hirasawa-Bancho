@@ -144,21 +144,19 @@ class Hirasawa {
 
         // TODO move out
         fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode) {
-            var rank = 1
+            var rank = 0
 
-            val scores = transaction {
-                ScoresTable.select {
+            transaction {
+                (ScoresTable innerJoin UsersTable).select {
                     (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq gameMode.ordinal)
-                }
-            }
-
-            for (scoreData in scores) {
-                val score = Score(scoreData)
-                if (!score.user.isBanned) {
-                    score.rank = rank++
-                    transaction {
-                        ScoresTable.update({ ScoresTable.id eq score.id }) {
-                            it[ScoresTable.rank] = score.rank
+                }.forEach {
+                    val score = Score(it)
+                    if (!score.user.isBanned) {
+                        score.rank = ++rank
+                        transaction {
+                            ScoresTable.update({ ScoresTable.id eq score.id }) {
+                                it[ScoresTable.rank] = score.rank
+                            }
                         }
                     }
                 }
@@ -166,7 +164,7 @@ class Hirasawa {
 
             transaction {
                 BeatmapsTable.update({ BeatmapsTable.id eq beatmap.id }) {
-                    it[ranks] = scores.fetchSize!!
+                    it[ranks] = rank
                 }
             }
         }

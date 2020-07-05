@@ -4,6 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.database.tables.ScoresTable
 import io.hirasawa.server.database.tables.UserStatsTable
+import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.handlers.ScoreHandler
 import io.hirasawa.server.objects.Score
@@ -66,7 +67,7 @@ class OsuSubmitModular: Route {
             }
 
             val topScore = Hirasawa.databaseToObject<Score>(Score::class, transaction {
-                ScoresTable.select {
+                (ScoresTable innerJoin UsersTable).select {
                     (ScoresTable.beatmapId eq score.beatmapId) and (ScoresTable.gamemode eq score.gameMode.ordinal) and
                             (ScoresTable.userId eq score.user.id)
                 }.firstOrNull()
@@ -108,44 +109,40 @@ class OsuSubmitModular: Route {
                 }
                 Hirasawa.processLeaderboard(score.beatmap, score.gameMode)
 
-                try {
-                    var rankedScore = 0L
-                    var scoreCount = 0
-                    var accuracyTotal = 0F
-                    transaction {
-                        ScoresTable.select {
-                            (ScoresTable.gamemode eq score.gameMode.ordinal) and (ScoresTable.userId eq score.user.id)
-                        }
+                var rankedScore = 0L
+                var scoreCount = 0
+                var accuracyTotal = 0F
+                transaction {
+                    ScoresTable.select {
+                        (ScoresTable.gamemode eq score.gameMode.ordinal) and (ScoresTable.userId eq score.user.id)
                     }.forEach {
                         val userScore = Score(it)
                         scoreCount++
                         rankedScore += userScore.score
                         accuracyTotal += userScore.accuracy
                     }
+                }
 
-                    val accuracy = accuracyTotal / scoreCount
+                val accuracy = accuracyTotal / scoreCount
 
-                    val userStats = UserStats(transaction {
-                        UserStatsTable.select {
-                            (UserStatsTable.userId eq score.user.id) and
-                                    (UserStatsTable.gamemode eq score.gameMode.ordinal)
-                        }.first()
-                    })
+                val userStats = UserStats(transaction {
+                    UserStatsTable.select {
+                        (UserStatsTable.userId eq score.user.id) and
+                                (UserStatsTable.gamemode eq score.gameMode.ordinal)
+                    }.first()
+                })
 
-                    userStats.totalScore += score.score
-                    userStats.rankedScore = rankedScore
-                    userStats.accuracy = accuracy
-                    userStats.playcount++
+                userStats.totalScore += score.score
+                userStats.rankedScore = rankedScore
+                userStats.accuracy = accuracy
+                userStats.playcount++
 
-                    UserStatsTable.update({ (UserStatsTable.userId eq userStats.userId) and
-                            (UserStatsTable.gamemode eq userStats.gameMode.ordinal) }) {
-                        it[UserStatsTable.totalScore] = userStats.totalScore
-                        it[UserStatsTable.rankedScore] = userStats.rankedScore
-                        it[UserStatsTable.accuracy] = userStats.accuracy
-                        it[UserStatsTable.playcount] = userStats.playcount
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                UserStatsTable.update({ (UserStatsTable.userId eq userStats.userId) and
+                        (UserStatsTable.gamemode eq userStats.gameMode.ordinal) }) {
+                    it[UserStatsTable.totalScore] = userStats.totalScore
+                    it[UserStatsTable.rankedScore] = userStats.rankedScore
+                    it[UserStatsTable.accuracy] = userStats.accuracy
+                    it[UserStatsTable.playcount] = userStats.playcount
                 }
 
 

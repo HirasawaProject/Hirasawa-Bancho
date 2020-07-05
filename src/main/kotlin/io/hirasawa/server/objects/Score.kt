@@ -24,7 +24,7 @@ data class Score(var id: Int, var user: User, var score: Int, var combo: Int, va
     val beatmap: Beatmap by lazy {
         Beatmap(transaction {
             BeatmapsTable.select {
-                BeatmapsTable.id eq beatmapId
+                BeatmapsTable.osuId eq beatmapId
             }.first()
         })
     }
