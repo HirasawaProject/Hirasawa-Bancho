@@ -3,6 +3,8 @@ package io.hirasawa.server.bancho.user
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.command.CommandSender
 import io.hirasawa.server.database.tables.FriendsTable
+import io.hirasawa.server.database.tables.PermissionGroupUsersTable
+import io.hirasawa.server.database.tables.PermissionGroupsTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.permissions.PermissionGroup
 import org.jetbrains.exposed.sql.select
@@ -26,7 +28,18 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
 
         arrayList
     }
-    val permissionGroups = arrayListOf(PermissionGroup("admin"))
+    val permissionGroups: ArrayList<PermissionGroup> by lazy {
+        val permissionGroups = ArrayList<PermissionGroup>()
+        transaction {
+            (PermissionGroupUsersTable innerJoin PermissionGroupsTable).select {
+                PermissionGroupUsersTable.userId eq id
+            }.forEach {
+                permissionGroups.add(Hirasawa.permissionEngine.getGroup(it[PermissionGroupsTable.name]))
+            }
+        }
+
+        permissionGroups
+    }
 
     fun hasPermission(node: String): Boolean {
         return Hirasawa.permissionEngine.hasPermission(this, node)
