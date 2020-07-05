@@ -74,7 +74,7 @@ class Hirasawa {
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
                     SchemaUtils.create(BeatmapsetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
-                        PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable)
+                        PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0) {
                         UsersTable.insert {
