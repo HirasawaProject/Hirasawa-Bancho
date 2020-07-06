@@ -11,9 +11,9 @@ class OsuSearchBeatmapHandler(private val beatmapSet: BeatmapSet) {
         outputStream.writeWithSeparator("${beatmapSet.id}.osz") // filename
         outputStream.writeWithSeparator(beatmapSet.artist)
         outputStream.writeWithSeparator(beatmapSet.title)
-        outputStream.writeWithSeparator("Unknown") // TODO mapper
+        outputStream.writeWithSeparator(beatmapSet.mapperName)
         outputStream.writeWithSeparator("1")
-        outputStream.writeWithSeparator("10") // TODO rating
+        outputStream.writeWithSeparator("${beatmapSet.rating}")
 //        outputStream.writeWithSeparator(Instant.now().toString()) // TODO last update
         outputStream.writeWithSeparator("2020-07-01T13:42:33+00:00")
         outputStream.writeWithSeparator("${beatmapSet.id}")
