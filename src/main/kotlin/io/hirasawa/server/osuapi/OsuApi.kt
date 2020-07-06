@@ -18,7 +18,7 @@ class OsuApi(private val key: String) {
         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
         .create()
 
-    fun getBeatmaps(since: Instant = Instant.EPOCH,
+    fun getBeatmaps(since: Instant? = null,
                     mapsetId: Int? = null,
                     beatmapId: Int? = null,
                     userId: Int? = null,
