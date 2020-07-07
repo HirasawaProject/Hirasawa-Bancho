@@ -28,6 +28,8 @@ enum class BanchoPacketType(val id: Short) {
 
     BANCHO_PROTOCOL_NEGOTIATION(75),
 
+    BANCHO_TITLE_UPDATE(76),
+
     OSU_CHANNEL_LEAVE(78),
 
     BANCHO_USER_PRESENCE(83),
