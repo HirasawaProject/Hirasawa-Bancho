@@ -2,9 +2,21 @@ package io.hirasawa.server.permissions
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.database.tables.PermissionGroupsTable
+import io.hirasawa.server.database.tables.PermissionNodesTable
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionScope
 
-class PermissionEngine {
-    val permissionGroups = Hirasawa.database.getPermissionGroups()
+class PermissionEngine(val permissionGroups: HashMap<String, PermissionGroup>) {
+    init {
+        transaction {
+            (PermissionNodesTable leftJoin PermissionGroupsTable).selectAll().forEach {
+                permissionGroups[it[PermissionGroupsTable.name]]?.addPermission(it[PermissionNodesTable.node])
+            }
+        }
+    }
 
     fun addGroup(group: PermissionGroup) {
         permissionGroups[group.name] = group

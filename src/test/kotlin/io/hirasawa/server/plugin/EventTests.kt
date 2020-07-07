@@ -2,6 +2,8 @@ package io.hirasawa.server.plugin
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.plugin.event.*
+import io.hirasawa.server.plugin.event.plugin.PluginLoadEvent
+import io.hirasawa.server.plugin.event.plugin.PluginUnloadEvent
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -84,6 +86,39 @@ class EventTests {
         Hirasawa.eventHandler.callEvent(event)
 
         assertEquals(0, event.test)
+    }
+
+    @Test
+    fun testPluginLoadUnloadEvents() {
+        val testPlugin = object: HirasawaPlugin() {
+            override fun onEnable() {}
+            override fun onDisable() {}
+        }
+
+        var loaded = false
+        var unloaded = false
+
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler
+            @Suppress("UNUSED_PARAMETER")
+            fun onTestEvent(pluginLoadEvent: PluginLoadEvent) {
+                loaded = true
+            }
+        }, this.plugin)
+
+        Hirasawa.eventHandler.registerEvent(object: EventListener {
+            @EventHandler
+            @Suppress("UNUSED_PARAMETER")
+            fun onTestEvent(pluginUnloadEvent: PluginUnloadEvent) {
+                unloaded = true
+            }
+        }, this.plugin)
+
+        Hirasawa.pluginManager.loadPlugin(testPlugin, PluginDescriptor("name", "version", "author", "main"))
+        Hirasawa.pluginManager.unloadPlugin("name")
+
+        assertTrue(loaded)
+        assertTrue(unloaded)
     }
 
 

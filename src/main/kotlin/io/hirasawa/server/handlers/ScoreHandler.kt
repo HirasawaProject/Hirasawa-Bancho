@@ -2,9 +2,13 @@ package io.hirasawa.server.handlers
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.database.tables.BeatmapsTable
+import io.hirasawa.server.database.tables.UsersTable
+import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
-import java.io.DataInputStream
-import java.lang.Exception
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ScoreHandler(encodedScore: String) {
     private val separator = ':'
@@ -51,8 +55,16 @@ class ScoreHandler(encodedScore: String) {
         date = scoreArray[16]
         version = scoreArray[17]
 
-        val user = Hirasawa.database.getUser(username)
-        val beatmap = Hirasawa.database.getBeatmap(fileChecksum)
+        val user = Hirasawa.databaseToObject<BanchoUser>(BanchoUser::class, transaction {
+            UsersTable.select {
+                UsersTable.username eq username
+            }.firstOrNull()
+        })
+        val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
+            BeatmapsTable.select {
+                BeatmapsTable.hash eq fileChecksum
+            }.firstOrNull()
+        })
 
         if (user != null && beatmap != null) {
             score = Score(-1, user, countScore, combo, count50, count100, count300, countMiss, countKatu, countGeki,

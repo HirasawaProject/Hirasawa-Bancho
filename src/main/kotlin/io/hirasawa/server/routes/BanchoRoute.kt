@@ -7,6 +7,7 @@ import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
 import io.hirasawa.server.polyfill.readNBytes
@@ -16,11 +17,14 @@ import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.ByteArrayInputStream
 import java.util.*
 
 class BanchoRoute: Route {
     override fun handle(request: Request, response: Response) {
+        response.isLoggingEnabled = false
         if (request.headers["User-Agent"] != "osu!") {
             // Only osu! should be able to contact Bancho
             // Tell RouteForbidden to handle this request for us
@@ -42,8 +46,10 @@ class BanchoRoute: Route {
 
             val userInfo = BanchoLoginHandler(request.inputStream)
 
-            if (Hirasawa.database.authenticate(userInfo.username, userInfo.password)) {
-                val user = Hirasawa.database.getUser(userInfo.username) as BanchoUser
+            if (Hirasawa.authenticate(userInfo.username, userInfo.password)) {
+                val user = BanchoUser(transaction {
+                    UsersTable.select { UsersTable.username eq userInfo.username }.first()
+                })
                 user.updateUserStats(GameMode.OSU)
                 user.uuid = token
                 user.updateKeepAlive()
@@ -59,7 +65,7 @@ class BanchoRoute: Route {
                     Hirasawa.banchoUsers.add(user)
                     LoginReplyPacket(user.id).write(osuWriter)
                     ProtocolNegotiationPacket(19).write(osuWriter)
-                    FriendsListPacket(Hirasawa.database.getUserFriends(user.id)).write(osuWriter)
+                    FriendsListPacket(user.friends).write(osuWriter)
                     LoginPermissionsPacket(user).write(osuWriter)
 
                     Hirasawa.chatEngine["#osu"]?.addUser(user)
@@ -79,6 +85,13 @@ class BanchoRoute: Route {
 
                     HandleOsuUpdatePacket(user).write(osuWriter)
                     UserPresencePacket(user).write(osuWriter)
+
+                    if (user.hasPermission("hirasawa.update.notify") && Hirasawa.isUpdateRequired) {
+                        user.sendPrivateMessage(Hirasawa.hirasawaBot, "You are running an outdated version of " +
+                                "Hirasawa, please update by going to the following link")
+                        user.sendPrivateMessage(Hirasawa.hirasawaBot,
+                            Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl ?: "")
+                    }
 
                 } else {
                     LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)

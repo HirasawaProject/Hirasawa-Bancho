@@ -6,14 +6,23 @@ import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.BanchoPacket
+import io.hirasawa.server.database.tables.UserStatsTable
+import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.permissions.PermissionGroup
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte,
-                      permissionGroups: ArrayList<PermissionGroup>, longitude: Float, latitude: Float,
-                      var uuid: UUID, isBanned: Boolean) : User(id, username,
-        timezone, countryCode, permissionGroups, longitude, latitude, isBanned) {
+open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: Byte, longitude: Float, latitude: Float,
+                      var uuid: UUID, isBanned: Boolean): User(id, username,
+        timezone, countryCode, longitude, latitude, isBanned) {
+
+    constructor(result: ResultRow): this(result[UsersTable.id].value, result[UsersTable.username], 0, 0, 0F ,0F,
+        UUID.randomUUID(), result[UsersTable.banned])
+
     val packetCache = Stack<BanchoPacket>()
     var status = BanchoStatus()
     var userStats = UserStats(id)
@@ -53,7 +62,11 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      * This can be used to switch gamemodes or just update the stats on it
      */
     fun updateUserStats(gameMode: GameMode) {
-        userStats = Hirasawa.database.getUserStats(this, gameMode) ?: return
+        userStats = UserStats(transaction {
+            UserStatsTable.select {
+                (UserStatsTable.userId eq id) and (UserStatsTable.gamemode eq gameMode.ordinal)
+            }.first()
+        })
     }
 
 
