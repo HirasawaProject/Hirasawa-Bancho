@@ -1,9 +1,6 @@
 package io.hirasawa.server.plugin
 
-import io.hirasawa.server.commands.HelpCommand
-import io.hirasawa.server.commands.RankCommand
-import io.hirasawa.server.commands.ReloadCommand
-import io.hirasawa.server.commands.TestCommand
+import io.hirasawa.server.commands.*
 
 class InternalPlugin: HirasawaPlugin() {
     override fun onEnable() {
@@ -11,6 +8,7 @@ class InternalPlugin: HirasawaPlugin() {
         registerCommand(HelpCommand())
         registerCommand(ReloadCommand())
         registerCommand(RankCommand())
+        registerCommand(ReportCommand())
     }
 
     override fun onDisable() {
