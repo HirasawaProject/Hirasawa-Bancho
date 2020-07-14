@@ -3,8 +3,12 @@ package io.hirasawa.server.commands
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.command.ChatCommand
 import io.hirasawa.server.bancho.chat.command.CommandContext
-import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.database.tables.ReportsTable
+import io.hirasawa.server.database.tables.UsersTable
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class ReportCommand: ChatCommand("report", "Report a player to the mods", "hirasawa.command.report") {
     override fun onCommand(context: CommandContext, command: String, args: List<String>): Boolean {
@@ -13,17 +17,40 @@ class ReportCommand: ChatCommand("report", "Report a player to the mods", "hiras
             return false
         }
 
-        val username = args.first()
-        val reason = args.slice(1..Int.MAX_VALUE)
+        val reporteeUsername = args.first()
+        val reason = args.slice(1 until args.size).joinToString(" ")
 
-        var reportee = "UNKNOWN"
+        lateinit var reporter: BanchoUser
         if (context.sender is BanchoUser) {
-            reportee = context.sender.username
-        } else if (context.sender is ConsoleCommandSender) {
-            reportee = "CONSOLE"
+            reporter = context.sender
+        } else {
+            context.respond("Console cannot report")
+            return false
         }
 
-        Hirasawa.chatEngine.handleChat(Hirasawa.hirasawaBot, "#lounge", "User $reportee reported $username for $reason")
+        val reportee = Hirasawa.databaseToObject<BanchoUser>(BanchoUser::class, transaction {
+            UsersTable.select {
+                UsersTable.username eq reporteeUsername
+            }.first()
+        })
+
+        if (reportee == null) {
+            context.respond("Cannot find user $reporteeUsername")
+            return false
+        }
+
+        transaction {
+            ReportsTable.insertAndGetId {
+                it[ReportsTable.reporterId] = reporter.id
+                it[ReportsTable.reporteeId] = reportee.id
+                it[ReportsTable.reason] = reason
+            }
+        }
+
+        Hirasawa.chatEngine.handleChat(Hirasawa.hirasawaBot, "#lounge", "User ${reporter.username} reported " +
+                "${reportee.username} for $reason")
+
+        context.respond("Thank you! Your report has been noted and staff have been informed")
 
         return true
     }
