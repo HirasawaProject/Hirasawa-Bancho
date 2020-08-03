@@ -19,14 +19,14 @@ class EventTests {
 
     @Test
     fun testCanCallAndListenToCustomEventsWithPriority() {
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.NORMAL)
             fun onTestEvent(testEvent: TestEvent) {
                 testEvent.test = 1
             }
         }, this.plugin)
 
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.LOW)
             fun onTestEvent(testEvent: TestEvent) {
                 testEvent.test = 2
@@ -42,21 +42,21 @@ class EventTests {
 
     @Test
     fun testCanBypassEventCancellation() {
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.HIGHEST)
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.isCancelled = true
             }
         }, this.plugin)
 
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.NORMAL, true)
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.test = 1
             }
         }, this.plugin)
 
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.LOW)
             fun onTestEvent(testEvent: TestCanceledEvent) {
                 testEvent.test = 2
@@ -72,7 +72,7 @@ class EventTests {
 
     @Test
     fun testCanEventListenerBeRemoved() {
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler(EventPriority.HIGHEST)
             fun onTestEvent(testEvent: SecondaryTestEvent) {
                 testEvent.test = 1
@@ -98,7 +98,7 @@ class EventTests {
         var loaded = false
         var unloaded = false
 
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler
             @Suppress("UNUSED_PARAMETER")
             fun onTestEvent(pluginLoadEvent: PluginLoadEvent) {
@@ -106,7 +106,7 @@ class EventTests {
             }
         }, this.plugin)
 
-        Hirasawa.eventHandler.registerEvent(object: EventListener {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
             @EventHandler
             @Suppress("UNUSED_PARAMETER")
             fun onTestEvent(pluginUnloadEvent: PluginUnloadEvent) {
