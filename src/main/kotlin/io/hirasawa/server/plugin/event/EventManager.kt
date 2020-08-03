@@ -27,7 +27,7 @@ class EventManager {
         }
     }
 
-    fun registerEvent(eventListener: EventListener, plugin: HirasawaPlugin) {
+    fun registerEvents(eventListener: EventListener, plugin: HirasawaPlugin) {
         val kClass = eventListener::class
         for (function in kClass.functions) {
             val eventHandler = function.findAnnotation<EventHandler>()

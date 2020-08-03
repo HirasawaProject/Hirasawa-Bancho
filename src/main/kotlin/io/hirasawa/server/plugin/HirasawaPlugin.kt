@@ -14,8 +14,8 @@ abstract class HirasawaPlugin: IHirasawaPlugin {
      *
      * @param eventListener The event listener instance to be registered
      */
-    fun registerEvent(eventListener: EventListener) {
-        Hirasawa.eventHandler.registerEvent(eventListener, this)
+    fun registerEvents(eventListener: EventListener) {
+        Hirasawa.eventHandler.registerEvents(eventListener, this)
     }
 
     /**
