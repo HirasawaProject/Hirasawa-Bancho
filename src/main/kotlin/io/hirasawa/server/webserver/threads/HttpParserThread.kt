@@ -40,8 +40,11 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val responseBuffer = ByteArrayOutputStream()
 
+        val ipAddress = socket.inetAddress.hostAddress
+
         val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders,
-            ByteArrayInputStream(postData))
+            ByteArrayInputStream(postData), ipAddress)
+
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
         val webRequestEvent = WebRequestEvent(host, request, response)
