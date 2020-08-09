@@ -7,6 +7,7 @@ import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
+import io.hirasawa.server.webserver.handlers.CookieHandler
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
@@ -24,7 +25,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val headerHandler = HttpHeaderHandler(dataInputStream)
         val immutableHeaders = headerHandler.headers.makeImmutable()
         var postData = ByteArray(0)
-        val cookies = HashMap<String, String>()
+        var cookies = HashMap<String, String>()
         if ("Content-Length" in immutableHeaders &&
             headerHandler.httpMethod == HttpMethod.POST) {
             // Handle POST data
@@ -32,6 +33,10 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             val postBuffer = ByteArrayOutputStream()
             postBuffer.write(dataInputStream.readNBytes(immutableHeaders["Content-Length"]!!.toInt()))
             postData = postBuffer.toByteArray()
+        }
+
+        if ("Cookie" in immutableHeaders) {
+            cookies = CookieHandler(immutableHeaders["Cookie"]!!).cookies
         }
 
         val urlSegment = UrlSegmentHandler(headerHandler.route).urlSegment
