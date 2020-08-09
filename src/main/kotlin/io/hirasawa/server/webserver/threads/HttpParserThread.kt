@@ -25,7 +25,8 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val headerHandler = HttpHeaderHandler(dataInputStream)
         val immutableHeaders = headerHandler.headers.makeImmutable()
         var postData = ByteArray(0)
-        var cookies = HashMap<String, String>()
+        var cookiesReceived = HashMap<String, String>()
+        val cookiesToSend = HashMap<String, String>()
         if ("Content-Length" in immutableHeaders &&
             headerHandler.httpMethod == HttpMethod.POST) {
             // Handle POST data
@@ -36,7 +37,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         }
 
         if ("Cookie" in immutableHeaders) {
-            cookies = CookieHandler(immutableHeaders["Cookie"]!!).cookies
+            cookiesReceived = CookieHandler(immutableHeaders["Cookie"]!!).cookies
         }
 
         val urlSegment = UrlSegmentHandler(headerHandler.route).urlSegment
@@ -49,7 +50,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val ipAddress = socket.inetAddress.hostAddress
 
-        val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders, cookies,
+        val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders, cookiesReceived,
             ByteArrayInputStream(postData), ipAddress)
 
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders(),
@@ -101,6 +102,10 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         for ((key, value) in response.headers) {
             dataOutputStream.writeBytes("$key: $value\r\n")
+        }
+
+        for ((name, value) in cookiesToSend) {
+            dataOutputStream.writeBytes("Set-Cookie: $name=$value\r\n")
         }
 
         dataOutputStream.writeBytes("\r\n")
