@@ -62,7 +62,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
                 request, response)
 
             if (response.isLoggingEnabled) {
-                webserver.accessLogger.log("${socket.inetAddress.hostAddress}: ${headerHandler.httpMethod} $host " +
+                webserver.accessLogger.log("${request.ipAddress}: ${headerHandler.httpMethod} $host " +
                         urlSegment.route
                 )
             }
