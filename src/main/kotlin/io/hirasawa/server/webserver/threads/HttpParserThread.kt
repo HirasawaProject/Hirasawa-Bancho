@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver.threads
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.plugin.event.web.WebRequestEvent
 import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.Webserver
@@ -48,6 +49,8 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
 
         val webRequestEvent = WebRequestEvent(host, request, response)
+
+        Hirasawa.eventHandler.callEvent(webRequestEvent)
 
         if (webRequestEvent.isCancelled) {
             RouteForbidden().handle(request, response)
