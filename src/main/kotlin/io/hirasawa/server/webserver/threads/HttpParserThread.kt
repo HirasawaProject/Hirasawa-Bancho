@@ -24,6 +24,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val headerHandler = HttpHeaderHandler(dataInputStream)
         val immutableHeaders = headerHandler.headers.makeImmutable()
         var postData = ByteArray(0)
+        val cookies = HashMap<String, String>()
         if ("Content-Length" in immutableHeaders &&
             headerHandler.httpMethod == HttpMethod.POST) {
             // Handle POST data
@@ -43,10 +44,11 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val ipAddress = socket.inetAddress.hostAddress
 
-        val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders,
+        val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders, cookies,
             ByteArrayInputStream(postData), ipAddress)
 
-        val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
+        val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders(),
+            HashMap())
 
         val webRequestEvent = WebRequestEvent(host, request, response)
 
