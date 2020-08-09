@@ -275,4 +275,33 @@ class WebserverTests {
         assert(body.contains("<p>"))
         assert(body.contains("Hello world"))
     }
+
+    @Test
+    fun testIpAddressCanBeChangedViaWebRequestEvent() {
+        webserver.addRoute("localhost", "/ipaddress", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                request.ipAddress = "test"
+                response.writeText(request.ipAddress)
+            }
+        })
+
+        val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/ipaddress")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        val body = response.body?.string()!!
+
+        val accessLogAfter = Files.readAllLines(File("logs/webserver/access.txt").toPath())
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals("4", response.headers["Content-Size"])
+        assertEquals("test", body)
+        assertEquals(1, accessLogAfter.size - accessLogBefore.size)
+        assert(body.contains("test"))
+    }
 }

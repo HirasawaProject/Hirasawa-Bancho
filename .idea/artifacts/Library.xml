@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Library">
+    <output-path>$PROJECT_DIR$/out/artifacts/Library</output-path>
+    <root id="archive" name="Library.jar">
+      <element id="module-output" name="HirasawaProject.main" />
+    </root>
+  </artifact>
+</component>

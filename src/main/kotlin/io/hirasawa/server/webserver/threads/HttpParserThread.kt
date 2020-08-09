@@ -1,5 +1,7 @@
 package io.hirasawa.server.webserver.threads
 
+import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.plugin.event.web.WebRequestEvent
 import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -8,6 +10,7 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
+import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import java.io.*
@@ -38,16 +41,28 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val responseBuffer = ByteArrayOutputStream()
 
+        val ipAddress = socket.inetAddress.hostAddress
+
         val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders,
-            ByteArrayInputStream(postData))
+            ByteArrayInputStream(postData), ipAddress)
+
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders())
+
+        val webRequestEvent = WebRequestEvent(host, request, response)
+
+        Hirasawa.eventHandler.callEvent(webRequestEvent)
+
+        if (webRequestEvent.isCancelled) {
+            RouteForbidden().handle(request, response)
+            return
+        }
 
         try {
             webserver.runRoute(host, urlSegment.route, headerHandler.httpMethod,
                 request, response)
 
             if (response.isLoggingEnabled) {
-                webserver.accessLogger.log("${socket.inetAddress.hostAddress}: ${headerHandler.httpMethod} $host " +
+                webserver.accessLogger.log("${request.ipAddress}: ${headerHandler.httpMethod} $host " +
                         urlSegment.route
                 )
             }

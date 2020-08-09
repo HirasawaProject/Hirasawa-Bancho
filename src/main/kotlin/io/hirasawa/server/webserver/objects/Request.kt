@@ -10,7 +10,8 @@ data class Request(
     val urlSegment: UrlSegment,
     val httpMethod: HttpMethod,
     val headers: ImmutableHeaders,
-    val inputStream: ByteArrayInputStream
+    val inputStream: ByteArrayInputStream,
+    var ipAddress: String
 ) {
     val routeParameters = HashMap<String, String>()
     val post: HashMap<String, String> by lazy {

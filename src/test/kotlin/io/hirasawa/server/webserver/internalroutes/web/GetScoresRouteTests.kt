@@ -42,7 +42,8 @@ class GetScoresRouteTests {
 
         val request = Request(
             UrlSegment("", "/web/osu-osz2-getscores.php", params), HttpMethod.GET, headers.makeImmutable(),
-            ByteArrayInputStream(ByteArray(0))
+            ByteArrayInputStream(ByteArray(0)),
+            "127.0.0.1"
         )
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer),
             Hirasawa.webserver.getDefaultHeaders())
