@@ -2,12 +2,10 @@ package io.hirasawa.server.webserver
 
 import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.ContentType
-import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.route.AssetNode
 import io.hirasawa.server.webserver.route.Route
 import kotlinx.html.body
 import kotlinx.html.p
@@ -18,9 +16,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
-import java.lang.Exception
 import java.nio.file.Files
-import kotlin.math.log
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -303,5 +299,35 @@ class WebserverTests {
         assertEquals("test", body)
         assertEquals(1, accessLogAfter.size - accessLogBefore.size)
         assert(body.contains("test"))
+    }
+
+    @Test
+    fun isWebserverAbleToSendAndReceiveCookies() {
+        /*
+            This code annoyingly handles cookies manually as okhttp didn't seem to support anything for this
+            unless we created it ourself.
+
+            TODO find way for okhttp to handle the cookies on their own
+         */
+
+        webserver.addRoute("localhost", "/cookies", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.cookies["test-cookie"] = "test cookie"
+                response.writeText(request.cookies.toString())
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/cookies")
+            .header("cookie", "foo=bar")
+            .build()
+
+        val response = client.newCall(request).execute()
+        val body = response.body?.string()
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals(body, "{foo=bar}")
+        assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie")
     }
 }

@@ -10,6 +10,7 @@ data class Request(
     val urlSegment: UrlSegment,
     val httpMethod: HttpMethod,
     val headers: ImmutableHeaders,
+    val cookies: HashMap<String, String>,
     val inputStream: ByteArrayInputStream,
     var ipAddress: String
 ) {
