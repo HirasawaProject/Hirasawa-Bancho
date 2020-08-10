@@ -54,7 +54,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             ByteArrayInputStream(postData), ipAddress)
 
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders(),
-            HashMap())
+            cookiesToSend)
 
         val webRequestEvent = WebRequestEvent(host, request, response)
 
