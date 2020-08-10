@@ -303,6 +303,13 @@ class WebserverTests {
 
     @Test
     fun isWebserverAbleToSendAndReceiveCookies() {
+        /*
+            This code annoyingly handles cookies manually as okhttp didn't seem to support anything for this
+            unless we created it ourself.
+
+            TODO find way for okhttp to handle the cookies on their own
+         */
+
         webserver.addRoute("localhost", "/cookies", HttpMethod.GET, object:
             Route {
             override fun handle(request: Request, response: Response) {
