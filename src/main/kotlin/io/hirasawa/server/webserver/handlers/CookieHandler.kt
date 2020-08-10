@@ -8,7 +8,7 @@ class CookieHandler(val cookieString: String) {
 
 
     init {
-        var state = ParsingState.COOKIE_DATA
+        var state = ParsingState.COOKIE_NAME
         var cookieName = ""
         var cookieData = ""
         for (byte in cookieString) {
