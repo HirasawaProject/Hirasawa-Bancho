@@ -39,7 +39,7 @@ class CookieHandler(val cookieString: String) {
             }
         }
 
-        if (cookieName.isEmpty()) {
+        if (cookieName.isNotEmpty()) {
             cookies[cookieName] = cookieData
         }
     }
