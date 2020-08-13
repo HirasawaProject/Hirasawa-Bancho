@@ -17,6 +17,7 @@ import kotlin.collections.HashMap
 class ChatEngine {
     val chatChannels = HashMap<String, ChatChannel>()
     val chatCommands = HashMap<String, Pair<ChatCommand, HirasawaPlugin>>()
+    val spectatorChannel = ChatChannel("#spectator", "", false)
 
     operator fun set(key: String, value: ChatChannel) {
         chatChannels[key] = value

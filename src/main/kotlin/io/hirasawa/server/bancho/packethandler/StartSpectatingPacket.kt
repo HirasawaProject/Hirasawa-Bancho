@@ -4,6 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.BanchoPacketType
+import io.hirasawa.server.bancho.packets.ChannelJoinSuccessPacket
 import io.hirasawa.server.bancho.packets.FellowSpectatorJoined
 import io.hirasawa.server.bancho.packets.SpectatorJoined
 import io.hirasawa.server.bancho.user.BanchoUser
@@ -26,5 +27,8 @@ class StartSpectatingPacket: PacketHandler(BanchoPacketType.OSU_START_SPECTATING
 
         user.spectating = spectatingUser
         spectatingUser.spectators.add(user)
+
+        user.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+        spectatingUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
     }
 }
