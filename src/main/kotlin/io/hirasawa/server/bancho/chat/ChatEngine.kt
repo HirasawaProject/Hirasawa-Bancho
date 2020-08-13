@@ -9,6 +9,7 @@ import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
+import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
@@ -32,6 +33,11 @@ class ChatEngine {
             destination == "!CONSOLE" -> {
                 println(message)
             }
+            destination == spectatorChannel.name -> {
+                if (user is BanchoUser) {
+                    handleSpectatorChat(user, message)
+                }
+            }
             destination.startsWith("#") -> {
                 handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
             }
@@ -44,6 +50,22 @@ class ChatEngine {
                 } else {
                     handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
                 }
+            }
+        }
+    }
+
+    private fun handleSpectatorChat(user: BanchoUser, message: String) {
+        val spectators: ArrayList<BanchoUser>
+        if (user.spectating != null) {
+            user.spectating?.sendPacket(SendMessagePacket(GlobalChatMessage(user, spectatorChannel, message)))
+            spectators = user.spectating?.spectators ?: return
+        } else {
+            spectators = user.spectators
+        }
+
+        for (spectator in spectators) {
+            if (spectator != user) {
+                spectator.sendPacket(SendMessagePacket(GlobalChatMessage(user, spectatorChannel, message)))
             }
         }
     }
