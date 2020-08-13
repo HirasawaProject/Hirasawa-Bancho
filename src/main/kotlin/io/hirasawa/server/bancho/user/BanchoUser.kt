@@ -28,6 +28,8 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     var userStats = UserStats(id)
     var lastKeepAlive = 0
     val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
+    val spectators = ArrayList<BanchoUser>()
+    var spectating: BanchoUser? = null
 
     /**
      * Send a packet to the user
