@@ -27,7 +27,7 @@ class UserInfoCommand: ChatCommand("userinfo", "Command to give internal informa
         context.respond("Spectating: ${user.spectating?.username ?: "nobody"}")
         context.respond("Spectators:")
         for (spectator in user.spectators) {
-            context.respond("* ${user.username}")
+            context.respond("* ${spectator.username}")
         }
 
         return true
