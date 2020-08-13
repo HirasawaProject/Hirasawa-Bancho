@@ -19,16 +19,6 @@ class StartSpectatingPacket: PacketHandler(BanchoPacketType.OSU_START_SPECTATING
             return
         }
 
-        for (spectators in spectatingUser.spectators) {
-            spectators.sendPacket(FellowSpectatorJoined(user))
-        }
-
-        spectatingUser.sendPacket(SpectatorJoined(user))
-
-        user.spectating = spectatingUser
-        spectatingUser.spectators.add(user)
-
-        user.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
-        spectatingUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+        user.spectateUser(spectatingUser)
     }
 }

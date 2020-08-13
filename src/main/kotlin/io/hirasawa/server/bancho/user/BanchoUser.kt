@@ -5,7 +5,7 @@ import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.UserStats
-import io.hirasawa.server.bancho.packets.BanchoPacket
+import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.permissions.PermissionGroup
@@ -71,6 +71,40 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
         })
     }
 
+    /**
+     * Spectates another Bancho User
+     * @param banchoUser The user to spectate
+     */
+    fun spectateUser(banchoUser: BanchoUser) {
+        if (this.spectating != null) {
+            stopSpectating()
+        }
 
+        for (spectators in banchoUser.spectators) {
+            spectators.sendPacket(FellowSpectatorJoined(this))
+        }
+
+        banchoUser.sendPacket(SpectatorJoined(this))
+
+        this.spectating = banchoUser
+        banchoUser.spectators.add(this)
+
+        this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+        banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+    }
+
+    fun stopSpectating() {
+        if (this.spectating != null) {
+            for (spectators in this.spectating!!.spectators) {
+                spectators.sendPacket(FellowSpectatorLeft(this))
+            }
+
+            this.spectating?.sendPacket(SpectatorLeft(this))
+
+            this.spectating?.spectators?.remove(this)
+            this.spectating = null
+            this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
+        }
+    }
 
 }
