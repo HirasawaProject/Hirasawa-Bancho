@@ -9,6 +9,7 @@ class InternalPlugin: HirasawaPlugin() {
         registerCommand(ReloadCommand())
         registerCommand(RankCommand())
         registerCommand(ReportCommand())
+        registerCommand(UserInfoCommand())
     }
 
     override fun onDisable() {
