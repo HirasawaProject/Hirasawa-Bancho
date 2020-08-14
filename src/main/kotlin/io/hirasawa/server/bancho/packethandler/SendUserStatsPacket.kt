@@ -33,5 +33,8 @@ class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
         user.status = banchoStatus
         user.updateUserStats(mode)
         user.sendPacket(HandleOsuUpdatePacket(user))
+        for (spectator in user.spectators) {
+            spectator.sendPacket(HandleOsuUpdatePacket(user))
+        }
     }
 }

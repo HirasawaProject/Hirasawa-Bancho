@@ -36,6 +36,9 @@ fun main() {
     Hirasawa.packetRouter[BanchoPacketType.OSU_USER_STATS_REQUEST] = UserStatsRequestPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_USER_PRESENCE_REQUEST] = UserPresenceRequestPacket()
     Hirasawa.packetRouter[BanchoPacketType.OSU_SEND_USER_STATS] = SendUserStatsPacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_START_SPECTATING] = StartSpectatingPacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_STOP_SPECTATING] = StopSpectatingPacket()
+    Hirasawa.packetRouter[BanchoPacketType.OSU_SPECTATE_FRAMES] = SpectateFramesPacket()
 
     for (channel in Hirasawa.config.channels) {
         Hirasawa.chatEngine[channel.name] = channel
