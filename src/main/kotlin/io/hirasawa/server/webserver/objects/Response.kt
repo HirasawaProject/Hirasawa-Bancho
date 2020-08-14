@@ -10,7 +10,7 @@ import java.io.DataOutputStream
 import javax.xml.parsers.DocumentBuilderFactory
 
 data class Response (var httpStatus: HttpStatus, val outputStream: DataOutputStream,
-                     val headers: MutableHeaders, val cookies: HashMap<String, String>) {
+                     val headers: MutableHeaders, val cookies: HashMap<String, Cookie>) {
     var isLoggingEnabled = true
     fun writeText(text: String) {
         outputStream.writeBytes(text)
