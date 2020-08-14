@@ -329,6 +329,6 @@ class WebserverTests {
 
         assertEquals(HttpStatus.OK.code, response.code)
         assertEquals(body, "{foo=bar}")
-        assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie")
+        assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie; Secure; HttpOnly; SameSite=STRICT")
     }
 }
