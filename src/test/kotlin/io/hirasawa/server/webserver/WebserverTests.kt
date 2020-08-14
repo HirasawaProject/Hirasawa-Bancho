@@ -4,6 +4,7 @@ import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
+import io.hirasawa.server.webserver.objects.Cookie
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.Route
@@ -313,7 +314,7 @@ class WebserverTests {
         webserver.addRoute("localhost", "/cookies", HttpMethod.GET, object:
             Route {
             override fun handle(request: Request, response: Response) {
-                response.cookies["test-cookie"] = "test cookie"
+                response.cookies["test-cookie"] = Cookie("test cookie")
                 response.writeText(request.cookies.toString())
             }
         })
@@ -328,6 +329,6 @@ class WebserverTests {
 
         assertEquals(HttpStatus.OK.code, response.code)
         assertEquals(body, "{foo=bar}")
-        assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie")
+        assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie; Secure; HttpOnly; SameSite=STRICT")
     }
 }

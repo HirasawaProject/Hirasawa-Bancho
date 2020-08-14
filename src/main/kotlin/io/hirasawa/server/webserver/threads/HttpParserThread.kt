@@ -12,6 +12,7 @@ import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
 import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
 import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
+import io.hirasawa.server.webserver.objects.Cookie
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import java.io.*
@@ -26,7 +27,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val immutableHeaders = headerHandler.headers.makeImmutable()
         var postData = ByteArray(0)
         var cookiesReceived = HashMap<String, String>()
-        val cookiesToSend = HashMap<String, String>()
+        val cookiesToSend = HashMap<String, Cookie>()
         if ("Content-Length" in immutableHeaders &&
             headerHandler.httpMethod == HttpMethod.POST) {
             // Handle POST data
@@ -105,7 +106,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         }
 
         for ((name, value) in cookiesToSend) {
-            dataOutputStream.writeBytes("Set-Cookie: $name=$value\r\n")
+            dataOutputStream.writeBytes("Set-Cookie: $name=${value.encode()}\r\n")
         }
 
         dataOutputStream.writeBytes("\r\n")
