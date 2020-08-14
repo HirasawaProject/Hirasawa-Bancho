@@ -31,7 +31,7 @@ class CookieHandler(val cookieString: String) {
                     if (!byte.isWhitespace()) {
                         cookies[cookieName] = cookieData
 
-                        cookieName = ""
+                        cookieName = "" + byte
                         cookieData = ""
                         state = ParsingState.COOKIE_NAME
                     }
