@@ -321,14 +321,14 @@ class WebserverTests {
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/cookies")
-            .header("cookie", "foo=bar")
+            .header("cookie", "foo=bar; bar=baz")
             .build()
 
         val response = client.newCall(request).execute()
         val body = response.body?.string()
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals(body, "{foo=bar}")
+        assertEquals(body, "{bar=baz, foo=bar}")
         assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie; Secure; HttpOnly; SameSite=STRICT")
     }
 }
