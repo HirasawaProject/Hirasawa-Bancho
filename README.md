@@ -1,7 +1,12 @@
 # Hirasawa Project
 Hirasawa Project is a WIP server for osu! supporting custom plugins written in Kotlin
 
-The idea is to have a vanilla Bancho experience with a basic web experience which is fully customisable via plugins
+## The ethos of the project
+The project is intended to be an all-in-one application providing a (close to) vanilla Bancho experience and more 
+bespoke web frontend that can be extended via plugins.
+
+This project should not provide anything to end user further than what would be expected from the vanilla server itself,
+so any nice to have features should instead be done via the plugin support
 
 ## Plugins
 We support plugins to extend the functionality of the server similarly to how Bukkit handles it forMinecraft utilising 
