@@ -43,5 +43,8 @@ a generated version number based on the date, Hirasawa will also be aware of the
 Hirasawa is completely open to contribution, please feel free to open tickets or work on what we currently have in the
 backlog
 
+The language used in the project is British English, this won't impact language shown to the user but we'd prefer 
+keeping the internal language consistent as possible
+
 ## Licencing
 Hirasawa Project is licenced under the MIT licence so do with it as you please
