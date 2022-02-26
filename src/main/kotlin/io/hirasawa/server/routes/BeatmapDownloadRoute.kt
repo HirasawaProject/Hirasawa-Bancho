@@ -6,7 +6,7 @@ import io.hirasawa.server.webserver.route.Route
 
 class BeatmapDownloadRoute : Route {
     override fun handle(request: Request, response: Response) {
-        response.redirect("https://bloodcat.com/osu/s/${request.routeParameters["beatmap"]}")
+        response.redirect("https://chimu.moe/d/${request.routeParameters["beatmap"]}")
     }
 
 }
