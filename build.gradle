@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.71'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
     id 'org.jetbrains.dokka' version '0.10.1'
 }
 
@@ -11,14 +11,10 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
-        url  "https://dl.bintray.com/kotlin/exposed"
-    }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
     compile 'com.google.code.gson:gson:2.8.6'
     compile group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
     compile 'mysql:mysql-connector-java:5.1.+'
@@ -27,8 +23,11 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.71"
     implementation "org.bouncycastle:bcprov-jdk15:1.46"
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.1")
-    implementation 'org.jetbrains.exposed:exposed:0.17.7'
+    implementation "org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3"
+    implementation 'org.jetbrains.exposed:exposed-core:0.37.3'
+    implementation 'org.jetbrains.exposed:exposed-dao:0.37.3'
+    implementation 'org.jetbrains.exposed:exposed-jdbc:0.37.3'
+    implementation 'org.jetbrains.exposed:exposed-java-time:0.37.3'
 }
 
 compileKotlin {
