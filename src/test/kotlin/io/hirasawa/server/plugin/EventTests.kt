@@ -121,9 +121,38 @@ class EventTests {
         assertTrue(unloaded)
     }
 
+    @Test
+    fun testEventThenAndCancelledFunctions() {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
+            @EventHandler(EventPriority.NORMAL)
+            fun onTestEvent(testEvent: TestCanceledEvent) {
+                testEvent.isCancelled = testEvent.test == 1 // Cancel if test is 1
+            }
+        }, this.plugin)
+
+        var wasFirstEventCalled = false
+        var wasSecondEventCalled = false
+
+        TestCanceledEvent(0).call().then {
+            assertEquals(0, it.test)
+            wasFirstEventCalled = true
+        }.cancelled {
+            assert(false)
+        }
+
+        TestCanceledEvent(1).call().then {
+            assert(false)
+        }.cancelled {
+            assertEquals(1, it.test)
+            wasSecondEventCalled = true
+        }
+
+        assertTrue(wasFirstEventCalled)
+        assertTrue(wasSecondEventCalled)
+    }
 
 
-    class TestEvent(var test: Int): HirasawaEvent
-    class TestCanceledEvent(var test: Int): HirasawaEvent, Cancelable()
-    class SecondaryTestEvent(var test: Int): HirasawaEvent
+    class TestEvent(var test: Int): HirasawaEvent<TestEvent>
+    class TestCanceledEvent(var test: Int): HirasawaEvent<TestCanceledEvent>, Cancelable()
+    class SecondaryTestEvent(var test: Int): HirasawaEvent<SecondaryTestEvent>
 }
