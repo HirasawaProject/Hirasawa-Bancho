@@ -18,9 +18,10 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
     abstract fun sendPrivateMessage(from: User, message: String)
     val friends: ArrayList<User> by lazy {
         val arrayList = ArrayList<User>()
+        val userId = this.id
         transaction {
             (FriendsTable innerJoin UsersTable).select {
-                (FriendsTable.userId eq id)
+                (FriendsTable.userId eq userId)
             }.forEach {
                 arrayList.add(BanchoUser(it))
             }
@@ -30,9 +31,10 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
     }
     val permissionGroups: ArrayList<PermissionGroup> by lazy {
         val permissionGroups = ArrayList<PermissionGroup>()
+        val userId = this.id
         transaction {
             (PermissionGroupUsersTable innerJoin PermissionGroupsTable).select {
-                PermissionGroupUsersTable.userId eq id
+                PermissionGroupUsersTable.userId eq userId
             }.forEach {
                 permissionGroups.add(Hirasawa.permissionEngine.getGroup(it[PermissionGroupsTable.name]))
             }

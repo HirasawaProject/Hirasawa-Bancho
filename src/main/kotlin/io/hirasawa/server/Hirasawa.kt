@@ -24,9 +24,8 @@ import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
 import io.hirasawa.server.update.UpdateChecker
 import io.hirasawa.server.webserver.Webserver
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.io.File
@@ -76,9 +75,9 @@ class Hirasawa {
                     SchemaUtils.create(BeatmapsetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
                         PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
-                    if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0) {
+                    if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {
                         UsersTable.insert {
-                            it[UsersTable.id] = EntityID(Hirasawa.config.banchoBotId, UsersTable)
+                            it[UsersTable.id] = EntityID<Int>(config.banchoBotId, UsersTable)
                             it[UsersTable.username] = "HirasawaBot"
                             it[UsersTable.password] = ""
                             it[UsersTable.banned] = false

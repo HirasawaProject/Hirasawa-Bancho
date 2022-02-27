@@ -67,9 +67,10 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      * This can be used to switch gamemodes or just update the stats on it
      */
     fun updateUserStats(gameMode: GameMode) {
+        val userId = this.id
         userStats = UserStats(transaction {
             UserStatsTable.select {
-                (UserStatsTable.userId eq id) and (UserStatsTable.gamemode eq gameMode.ordinal)
+                (UserStatsTable.userId eq userId) and (UserStatsTable.gamemode eq gameMode.ordinal)
             }.first()
         })
     }

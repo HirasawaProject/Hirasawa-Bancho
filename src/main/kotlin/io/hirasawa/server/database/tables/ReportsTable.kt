@@ -1,6 +1,6 @@
 package io.hirasawa.server.database.tables
 
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.id.IntIdTable
 
 object ReportsTable: IntIdTable("reports") {
     val reporterId = integer("reporter_id").references(UsersTable.id)

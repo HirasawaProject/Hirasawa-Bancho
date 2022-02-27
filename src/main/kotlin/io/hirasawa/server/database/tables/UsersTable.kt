@@ -1,6 +1,6 @@
 package io.hirasawa.server.database.tables
 
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.id.IntIdTable
 
 object UsersTable: IntIdTable("users") {
     val username = varchar("username", 30)
