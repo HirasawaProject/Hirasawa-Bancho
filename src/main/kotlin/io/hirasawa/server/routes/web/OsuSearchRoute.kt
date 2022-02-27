@@ -61,7 +61,7 @@ class OsuSearchRoute: Route {
         transaction {
             BeatmapsetsTable.select {
                 (BeatmapsetsTable.title like "%$beatmapQuery%") or (BeatmapsetsTable.artist like "%$beatmapQuery%")
-            }.limit(page * 100, (page + 1) * 100).sortedBy { beatmapSort }.forEach {
+            }.limit(page * 100, ((page + 1) * 100).toLong()).sortedBy { beatmapSort }.forEach {
                 beatmaps.add(BeatmapSet(it))
             }
         }

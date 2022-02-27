@@ -12,8 +12,9 @@ data class BeatmapSet(val id: Int, val artist: String, val title: String, val st
                       val mapperName: String, val genreId: Int, val languageId: Int, val rating: Float) {
     val difficulties: ArrayList<Beatmap> by lazy {
         val difficulties = ArrayList<Beatmap>()
+        val beatmapId = id
         transaction {
-            BeatmapsTable.select { BeatmapsTable.mapsetId eq id }.forEach {
+            BeatmapsTable.select { BeatmapsTable.mapsetId eq beatmapId }.forEach {
                 difficulties.add(Beatmap(it))
             }
         }
