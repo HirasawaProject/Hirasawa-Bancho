@@ -11,4 +11,4 @@ import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
  * This occurs just before the user is about to quit
  *
  */
-data class BanchoUserQuitEvent(val user: BanchoUser, val reason: QuitReason): HirasawaEvent
+data class BanchoUserQuitEvent(val user: BanchoUser, val reason: QuitReason): HirasawaEvent<BanchoUserQuitEvent>

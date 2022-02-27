@@ -8,4 +8,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when player sends a message in a chat channel
  */
-class BanchoUserChatEvent(val chatMessage: ChatMessage): HirasawaEvent, Cancelable()
+class BanchoUserChatEvent(val chatMessage: ChatMessage): HirasawaEvent<BanchoUserChatEvent>, Cancelable()

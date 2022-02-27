@@ -8,4 +8,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when a player updates their gamemode
  */
-class BanchoUserModeChangeEvent(val banchoUser: BanchoUser, val gameMode: GameMode): HirasawaEvent, Cancelable()
+class BanchoUserModeChangeEvent(val banchoUser: BanchoUser, val gameMode: GameMode): HirasawaEvent<BanchoUserModeChangeEvent>, Cancelable()
