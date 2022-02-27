@@ -8,7 +8,7 @@ class RegisteredListenerFunction(private val eventListener: EventListener, priva
     val eventClass = function.parameters[1].type.toString()
     val annotation = function.annotations[0] as EventHandler
 
-    fun call(event: HirasawaEvent) {
+    fun call(event: HirasawaEvent<*>) {
         function.call(eventListener, event)
     }
 }

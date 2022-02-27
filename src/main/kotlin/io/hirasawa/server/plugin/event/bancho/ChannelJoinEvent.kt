@@ -8,4 +8,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when player joins a chat channel
  */
-class ChannelJoinEvent(val banchoUser: BanchoUser, val chatChannel: ChatChannel): HirasawaEvent, Cancelable()
+class ChannelJoinEvent(val banchoUser: BanchoUser, val chatChannel: ChatChannel): HirasawaEvent<ChannelJoinEvent>, Cancelable()

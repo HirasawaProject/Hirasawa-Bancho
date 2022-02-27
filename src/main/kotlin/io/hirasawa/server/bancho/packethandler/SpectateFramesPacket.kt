@@ -27,15 +27,10 @@ class SpectateFramesPacket: PacketHandler(BanchoPacketType.OSU_SPECTATE_FRAMES) 
 
         val scoreFrame = ScoreFrameHandler(reader).scoreFrame
 
-        val event = BanchoUserSpectateFramesEvent(user, replayFrames, action, scoreFrame)
-        Hirasawa.eventHandler.callEvent(event)
-
-        if (event.isCancelled) {
-            return
-        }
-
-        for (spectator in user.spectators) {
-            spectator.sendPacket(SpectateFramesPacket(user.id, event.replayFrames, event.action, event.scoreFrame))
+        BanchoUserSpectateFramesEvent(user, replayFrames, action, scoreFrame).call().then {
+            for (spectator in user.spectators) {
+                spectator.sendPacket(SpectateFramesPacket(user.id, it.replayFrames, it.action, it.scoreFrame))
+            }
         }
     }
 }

@@ -57,9 +57,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders(),
             cookiesToSend)
 
-        val webRequestEvent = WebRequestEvent(host, request, response)
-
-        Hirasawa.eventHandler.callEvent(webRequestEvent)
+        val webRequestEvent = WebRequestEvent(host, request, response).call()
 
         if (webRequestEvent.isCancelled) {
             RouteForbidden().handle(request, response)

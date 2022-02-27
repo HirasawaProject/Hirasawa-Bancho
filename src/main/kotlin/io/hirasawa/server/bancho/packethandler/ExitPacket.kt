@@ -14,10 +14,9 @@ class ExitPacket: PacketHandler(BanchoPacketType.OSU_EXIT) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val quitReason = QuitReason.values()[reader.readInt()]
 
-        val event = BanchoUserQuitEvent(user, quitReason)
-        Hirasawa.eventHandler.callEvent(event)
-
-        Hirasawa.sendBanchoPacketToAll(HandleUserQuitPacket(user, QuitState.GONE))
-        Hirasawa.banchoUsers.remove(user)
+        BanchoUserQuitEvent(user, quitReason).call().then {
+            Hirasawa.sendBanchoPacketToAll(HandleUserQuitPacket(user, QuitState.GONE))
+            Hirasawa.banchoUsers.remove(user)
+        }
     }
 }

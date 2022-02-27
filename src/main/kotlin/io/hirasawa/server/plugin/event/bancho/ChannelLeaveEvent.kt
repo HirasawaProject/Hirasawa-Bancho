@@ -8,4 +8,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when player leaves a chat channel
  */
-class ChannelLeaveEvent(val banchoUser: BanchoUser, val chatChannel: ChatChannel): HirasawaEvent, Cancelable()
+class ChannelLeaveEvent(val banchoUser: BanchoUser, val chatChannel: ChatChannel): HirasawaEvent<ChannelLeaveEvent>, Cancelable()

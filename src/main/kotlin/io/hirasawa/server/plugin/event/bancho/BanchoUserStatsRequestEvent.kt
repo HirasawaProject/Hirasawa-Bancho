@@ -11,4 +11,4 @@ import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
  * @param requester The user that caused the event
  * @param requested The IDs the user requested
  */
-data class BanchoUserStatsRequestEvent(val requester: BanchoUser, val requested: ArrayList<Int>): HirasawaEvent, Cancelable()
+data class BanchoUserStatsRequestEvent(val requester: BanchoUser, val requested: ArrayList<Int>): HirasawaEvent<BanchoUserStatsRequestEvent>, Cancelable()

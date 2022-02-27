@@ -47,8 +47,7 @@ class OsuOsz2GetScoresRoute: Route {
                 }.first()
             })
 
-            val preloadEvent = ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode)
-            Hirasawa.eventHandler.callEvent(preloadEvent)
+            ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode).call()
 
             val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
                 BeatmapsTable.select { BeatmapsTable.hash eq beatmapHash }.firstOrNull()
@@ -56,14 +55,13 @@ class OsuOsz2GetScoresRoute: Route {
             val beatmapSet = beatmap?.beatmapSet
 
             if (beatmap == null || beatmapSet == null) {
-                val failEvent = ClientLeaderboardFailEvent(user, beatmapHash, gamemode)
-                Hirasawa.eventHandler.callEvent(failEvent)
-                GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                ClientLeaderboardFailEvent(user, beatmapHash, gamemode).call().then {
+                    GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                }
                 return
             }
 
-            val loadEvent = ClientLeaderboardLoadEvent(user, beatmap, beatmapSet, gamemode)
-            Hirasawa.eventHandler.callEvent(loadEvent)
+            ClientLeaderboardLoadEvent(user, beatmap, beatmapSet, gamemode).call()
 
             GetScoresHeaderHandler(false, beatmap, beatmapSet).write(response.outputStream)
 

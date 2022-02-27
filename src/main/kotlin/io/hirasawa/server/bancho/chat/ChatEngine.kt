@@ -71,21 +71,14 @@ class ChatEngine {
     }
 
     fun handleChat(chatMessage: ChatMessage) {
-        val event = BanchoUserChatEvent(chatMessage)
-
-        Hirasawa.eventHandler.callEvent(event)
-
-        if (event.isCancelled) {
-            return
-        }
-
-
-        if (chatMessage is GlobalChatMessage) {
-            handleGlobalChat(chatMessage)
-        } else if (chatMessage is PrivateChatMessage) {
-            handlePrivateChat(chatMessage)
-        } else if (chatMessage.destinationName == "CONSOLE") {
-            println(chatMessage.message)
+        BanchoUserChatEvent(chatMessage).call().then {
+            if (chatMessage is GlobalChatMessage) {
+                handleGlobalChat(chatMessage)
+            } else if (chatMessage is PrivateChatMessage) {
+                handlePrivateChat(chatMessage)
+            } else if (chatMessage.destinationName == "CONSOLE") {
+                println(chatMessage.message)
+            }
         }
     }
 

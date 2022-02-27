@@ -14,10 +14,10 @@ class UserTimeoutThread: Runnable {
             if (timestamp - user.lastKeepAlive >= Hirasawa.config.banchoUserTimeout) {
                 Hirasawa.sendBanchoPacketToAll(HandleUserQuitPacket(user, QuitState.GONE))
 
-                val event = BanchoUserQuitEvent(user, QuitReason.TIMEOUT)
-                Hirasawa.eventHandler.callEvent(event)
+                BanchoUserQuitEvent(user, QuitReason.TIMEOUT).call().then {
+                    Hirasawa.banchoUsers.remove(user)
+                }
 
-                Hirasawa.banchoUsers.remove(user)
             }
         }
     }

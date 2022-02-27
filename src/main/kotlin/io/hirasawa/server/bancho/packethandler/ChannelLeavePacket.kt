@@ -14,15 +14,11 @@ class ChannelLeavePacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_LEAVE) {
 
         if (channelName in Hirasawa.chatEngine.chatChannels.keys) {
             val channel = Hirasawa.chatEngine[channelName]!!
-            val event = ChannelLeaveEvent(user, channel)
-
-            Hirasawa.eventHandler.callEvent(event)
-
-            if (event.isCancelled) {
+            ChannelLeaveEvent(user, channel).call().then {
+                channel.removePlayer(user)
+            }.cancelled {
                 // Force channel to reopen
                 user.sendPacket(ChannelAvailableAutojoinPacket(channel))
-            } else {
-                channel.removePlayer(user)
             }
         }
     }

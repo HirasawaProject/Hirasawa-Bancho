@@ -9,4 +9,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when player submits a score
  */
-class ScoreSubmitEvent(val score: Score): HirasawaEvent, Cancelable()
+class ScoreSubmitEvent(val score: Score): HirasawaEvent<ScoreSubmitEvent>, Cancelable()

@@ -20,11 +20,10 @@ class PluginManager {
         hirasawaPlugin.pluginDescriptor = pluginDescriptor
         hirasawaPlugin.logger = PluginLogger(pluginDescriptor)
 
-        val event = PluginLoadEvent(pluginDescriptor)
-        Hirasawa.eventHandler.callEvent(event)
-
-        loadedPlugins[pluginDescriptor.name] = hirasawaPlugin
-        hirasawaPlugin.onEnable()
+        PluginLoadEvent(pluginDescriptor).call().then {
+            loadedPlugins[pluginDescriptor.name] = hirasawaPlugin
+            hirasawaPlugin.onEnable()
+        }
     }
 
     fun unloadPlugin(name: String): Boolean {
@@ -34,13 +33,12 @@ class PluginManager {
 
         val plugin = loadedPlugins[name] ?: return false
 
-        val event = PluginUnloadEvent(plugin.pluginDescriptor)
-        Hirasawa.eventHandler.callEvent(event)
-
-        Hirasawa.eventHandler.removeEvents(plugin)
-        Hirasawa.chatEngine.removeCommands(plugin)
-        plugin.onDisable()
-        loadedPlugins.remove(name)
+        PluginUnloadEvent(plugin.pluginDescriptor).call().then {
+            Hirasawa.eventHandler.removeEvents(plugin)
+            Hirasawa.chatEngine.removeCommands(plugin)
+            plugin.onDisable()
+            loadedPlugins.remove(name)
+        }
 
         return true
     }

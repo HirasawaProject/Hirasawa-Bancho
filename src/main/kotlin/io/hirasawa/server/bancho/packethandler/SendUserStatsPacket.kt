@@ -24,17 +24,13 @@ class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
 
         val banchoStatus = BanchoStatus(status, statustext, beatmapChecksum, mods, mode, beatmapId)
 
-        val event = BanchoUserModeChangeEvent(user, mode)
-
-        if (event.isCancelled) {
-            return
-        }
-
-        user.status = banchoStatus
-        user.updateUserStats(mode)
-        user.sendPacket(HandleOsuUpdatePacket(user))
-        for (spectator in user.spectators) {
-            spectator.sendPacket(HandleOsuUpdatePacket(user))
+        BanchoUserModeChangeEvent(user, mode).call().then {
+            user.status = banchoStatus
+            user.updateUserStats(mode)
+            user.sendPacket(HandleOsuUpdatePacket(user))
+            for (spectator in user.spectators) {
+                spectator.sendPacket(HandleOsuUpdatePacket(user))
+            }
         }
     }
 }

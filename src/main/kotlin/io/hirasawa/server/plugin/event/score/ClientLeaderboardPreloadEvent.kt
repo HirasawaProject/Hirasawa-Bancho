@@ -6,4 +6,4 @@ import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.plugin.event.HirasawaEvent
 
-class ClientLeaderboardPreloadEvent(val user: User, val beatmapHash: String, val gameMode: GameMode): HirasawaEvent
+class ClientLeaderboardPreloadEvent(val user: User, val beatmapHash: String, val gameMode: GameMode): HirasawaEvent<ClientLeaderboardPreloadEvent>
