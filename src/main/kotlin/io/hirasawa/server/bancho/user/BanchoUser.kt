@@ -80,40 +80,37 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      */
     fun spectateUser(banchoUser: BanchoUser) {
         if (this.spectating != null) {
-            val spectateSwitchEvent = BanchoUserSpectateSwitchEvent(this, this.spectating!!, banchoUser)
-            Hirasawa.eventHandler.callEvent(spectateSwitchEvent)
+            BanchoUserSpectateSwitchEvent(this, this.spectating!!, banchoUser).call()
             stopSpectating()
         }
-        val spectateJoinEvent = BanchoUserSpectateJoinEvent(this, banchoUser)
-        Hirasawa.eventHandler.callEvent(spectateJoinEvent)
+        BanchoUserSpectateJoinEvent(this, banchoUser).call().then {
+            for (spectators in banchoUser.spectators) {
+                spectators.sendPacket(FellowSpectatorJoined(this))
+            }
 
-        for (spectators in banchoUser.spectators) {
-            spectators.sendPacket(FellowSpectatorJoined(this))
+            banchoUser.sendPacket(SpectatorJoined(this))
+
+            this.spectating = banchoUser
+            banchoUser.spectators.add(this)
+
+            this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+            banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
         }
-
-        banchoUser.sendPacket(SpectatorJoined(this))
-
-        this.spectating = banchoUser
-        banchoUser.spectators.add(this)
-
-        this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
-        banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
     }
 
     fun stopSpectating() {
         if (this.spectating != null) {
-            val spectateLeaveEvent = BanchoUserSpectateLeaveEvent(this, this.spectating!!)
-            Hirasawa.eventHandler.callEvent(spectateLeaveEvent)
+            BanchoUserSpectateLeaveEvent(this, this.spectating!!).call().then {
+                for (spectators in this.spectating!!.spectators) {
+                    spectators.sendPacket(FellowSpectatorLeft(this))
+                }
 
-            for (spectators in this.spectating!!.spectators) {
-                spectators.sendPacket(FellowSpectatorLeft(this))
+                this.spectating?.sendPacket(SpectatorLeft(this))
+
+                this.spectating?.spectators?.remove(this)
+                this.spectating = null
+                this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
             }
-
-            this.spectating?.sendPacket(SpectatorLeft(this))
-
-            this.spectating?.spectators?.remove(this)
-            this.spectating = null
-            this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
         }
     }
 

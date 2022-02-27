@@ -13,18 +13,16 @@ class UserStatsRequestPacket: PacketHandler(BanchoPacketType.OSU_USER_STATS_REQU
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val intList = BanchoIntListHandler(reader).intList
 
-        val event = BanchoUserStatsRequestEvent(user, intList)
-
-        if (event.isCancelled) {
-            return
-        }
-
-        for (id in intList) {
-            if (id == user.id) continue // Don't send our stats
-            if (id in Hirasawa.banchoUsers) {
-                val requestedUser = Hirasawa.banchoUsers[id] ?: continue
-                user.sendPacket(HandleOsuUpdatePacket(requestedUser))
+        BanchoUserStatsRequestEvent(user, intList).call().then {
+            for (id in intList) {
+                if (id == user.id) continue // Don't send our stats
+                if (id in Hirasawa.banchoUsers) {
+                    val requestedUser = Hirasawa.banchoUsers[id] ?: continue
+                    user.sendPacket(HandleOsuUpdatePacket(requestedUser))
+                }
             }
         }
+
+
     }
 }

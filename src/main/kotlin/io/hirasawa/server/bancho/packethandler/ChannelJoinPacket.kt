@@ -15,15 +15,11 @@ class ChannelJoinPacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_JOIN) {
 
         if (channelName in Hirasawa.chatEngine.chatChannels.keys) {
             val channel = Hirasawa.chatEngine[channelName]!!
-            val event = ChannelJoinEvent(user, channel)
-
-            Hirasawa.eventHandler.callEvent(event)
-
-            if (event.isCancelled) {
-                user.sendPacket(ChannelRevokedPacket(channelName))
-            } else {
+            ChannelJoinEvent(user, channel).call().then {
                 channel.addUser(user)
                 user.sendPacket(ChannelJoinSuccessPacket(channel))
+            }.cancelled {
+                user.sendPacket(ChannelRevokedPacket(channelName))
             }
         } else {
             user.sendPacket(ChannelRevokedPacket(channelName))

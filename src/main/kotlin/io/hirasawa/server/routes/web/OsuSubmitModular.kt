@@ -52,8 +52,7 @@ class OsuSubmitModular: Route {
         if (Hirasawa.authenticate(handler.username, request.post["pass"] ?: "")) {
             val score = handler.score!!
 
-            val event = ScoreSubmitEvent(score)
-            Hirasawa.eventHandler.callEvent(event)
+            val event = ScoreSubmitEvent(score).call()
 
             if (event.isCancelled) {
                 return
