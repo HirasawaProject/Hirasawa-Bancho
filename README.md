@@ -1,4 +1,6 @@
 # Hirasawa Project
+[![Unit tests](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml) [![Codacy Security Scan](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml)
+
 Hirasawa Project is a WIP server for osu! supporting custom plugins written in Kotlin
 
 ## The ethos of the project
