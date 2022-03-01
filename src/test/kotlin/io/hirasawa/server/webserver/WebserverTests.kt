@@ -93,7 +93,7 @@ class WebserverTests {
         val errorLogAfter = Files.readAllLines(File("logs/webserver/error.txt").toPath())
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.code, response.code)
-        assertEquals("185", response.headers["Content-Size"])
+        assertEquals("185", response.headers["Content-Length"])
         assert(body.contains("Internal Server Error"))
         assert(body.contains("GET (/error)"))
         assert(errorLogBefore.size < errorLogAfter.size)
@@ -136,7 +136,7 @@ class WebserverTests {
         val body = response.body?.string()!!
 
         assertEquals(HttpStatus.BAD_REQUEST.code, response.code)
-        assertEquals("198", response.headers["Content-Size"])
+        assertEquals("198", response.headers["Content-Length"])
         assert(body.contains("Bad Request"))
         assert(body.contains("GET (/params/101)"))
     }
@@ -265,7 +265,7 @@ class WebserverTests {
         val body = response.body?.string()!!
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals("73", response.headers["Content-Size"])
+        assertEquals("73", response.headers["Content-Length"])
         assert(body.contains("<!DOCTYPE html>"))
         assert(body.contains("<html>"))
         assert(body.contains("<body>"))
@@ -296,7 +296,7 @@ class WebserverTests {
         val accessLogAfter = Files.readAllLines(File("logs/webserver/access.txt").toPath())
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals("4", response.headers["Content-Size"])
+        assertEquals("4", response.headers["Content-Length"])
         assertEquals("test", body)
         assertEquals(1, accessLogAfter.size - accessLogBefore.size)
         assert(body.contains("test"))
