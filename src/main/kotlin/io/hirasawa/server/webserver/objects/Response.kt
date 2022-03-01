@@ -65,11 +65,11 @@ data class Response (var httpStatus: HttpStatus, private val wireOutputStream: D
     }
 
     /**
-     * Closes the connection to the client and populates the content size header if headers haven't been sent yet
+     * Closes the connection to the client and populates the content length header if headers haven't been sent yet
      */
     fun close() {
         if (!haveHeadersBeenSent) {
-            headers[HttpHeader.CONTENT_SIZE] = buffer.size()
+            headers[HttpHeader.CONTENT_LENGTH] = buffer.size()
         }
         flush()
         wireOutputStream.close()

@@ -5,7 +5,7 @@ package io.hirasawa.server.webserver.enums
  */
 enum class HttpHeader {
     CONTENT_TYPE,
-    CONTENT_SIZE,
+    CONTENT_LENGTH,
     USER_AGENT,
     LOCATION;
 
