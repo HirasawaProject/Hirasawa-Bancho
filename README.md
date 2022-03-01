@@ -9,7 +9,7 @@ This project should not provide anything to end user further than what would be 
 so any nice to have features should instead be done via the plugin support
 
 ## Plugins
-We support plugins to extend the functionality of the server similarly to how Bukkit handles it forMinecraft utilising 
+We support plugins to extend the functionality of the server similarly to how Bukkit handles it for Minecraft utilising 
 events for all actions in-game
 
 Plugins currently have access to:
