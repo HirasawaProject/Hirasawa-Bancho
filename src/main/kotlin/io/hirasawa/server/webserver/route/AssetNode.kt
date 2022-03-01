@@ -19,6 +19,7 @@ class AssetNode(val assetPath: String): RouteNode {
 
             response.headers[HttpHeader.CONTENT_TYPE] = mimeType
             response.outputStream.write(Files.readAllBytes(filePath))
+            response.close()
         } else {
             RouteNotFoundRoute().handle(request, response)
         }
