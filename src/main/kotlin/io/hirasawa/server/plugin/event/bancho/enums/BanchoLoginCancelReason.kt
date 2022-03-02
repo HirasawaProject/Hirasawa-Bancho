@@ -1,7 +1,7 @@
 package io.hirasawa.server.plugin.event.bancho.enums
 
 enum class BanchoLoginCancelReason(val id: Int) {
-    NOT_CANCELLED(0),
+    UNKNOWN(-5),
     AUTHENTICATION_FAILED(-1),
     OLD_VERSION(-2),
     BANNED(-3),

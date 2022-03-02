@@ -54,14 +54,8 @@ class BanchoRoute: Route {
                 user.uuid = token
                 user.updateKeepAlive()
 
-                var cancelReason = BanchoLoginCancelReason.NOT_CANCELLED
-                if (user.isBanned) {
-                    cancelReason = BanchoLoginCancelReason.BANNED
-                }
-                val loginEvent = BanchoUserLoginEvent(user, cancelReason)
-                Hirasawa.eventHandler.callEvent(loginEvent)
-
-                if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
+                val cancelReason = if (user.isBanned) BanchoLoginCancelReason.BANNED  else BanchoLoginCancelReason.UNKNOWN
+                BanchoUserLoginEvent(user, cancelReason).call().then {
                     Hirasawa.banchoUsers.add(user)
                     LoginReplyPacket(user.id).write(osuWriter)
                     ProtocolNegotiationPacket(19).write(osuWriter)
@@ -93,8 +87,8 @@ class BanchoRoute: Route {
                             Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl ?: "")
                     }
 
-                } else {
-                    LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
+                }.cancelled {
+                    LoginReplyPacket(cancelReason).write(osuWriter)
                 }
             } else {
                 LoginReplyPacket(BanchoLoginCancelReason.AUTHENTICATION_FAILED).write(osuWriter)
