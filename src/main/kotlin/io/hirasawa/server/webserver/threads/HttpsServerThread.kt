@@ -16,6 +16,7 @@ class HttpsServerThread(val port: Int): Runnable {
         if (!File("keystore.pfx").exists()) {
             println("You are missing the keystore.pfx file, this is required for HTTPS connections.")
             println("Falling back to HTTP only mode!")
+            println("Bare in mind osu! requires an HTTPS connection so clients will not be able to connect")
             return
         }
 
