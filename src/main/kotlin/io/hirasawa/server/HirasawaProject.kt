@@ -19,8 +19,6 @@ fun main() {
     // Load user provided plugins
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
 
-    // Clone routes from osu.ppy.sh to also be served by the user provided domain
-    Hirasawa.webserver.cloneRoutes(CommonDomains.OSU_WEB, Hirasawa.config.domain)
     Hirasawa.webserver.start()
 
     if (Hirasawa.isUpdateRequired) {

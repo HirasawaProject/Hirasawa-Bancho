@@ -9,7 +9,7 @@ import io.hirasawa.server.webserver.enums.HttpMethod
 
 class InternalWebFrontendPlugin: HirasawaPlugin() {
     override fun onEnable() {
-        Hirasawa.webserver.addRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET, HomeRoute())
+        Hirasawa.webserver.addRoute(CommonDomains.HIRASAWA_WEB, "/", HttpMethod.GET, HomeRoute())
     }
 
     override fun onDisable() {

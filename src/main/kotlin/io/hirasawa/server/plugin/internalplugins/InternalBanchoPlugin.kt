@@ -15,8 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class InternalBanchoPlugin: HirasawaPlugin() {
     private val threadExecutor = Executors.newSingleThreadScheduledExecutor()
-    private val alternativeBanchoDomains = listOf("c1.ppy.sh", "c2.ppy.sh", "c3.ppy.sh", "c4.ppy.sh", "c5.ppy.sh",
-        "c6.ppy.sh", "c7.ppy.sh", "c8.ppy.sh", "c9.ppy.sh", "ce.ppy.sh", "cho.ppy.sh")
+    private val alternativeBanchoDomains = listOf("c.${Hirasawa.config.domain}", "c6.${Hirasawa.config.domain}")
     override fun onEnable() {
         // Large amount of duplicated code moved to own function
         registerPackets()
