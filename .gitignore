@@ -115,4 +115,4 @@ gradle-app.setting
 /logs
 /test
 /config.json
-/keystore.jks
+/keystore.pfx
