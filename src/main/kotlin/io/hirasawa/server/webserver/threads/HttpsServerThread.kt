@@ -13,13 +13,14 @@ class HttpsServerThread(val port: Int): Runnable {
             return
         }
 
-        if (!File("keystore.jks").exists()) {
-            println("You are missing the keystore.jks file, this is required for HTTPS connections.")
+        if (!File("keystore.pfx").exists()) {
+            println("You are missing the keystore.pfx file, this is required for HTTPS connections.")
             println("Falling back to HTTP only mode!")
+            println("Bare in mind osu! requires an HTTPS connection so clients will not be able to connect")
             return
         }
 
-        System.setProperty("javax.net.ssl.keyStore", "./keystore.jks")
+        System.setProperty("javax.net.ssl.keyStore", "./keystore.pfx")
         System.setProperty("javax.net.ssl.keyStorePassword", "password")
 
 
