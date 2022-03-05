@@ -1,5 +1,7 @@
 package io.hirasawa.server.enums
 
+import io.hirasawa.server.objects.Mods
+
 enum class Mod(val id: Int) {
     NO_MOD(0),
     NO_FAIL(1 shl 0),
@@ -33,24 +35,7 @@ enum class Mod(val id: Int) {
     KEY2(1 shl 28),
     SCORE_V2(1 shl 29);
 
-    private infix fun within(id: Int): Boolean {
-        return (id and this.id) > 0
-    }
-
-    operator fun plus(mod: Mod): Int {
-        return this.id + mod.id
-    }
-
-    companion object {
-        fun idToModArray(id: Int): ArrayList<Mod> {
-            val mods = ArrayList<Mod>()
-            for (mod in Mod.values()) {
-                if (mod within id) {
-                    mods.add(mod)
-                }
-            }
-
-            return mods
-        }
+    operator fun plus(mod: Mod): Mods {
+        return Mods(arrayListOf(this, mod))
     }
 }
