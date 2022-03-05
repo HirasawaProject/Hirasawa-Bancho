@@ -7,6 +7,7 @@ import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.handlers.ScoreHandler
+import io.hirasawa.server.objects.Mods
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.plugin.event.web.ScoreSubmitEvent
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -58,7 +59,7 @@ class OsuSubmitModular: Route {
                 return
             }
 
-            val mods = Mod.idToModArray(score.mods)
+            val mods = Mods.fromInt(score.mods)
             for (mod in Hirasawa.config.blockedMods) {
                 if (mod in mods) {
                     return
