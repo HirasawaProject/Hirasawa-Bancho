@@ -17,7 +17,7 @@ enum class Mod(val id: Int) {
     FLASHLIGHT(1 shl 10),
     AUTOPLAY(1 shl 11),
     SPUN_OUT(1 shl 12),
-    RELAX2(1 shl 13),
+    AUTOPILOT(1 shl 13),
     PERFECT(1 shl 14),
     KEY4(1 shl 15),
     KEY5(1 shl 16),
