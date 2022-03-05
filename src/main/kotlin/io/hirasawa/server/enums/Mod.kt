@@ -6,7 +6,7 @@ enum class Mod(val id: Int) {
     NO_MOD(0),
     NO_FAIL(1 shl 0),
     EASY(1 shl 1),
-    NO_VIDEO(1 shl 2), // Legacy
+    TOUCH_DEVICE(1 shl 2), // Not selected by user, added when touch device is detected during play
     HIDDEN(1 shl 3),
     HARD_ROCK(1 shl 4),
     SUDDEN_DEATH(1 shl 5),
