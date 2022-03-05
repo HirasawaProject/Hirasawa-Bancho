@@ -32,7 +32,7 @@ In terms of hardware requirements I've gotten this to run on a Pi Zero
 
 ## Builds
 Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project/releases), the version number uses the
-format YYYYDDMM using the UTC timezone
+format YYYYMMDD using the UTC timezone
 
 ## Building
 Building Hirasawa is very easy, for building testing builds `gradle shadow` will output to 
