@@ -35,11 +35,8 @@ Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project
 format YYYYDDMM using the UTC timezone
 
 ## Building
-Building Hirasawa is very easy, for building testing builds `gradle build` will output to 
-`build/libs/HirasawaProject-Testing.jar`
-
-If you want to build a production jar `gradle prod build` will output to `build/libs/HirasawaProject-VERSION.jar` using
-a generated version number based on the date, Hirasawa will also be aware of the version internally
+Building Hirasawa is very easy, for building testing builds `gradle shadow` will output to 
+`build/libs/HirasawaProject-VERSION.jar`
 
 ## Contribution
 Hirasawa is completely open to contribution, please feel free to open tickets or work on what we currently have in the
