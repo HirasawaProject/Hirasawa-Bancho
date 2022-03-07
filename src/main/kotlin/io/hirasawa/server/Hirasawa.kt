@@ -53,7 +53,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val chatEngine = ChatEngine()
         val pipeline = PipelineManager()
-        val irc = IrcServer(6667)
+        val irc = IrcServer(config.ircPort)
         val osuApi = OsuApi(config.osuApiKey)
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
