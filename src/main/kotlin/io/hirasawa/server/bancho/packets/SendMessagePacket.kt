@@ -1,6 +1,6 @@
 package io.hirasawa.server.bancho.packets
 
-import io.hirasawa.server.bancho.chat.message.ChatMessage
+import io.hirasawa.server.chat.message.ChatMessage
 
 class SendMessagePacket(chatMessage: ChatMessage): BanchoPacket(BanchoPacketType.BANCHO_SEND_MESSAGE) {
     init {

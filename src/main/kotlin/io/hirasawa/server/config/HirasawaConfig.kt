@@ -1,6 +1,6 @@
 package io.hirasawa.server.config
 
-import io.hirasawa.server.bancho.chat.ChatChannel
+import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.database.DatabaseCredentials
 import io.hirasawa.server.enums.Mod
 

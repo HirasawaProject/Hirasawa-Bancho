@@ -1,8 +1,8 @@
 package io.hirasawa.server.irc.clientcommands
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.ChatChannel
-import io.hirasawa.server.bancho.chat.message.ChatMessage
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.message.ChatMessage
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.irc.enums.NumericReply
 import io.hirasawa.server.irc.enums.TextualReply

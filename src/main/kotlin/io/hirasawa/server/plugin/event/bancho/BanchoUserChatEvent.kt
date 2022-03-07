@@ -1,7 +1,6 @@
 package io.hirasawa.server.plugin.event.bancho
 
-import io.hirasawa.server.bancho.chat.message.ChatMessage
-import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.chat.message.ChatMessage
 import io.hirasawa.server.plugin.event.Cancelable
 import io.hirasawa.server.plugin.event.HirasawaEvent
 

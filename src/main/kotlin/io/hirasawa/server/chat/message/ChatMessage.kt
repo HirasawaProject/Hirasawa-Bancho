@@ -1,4 +1,4 @@
-package io.hirasawa.server.bancho.chat.message
+package io.hirasawa.server.chat.message
 
 import io.hirasawa.server.bancho.user.User
 

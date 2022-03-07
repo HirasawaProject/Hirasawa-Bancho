@@ -1,11 +1,9 @@
 package io.hirasawa.server.irc.objects
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
-import io.hirasawa.server.irc.clientcommands.Privmsg
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.*
 

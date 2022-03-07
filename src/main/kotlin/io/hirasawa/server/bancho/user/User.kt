@@ -1,8 +1,8 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.CommandSender
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.chat.command.CommandSender
+import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.database.tables.FriendsTable
 import io.hirasawa.server.database.tables.PermissionGroupUsersTable
 import io.hirasawa.server.database.tables.PermissionGroupsTable

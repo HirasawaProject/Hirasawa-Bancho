@@ -1,8 +1,8 @@
 package io.hirasawa.server.commands
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.database.tables.BeatmapsetsTable
 import org.jetbrains.exposed.sql.insert

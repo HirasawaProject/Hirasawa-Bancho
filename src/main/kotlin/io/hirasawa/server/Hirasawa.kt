@@ -1,10 +1,9 @@
 package io.hirasawa.server
 
 import com.google.gson.GsonBuilder
-import io.hirasawa.server.bancho.chat.ChatChannel
-import io.hirasawa.server.bancho.chat.ChatEngine
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.ChatEngine
 import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.bancho.objects.BanchoUserMap
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
@@ -16,9 +15,9 @@ import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
-import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
+import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.osuapi.OsuApi
 import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.permissions.PermissionGroup
@@ -40,7 +39,6 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.typeOf
 
 class Hirasawa {
     companion object {
@@ -63,7 +61,7 @@ class Hirasawa {
         val isUpdateRequired get() = updateChecker.checkUpdate()
 
         lateinit var hirasawaBot: HirasawaBot
-        val banchoUsers = BanchoUserMap()
+        val banchoUsers = UserMap<BanchoUser>()
 
         /**
          * Sends a BanchoPacket to all connected users on Bancho

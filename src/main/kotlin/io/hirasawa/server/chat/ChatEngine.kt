@@ -1,12 +1,12 @@
-package io.hirasawa.server.bancho.chat
+package io.hirasawa.server.chat
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
-import io.hirasawa.server.bancho.chat.command.CommandSender
-import io.hirasawa.server.bancho.chat.message.ChatMessage
-import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
+import io.hirasawa.server.chat.command.CommandSender
+import io.hirasawa.server.chat.message.ChatMessage
+import io.hirasawa.server.chat.message.GlobalChatMessage
+import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser

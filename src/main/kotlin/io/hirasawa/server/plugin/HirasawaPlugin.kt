@@ -1,7 +1,7 @@
 package io.hirasawa.server.plugin
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.ChatCommand
 import io.hirasawa.server.logger.PluginLogger
 import io.hirasawa.server.plugin.event.EventListener
 
