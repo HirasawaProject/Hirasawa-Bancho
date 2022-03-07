@@ -26,6 +26,7 @@ class Helper {
                     it[UsersTable.password] = BCrypt.hashpw("", BCrypt.gensalt())
                     it[UsersTable.banned] = false
                     it[UsersTable.mutedUntil] = 0
+                    it[UsersTable.ircToken] = "ircToken"
                 }
 
                 UsersTable.select { UsersTable.id eq userId }.first()
