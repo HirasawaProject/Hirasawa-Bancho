@@ -7,13 +7,18 @@ import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
-import io.hirasawa.server.irc.clientcommands.Privmsg
+import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
 
 data class ChatChannel(val name: String, val description: String, val autojoin: Boolean) {
     val connectedUsers = ArrayList<User>()
     val size get() = connectedUsers.size.toShort()
 
+    /**
+     * Send BanchoPacket to all BanchoUsers connected to this ChatChannel
+     *
+     * @param banchoPacket The packet to send
+     */
     fun sendPacketToAll(banchoPacket: BanchoPacket) {
         for (user in connectedUsers) {
             if (user is BanchoUser) {
@@ -31,16 +36,43 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
         }
     }
 
+    private fun sendIrcReplyToAll(ircProtocolReply: IrcProtocolReply) {
+        for (user in connectedUsers) {
+            if (user is IrcUser) {
+                user.sendReply(ircProtocolReply)
+            }
+        }
+    }
+
+    /**
+     * Add user to ChatChannel, this will register them for all messages and inform other connected users that they
+     * joined
+     *
+     * @param user The user to add
+     */
     fun addUser(user: User) {
         connectedUsers.add(user)
+        sendIrcReplyToAll(Join(this, user))
         update()
     }
 
-    fun removePlayer(user: User) {
+    /**
+     * Removes a user from this ChatChannel, this will unregister them for all messages and inform other connected users
+     * that they have left
+     *
+     * @param user The user to add
+     */
+    fun removeUser(user: User) {
+        sendIrcReplyToAll(Part(this, user))
         connectedUsers.remove(user)
         update()
     }
 
+    /**
+     * Queues a message to all connected clients in the ChatChannel other than the message source
+     *
+     * @param chatMessage The chat message to queue
+     */
     fun sendMessage(chatMessage: GlobalChatMessage) {
         for (user in connectedUsers) {
             if (chatMessage.source == user) continue
