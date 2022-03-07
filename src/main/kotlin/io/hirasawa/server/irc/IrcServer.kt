@@ -14,7 +14,7 @@ import kotlin.collections.HashMap
 
 class IrcServer(private val port: Int) {
     private val outputStreams = HashMap<User, DataOutputStream>()
-    private val connectedUsers = ArrayList<IrcUser>()
+    val connectedUsers = ArrayList<IrcUser>()
     private val registeredCommands = HashMap<String, IrcServerCommand>()
 
     fun start() {

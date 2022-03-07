@@ -15,6 +15,8 @@ import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.irc.IrcServer
+import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
+import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.osuapi.OsuApi
@@ -63,9 +65,23 @@ class Hirasawa {
         lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = BanchoUserMap()
 
+        /**
+         * Sends a BanchoPacket to all connected users on Bancho
+         *
+         * @param banchoPacket The packet to send
+         */
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
             for (user in banchoUsers) {
                 user.sendPacket(banchoPacket)
+            }
+        }
+
+        /**
+         * Send IRC reply to all connected users over IRC
+         */
+        fun sendIrcReplyToAll(ircProtocolReply: IrcProtocolReply) {
+            for (user in irc.connectedUsers) {
+                user.sendReply(ircProtocolReply)
             }
         }
 
