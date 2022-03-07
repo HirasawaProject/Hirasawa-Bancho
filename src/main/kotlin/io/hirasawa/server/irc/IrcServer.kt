@@ -23,12 +23,12 @@ class IrcServer(private val port: Int) {
 
     fun sendToAll(ircProtocolReply: IrcProtocolReply) {
         for (streams in outputStreams) {
-            streams.value.writeBytes(ircProtocolReply.generate())
+            streams.value.writeBytes(ircProtocolReply.generate(streams.key))
         }
     }
 
     fun sendToUser(user: User, ircProtocolReply: IrcProtocolReply) {
-        outputStreams[user]?.writeBytes(ircProtocolReply.generate())
+        outputStreams[user]?.writeBytes(ircProtocolReply.generate(user))
     }
 
     fun handleCommand(ircUser: IrcUser, command: String, args: Array<String>) {
@@ -40,14 +40,14 @@ class IrcServer(private val port: Int) {
         connectedUsers.add(ircUser)
         outputStreams[ircUser] = outputStream
 
-        sendToUser(ircUser, RplWelcome(ircUser, "Welcome to Hirasawa"))
-        sendToUser(ircUser, RplYourHost(ircUser))
-        sendToUser(ircUser, RplCreated(ircUser))
-        sendToUser(ircUser, RplMyInfo(ircUser))
-        sendToUser(ircUser, RplLUserClient(ircUser))
-        sendToUser(ircUser, RplMotdStart(ircUser, "Welcome"))
-        sendToUser(ircUser, RplMotd(ircUser, "to"))
-        sendToUser(ircUser, RplEndOfMotd(ircUser, "Hirasawa~"))
+        sendToUser(ircUser, RplWelcome("Welcome to Hirasawa"))
+        sendToUser(ircUser, RplYourHost())
+        sendToUser(ircUser, RplCreated())
+        sendToUser(ircUser, RplMyInfo())
+        sendToUser(ircUser, RplLUserClient())
+        sendToUser(ircUser, RplMotdStart("Welcome"))
+        sendToUser(ircUser, RplMotd("to"))
+        sendToUser(ircUser, RplEndOfMotd("Hirasawa~"))
     }
 
     fun removeUser(ircUser: IrcUser) {

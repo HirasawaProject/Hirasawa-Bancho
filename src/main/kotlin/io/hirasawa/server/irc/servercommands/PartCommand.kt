@@ -9,7 +9,7 @@ class PartCommand: IrcServerCommand {
         println(args.toList())
         val channel = Hirasawa.chatEngine[args[0]]
         if (channel == null) {
-            user.sendReply(ErrNoSuchChannel(user, args[0]))
+            user.sendReply(ErrNoSuchChannel(args[0]))
             return
         }
 

@@ -1,5 +1,7 @@
 package io.hirasawa.server.irc.clientcommands
 
+import io.hirasawa.server.bancho.user.User
+
 interface IrcProtocolReply {
-    fun generate(): String
+    fun generate(to: User): String
 }
