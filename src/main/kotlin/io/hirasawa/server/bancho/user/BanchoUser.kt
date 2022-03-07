@@ -52,16 +52,6 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     }
 
     /**
-     * Sends a private chat message to this user
-     *
-     * @param from The user that sent the chat message
-     * @param message The message sent to the user
-     */
-    override fun sendPrivateMessage(from: User, message: String) {
-        Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
-    }
-
-    /**
      * Updates user stats for the specified gamemode
      *
      * This can be used to switch gamemodes or just update the stats on it

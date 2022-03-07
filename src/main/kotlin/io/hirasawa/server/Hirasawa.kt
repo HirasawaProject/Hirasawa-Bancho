@@ -14,6 +14,7 @@ import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.tables.*
+import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.osuapi.OsuApi
@@ -52,6 +53,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val chatEngine = ChatEngine()
         val pipeline = PipelineManager()
+        val irc = IrcServer(6667)
         val osuApi = OsuApi(config.osuApiKey)
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
