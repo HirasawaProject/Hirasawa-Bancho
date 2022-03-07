@@ -1,5 +1,6 @@
 package io.hirasawa.server.bancho.objects
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import java.util.*
@@ -36,12 +37,14 @@ class BanchoUserMap {
         uuidCache[user.uuid] = user
         usernameCache[user.username] = user
         idCache[user.id] = user
+        Hirasawa.chatEngine.addUser(user)
     }
 
     fun remove(user: BanchoUser) {
         uuidCache.remove(user.uuid)
         usernameCache.remove(user.username)
         idCache.remove(user.id)
+        Hirasawa.chatEngine.removeUser(user)
     }
 
     operator fun contains(key: UUID): Boolean {

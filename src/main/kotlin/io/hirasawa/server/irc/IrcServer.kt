@@ -1,8 +1,10 @@
 package io.hirasawa.server.irc
 
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.chat.message.ChatMessage
 import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
 import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
@@ -39,6 +41,7 @@ class IrcServer(private val port: Int) {
     fun addUser(ircUser: IrcUser, outputStream: DataOutputStream) {
         connectedUsers.add(ircUser)
         outputStreams[ircUser] = outputStream
+        Hirasawa.chatEngine.addUser(ircUser)
 
         sendToUser(ircUser, RplWelcome("Welcome to Hirasawa"))
         sendToUser(ircUser, RplYourHost())
@@ -54,6 +57,7 @@ class IrcServer(private val port: Int) {
         connectedUsers.remove(ircUser)
         outputStreams[ircUser]?.close()
         outputStreams.remove(ircUser)
+        Hirasawa.chatEngine.removeUser(ircUser)
     }
 
     fun registerServerCommand(command: String, ircServerCommand: IrcServerCommand) {
