@@ -157,6 +157,12 @@ class Hirasawa {
             return BCrypt.checkpw(password, result[UsersTable.password])
         }
 
+        fun authenticateIrc(username: String, ircToken: String): Boolean {
+            return transaction {
+                UsersTable.select { UsersTable.username eq username and (UsersTable.ircToken eq ircToken) }.empty().not()
+            }
+        }
+
         // TODO move out
         fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode) {
             var rank = 0

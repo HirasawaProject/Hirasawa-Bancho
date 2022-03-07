@@ -27,5 +27,7 @@ enum class NumericReply(val id: String) {
 
     ERR_NOSUCHCHANNEL("403"),
 
-    ERR_NOMOTD("422")
+    ERR_NOMOTD("422"),
+
+    ERR_PASSWDMISMATCH("464"),
 }

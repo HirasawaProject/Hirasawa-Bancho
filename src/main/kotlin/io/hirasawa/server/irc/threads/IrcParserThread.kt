@@ -11,12 +11,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.BufferedInputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.lang.Exception
 import java.lang.StringBuilder
 import java.net.Socket
 import java.util.*
 
 class IrcParserThread(private val socket: Socket) : Runnable {
     private var isLoggedIn = false
+    private var password = ""
     private lateinit var user: IrcUser
     val reader = DataInputStream(BufferedInputStream(socket.getInputStream()))
     val writer = DataOutputStream(socket.getOutputStream())
@@ -32,8 +34,8 @@ class IrcParserThread(private val socket: Socket) : Runnable {
                 processCommand(args[0], argsWithoutCommand)
                 builder.clear()
             }
+            print(temp)
             if (temp !in arrayOf('\n', '\r')) {
-                print(temp)
                 builder.append(temp)
             }
         }
@@ -48,14 +50,35 @@ class IrcParserThread(private val socket: Socket) : Runnable {
         } else {
             // We're still doing the handshake
             // We're quite basic so we're just gonna handle the USER command as the login
-            if (command == "USER") {
-                user = IrcUser(transaction {
-                    UsersTable.select { UsersTable.username eq args[0] }.first()
-                })
+            try {
+                when (command) {
+                    "USER" -> {
+                        if (password == "") {
+                            writer.writeBytes(ErrPasswdMismatch().generate(args[0]))
+                            socket.close()
+                            return
+                        }
 
-                Hirasawa.irc.addUser(user, writer)
-                isLoggedIn = true
+                        if (!Hirasawa.authenticateIrc(args[0], password)) {
+                            writer.writeBytes(ErrPasswdMismatch().generate(args[0]))
+                            socket.close()
+                            return
+                        }
+                        user = IrcUser(transaction {
+                            UsersTable.select { UsersTable.username eq args[0] }.first()
+                        })
+
+                        Hirasawa.irc.addUser(user, writer)
+                        isLoggedIn = true
+                    }
+                    "PASS" -> {
+                        password = args[0]
+                    }
+                }
+            } catch (exception: Exception) {
+                exception.printStackTrace()
             }
+
         }
     }
 }
