@@ -11,6 +11,7 @@ import io.hirasawa.server.webserver.enums.CommonDomains
 private val host = CommonDomains.HIRASAWA_IRC.domain
 // Textual
 class Join(chatChannel: ChatChannel, joiningUser: User): TextualIrcReply(joiningUser.username, TextualReply.JOIN, chatChannel.name)
+class Part(chatChannel: ChatChannel, partingUser: User): TextualIrcReply(partingUser.username, TextualReply.PART, chatChannel.name)
 class Pong: TextualIrcReply(host, TextualReply.PONG, "$host :")
 class Privmsg(chatMessage: ChatMessage): TextualIrcReply(chatMessage.source.username, TextualReply.PRIVMSG, "${chatMessage.destinationName} :${chatMessage.message}")
 

@@ -14,6 +14,7 @@ class InternalIrcPlugin: HirasawaPlugin() {
         Hirasawa.irc.registerServerCommand("JOIN", JoinCommand())
         Hirasawa.irc.registerServerCommand("LIST", ListCommand())
         Hirasawa.irc.registerServerCommand("PING", PingCommand())
+        Hirasawa.irc.registerServerCommand("PART", PartCommand())
         Hirasawa.irc.registerServerCommand("PRIVMSG", PrivmsgCommand())
         Hirasawa.irc.registerServerCommand("QUIT", QuitCommand())
         Hirasawa.irc.start()
