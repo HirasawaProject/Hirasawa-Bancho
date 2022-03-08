@@ -39,14 +39,16 @@ class IrcServer(private val port: Int) {
         outputStreams[ircUser] = outputStream
         Hirasawa.chatEngine.addUser(ircUser)
 
-        sendToUser(ircUser, RplWelcome("Welcome to Hirasawa"))
+        sendToUser(ircUser, RplWelcome(Hirasawa.config.ircWelcomeMessage))
         sendToUser(ircUser, RplYourHost())
         sendToUser(ircUser, RplCreated())
         sendToUser(ircUser, RplMyInfo())
         sendToUser(ircUser, RplLUserClient())
-        sendToUser(ircUser, RplMotdStart("Welcome"))
-        sendToUser(ircUser, RplMotd("to"))
-        sendToUser(ircUser, RplEndOfMotd("Hirasawa~"))
+        sendToUser(ircUser, RplMotdStart())
+        for (line in Hirasawa.config.ircMotd) {
+            sendToUser(ircUser, RplMotd(line))
+        }
+        sendToUser(ircUser, RplEndOfMotd())
     }
 
     fun removeUser(ircUser: IrcUser) {

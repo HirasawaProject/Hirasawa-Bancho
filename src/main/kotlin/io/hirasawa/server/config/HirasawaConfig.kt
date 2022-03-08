@@ -6,7 +6,8 @@ import io.hirasawa.server.enums.Mod
 
 data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val ircPort: Int, val database: DatabaseCredentials,
                            val channels: List<ChatChannel>, val banchoUserTimeout: Int, val banchoBotId: Int,
-                           val domain: String, val blockedMods: List<Mod>, val osuApiKey: String) {
+                           val domain: String, val blockedMods: List<Mod>, val osuApiKey: String,
+                           val ircWelcomeMessage: String, val ircMotd: List<String>) {
     constructor(): this(
         8080,
         4430,
@@ -20,6 +21,11 @@ data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val ircPort: I
         3,
         "localhost",
         listOf(Mod.AUTOPLAY, Mod.RELAX, Mod.AUTOPILOT, Mod.CINEMA, Mod.TARGET, Mod.SCORE_V2),
-        ""
+        "",
+        "Welcome to Hirasawa!",
+        listOf(
+            "This is an example of a MOTD for the IRC server",
+            "set this to whatever you want"
+        )
     )
 }
