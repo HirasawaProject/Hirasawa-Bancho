@@ -44,11 +44,9 @@ class IrcServer(private val port: Int) {
         sendToUser(ircUser, RplCreated())
         sendToUser(ircUser, RplMyInfo())
         sendToUser(ircUser, RplLUserClient())
-        sendToUser(ircUser, RplMotdStart())
         for (line in Hirasawa.config.ircMotd) {
             sendToUser(ircUser, RplMotd(line))
         }
-        sendToUser(ircUser, RplEndOfMotd())
     }
 
     fun removeUser(ircUser: IrcUser) {
