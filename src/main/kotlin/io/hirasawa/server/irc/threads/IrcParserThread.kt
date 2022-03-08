@@ -53,13 +53,16 @@ class IrcParserThread(private val socket: Socket) : Runnable {
             try {
                 when (command) {
                     "USER" -> {
-                        if (password == "") {
-                            writer.writeBytes(ErrPasswdMismatch().generate(args[0]))
-                            socket.close()
-                            return
-                        }
+                        if (password == "" || !Hirasawa.authenticateIrc(args[0], password)) {
+                            arrayOf(
+                                Hirasawa.config.ircWelcomeMessage,
+                                "-",
+                                "- You are required to authenticate before accessing this server",
+                                "- Run !ircsetup in osu! in order to see your authentication token for IRC"
+                            ).forEach {
+                                writer.writeBytes(RplMotd(it).generate(args[0]))
+                            }
 
-                        if (!Hirasawa.authenticateIrc(args[0], password)) {
                             writer.writeBytes(ErrPasswdMismatch().generate(args[0]))
                             socket.close()
                             return
