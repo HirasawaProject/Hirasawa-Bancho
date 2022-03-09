@@ -20,7 +20,7 @@ class RplWelcome(welcomeMessage: String): NumericIrcReply(host, NumericReply.RPL
 class RplYourHost: NumericIrcReply(host, NumericReply.RPL_YOURHOST, "Your host is Hirasawa, running version ${Hirasawa.version}")
 class RplCreated: NumericIrcReply(host, NumericReply.RPL_CREATED, "This server was created sometime")
 class RplMyInfo: NumericIrcReply(host, NumericReply.RPL_MYINFO, "$host Hirasawa o o")
-class RplLUserClient: NumericIrcReply(host, NumericReply.RPL_LUSERCLIENT, ":There are 2 users 0 invisible on 1 servers")
+class RplLUserClient: NumericIrcReply(host, NumericReply.RPL_LUSERCLIENT, ":There are ${Hirasawa.irc.connectedUsers.size + 1} users online")
 class RplWhoisUser(context: User): NumericIrcReply(host, NumericReply.RPL_WHOISUSER, "${context.username} ${context.username} 127.0.0.1 *")
 class RplEndOfWhois(context: User): NumericIrcReply(host, NumericReply.RPL_ENDOFWHOIS, "${context.username} :End of WHOIS")
 class RplListStart: NumericIrcReply(host, NumericReply.RPL_LISTSTART, "Channel :Users Name")
