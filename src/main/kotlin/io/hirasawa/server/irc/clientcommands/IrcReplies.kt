@@ -35,4 +35,4 @@ class RplMotd(motdLine: String): NumericIrcReply(host, NumericReply.RPL_MOTD, ":
 class RplEndOfMotd: NumericIrcReply(host, NumericReply.RPL_ENDOFMOTD, ":End of MOTD")
 class ErrNoSuchChannel(channelName: String): NumericIrcReply(host, NumericReply.ERR_NOSUCHCHANNEL, "$channelName :No such channel")
 class ErrNoMotd: NumericIrcReply(host, NumericReply.ERR_NOMOTD, ":This server has no MOTD")
-class ErrPasswdMismatch: NumericIrcReply(host, NumericReply.ERR_PASSWDMISMATCH, ":Password incorrect")
+class ErrPasswdMismatch: NumericIrcReply(host, NumericReply.ERR_PASSWDMISMATCH, ":Bad authentication token")
