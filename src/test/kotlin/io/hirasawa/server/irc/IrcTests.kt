@@ -53,7 +53,7 @@ class IrcTests {
         assertEquals(":$host 001 TCJALI Welcome to Hirasawa!", reader.nextLine())
         assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version TESTING", reader.nextLine())
         assertEquals(":$host 003 TCJALI This server was created sometime", reader.nextLine())
-        assertEquals(":$host 004 TCJALI irc.shite.xyz Hirasawa o o", reader.nextLine())
+        assertEquals(":$host 004 TCJALI $host Hirasawa o o", reader.nextLine())
         assertEquals(":$host 251 TCJALI :There are 2 users online", reader.nextLine())
         assertEquals(":$host 372 TCJALI :This is an example of a MOTD for the IRC server", reader.nextLine())
         assertEquals(":$host 372 TCJALI :set this to whatever you want", reader.nextLine())
