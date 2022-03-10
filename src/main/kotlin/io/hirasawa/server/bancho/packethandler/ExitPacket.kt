@@ -8,13 +8,13 @@ import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.HandleUserQuitPacket
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.plugin.event.bancho.BanchoUserQuitEvent
+import io.hirasawa.server.plugin.event.chat.UserQuitEvent
 
 class ExitPacket: PacketHandler(BanchoPacketType.OSU_EXIT) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val quitReason = QuitReason.values()[reader.readInt()]
 
-        BanchoUserQuitEvent(user, quitReason).call().then {
+        UserQuitEvent(user, quitReason).call().then {
             Hirasawa.sendBanchoPacketToAll(HandleUserQuitPacket(user, QuitState.GONE))
             Hirasawa.banchoUsers.remove(user)
         }

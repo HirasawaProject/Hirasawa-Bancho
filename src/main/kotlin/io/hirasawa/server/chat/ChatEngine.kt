@@ -14,7 +14,7 @@ import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.irc.clientcommands.Privmsg
 import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.plugin.HirasawaPlugin
-import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
+import io.hirasawa.server.plugin.event.chat.UserChatEvent
 import kotlin.collections.HashMap
 
 class ChatEngine {
@@ -79,7 +79,7 @@ class ChatEngine {
     }
 
     fun handleChat(chatMessage: ChatMessage) {
-        BanchoUserChatEvent(chatMessage).call().then {
+        UserChatEvent(chatMessage).call().then {
             if (chatMessage is GlobalChatMessage) {
                 handleGlobalChat(chatMessage)
             } else if (chatMessage is PrivateChatMessage) {
