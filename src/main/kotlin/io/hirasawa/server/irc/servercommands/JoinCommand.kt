@@ -6,7 +6,6 @@ import io.hirasawa.server.irc.objects.IrcUser
 
 class JoinCommand: IrcServerCommand {
     override fun handle(user: IrcUser, command: String, args: Array<String>) {
-        println(args.toList())
         val channel = Hirasawa.chatEngine[args[0]]
         if (channel == null) {
             user.sendReply(ErrNoSuchChannel(args[0]))

@@ -9,7 +9,6 @@ open class TextualIrcReply(
     private val args: String
 ): IrcProtocolReply {
     override fun generate(to: String): String {
-        println(":$from $textualReply $args\r\n")
         return ":$from $textualReply $args\r\n"
     }
 

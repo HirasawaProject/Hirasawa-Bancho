@@ -52,7 +52,6 @@ class ChatEngine {
                     handleChat(user, Hirasawa.hirasawaBot.username, message)
                 } else {
                     for (connectedUser in connectedUsers) {
-                        println("${connectedUser.username} == $destination")
                         if (connectedUser.username == destination) {
                             handleChat(PrivateChatMessage(user, connectedUser, message))
                         }

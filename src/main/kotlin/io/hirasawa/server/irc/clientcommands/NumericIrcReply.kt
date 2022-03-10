@@ -9,7 +9,6 @@ open class NumericIrcReply(
     private val args: String
 ): IrcProtocolReply {
     override fun generate(to: String): String {
-        println(":$from ${numericReply.id} $to $args\r\n")
         return ":$from ${numericReply.id} $to $args\r\n"
     }
 

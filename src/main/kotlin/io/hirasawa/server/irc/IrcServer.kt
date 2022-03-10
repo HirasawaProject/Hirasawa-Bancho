@@ -36,7 +36,6 @@ class IrcServer(private val defaultPort: Int) {
     }
 
     fun handleCommand(ircUser: IrcUser, command: String, args: Array<String>) {
-        println("Handle: $command")
         IrcUserProtocolMessageEvent(ircUser, command, args).call().then {
             registeredCommands[command.uppercase()]?.handle(ircUser, command, args)
         }

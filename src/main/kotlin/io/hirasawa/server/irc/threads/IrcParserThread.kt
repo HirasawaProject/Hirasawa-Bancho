@@ -22,11 +22,9 @@ class IrcParserThread(private val socket: Socket) : Runnable {
     val writer = DataOutputStream(socket.getOutputStream())
 
     override fun run() {
-        println("CONNECT")
         val builder = StringBuilder()
         while (socket.isConnected) {
             val temp = reader.readByte().toInt().toChar()
-            print(temp)
             if (temp == '\n') {
                 val args = builder.toString().split(" ")
                 val argsWithoutCommand = if (args.size > 1) args.subList(1, args.size).toList().toTypedArray() else arrayOf()
