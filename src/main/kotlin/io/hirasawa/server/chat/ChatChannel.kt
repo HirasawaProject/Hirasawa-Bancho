@@ -60,12 +60,14 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
      * Removes a user from this ChatChannel, this will unregister them for all messages and inform other connected users
      * that they have left
      *
-     * @param user The user to add
+     * @param user The user to remove
      */
     fun removeUser(user: User) {
-        sendIrcReplyToAll(Part(this, user))
-        connectedUsers.remove(user)
-        update()
+        if (user in connectedUsers) {
+            sendIrcReplyToAll(Part(this, user))
+            connectedUsers.remove(user)
+            update()
+        }
     }
 
     /**

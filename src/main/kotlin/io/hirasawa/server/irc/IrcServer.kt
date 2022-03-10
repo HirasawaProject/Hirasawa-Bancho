@@ -7,15 +7,17 @@ import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.irc.servercommands.IrcServerCommand
 import io.hirasawa.server.irc.threads.IrcServerThread
 import java.io.DataOutputStream
+import java.net.Socket
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class IrcServer(private val port: Int) {
+class IrcServer(private val defaultPort: Int) {
     private val outputStreams = HashMap<User, DataOutputStream>()
+    private val sockets = HashMap<User, Socket>()
     val connectedUsers = ArrayList<IrcUser>()
     private val registeredCommands = HashMap<String, IrcServerCommand>()
 
-    fun start() {
+    fun start(port: Int = defaultPort) {
         Thread(IrcServerThread(port)).start()
     }
 
@@ -34,9 +36,10 @@ class IrcServer(private val port: Int) {
         registeredCommands[command.uppercase()]?.handle(ircUser, command, args)
     }
 
-    fun addUser(ircUser: IrcUser, outputStream: DataOutputStream) {
+    fun addUser(ircUser: IrcUser, outputStream: DataOutputStream, socket: Socket) {
         connectedUsers.add(ircUser)
         outputStreams[ircUser] = outputStream
+        sockets[ircUser] = socket
         Hirasawa.chatEngine.addUser(ircUser)
 
         sendToUser(ircUser, RplWelcome(Hirasawa.config.ircWelcomeMessage))
@@ -52,7 +55,9 @@ class IrcServer(private val port: Int) {
     fun removeUser(ircUser: IrcUser) {
         connectedUsers.remove(ircUser)
         outputStreams[ircUser]?.close()
+        sockets[ircUser]?.close()
         outputStreams.remove(ircUser)
+        sockets.remove(ircUser)
         Hirasawa.chatEngine.removeUser(ircUser)
     }
 

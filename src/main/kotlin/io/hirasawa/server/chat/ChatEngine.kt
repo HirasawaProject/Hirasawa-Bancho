@@ -146,5 +146,9 @@ class ChatEngine {
 
     fun removeUser(user: User) {
         connectedUsers.remove(user)
+
+        for (channel in chatChannels) {
+            channel.value.removeUser(user)
+        }
     }
 }
