@@ -71,6 +71,7 @@ class IrcParserThread(private val socket: Socket) : Runnable {
                         user = IrcUser(transaction {
                             UsersTable.select { UsersTable.username eq username }.first()
                         })
+                        user.updateKeepAlive()
 
                         Hirasawa.irc.addUser(user, writer, socket)
                         isLoggedIn = true

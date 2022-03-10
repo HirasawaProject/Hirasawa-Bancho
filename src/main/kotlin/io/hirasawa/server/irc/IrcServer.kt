@@ -6,6 +6,7 @@ import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.irc.servercommands.IrcServerCommand
 import io.hirasawa.server.irc.threads.IrcServerThread
+import io.hirasawa.server.irc.threads.IrcUserTimeoutThread
 import java.io.DataOutputStream
 import java.net.Socket
 import kotlin.collections.ArrayList
@@ -19,6 +20,7 @@ class IrcServer(private val defaultPort: Int) {
 
     fun start(port: Int = defaultPort) {
         Thread(IrcServerThread(port)).start()
+        Thread(IrcUserTimeoutThread()).start()
     }
 
     fun sendToAll(ircProtocolReply: IrcProtocolReply) {
