@@ -1,11 +1,9 @@
 package io.hirasawa.server.irc.threads
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.BufferedInputStream
@@ -14,7 +12,6 @@ import java.io.DataOutputStream
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.net.Socket
-import java.util.*
 
 class IrcParserThread(private val socket: Socket) : Runnable {
     private var isLoggedIn = false

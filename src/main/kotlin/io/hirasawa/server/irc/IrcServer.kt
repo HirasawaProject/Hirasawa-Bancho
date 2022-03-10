@@ -7,6 +7,8 @@ import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.irc.servercommands.IrcServerCommand
 import io.hirasawa.server.irc.threads.IrcServerThread
 import io.hirasawa.server.irc.threads.IrcUserTimeoutThread
+import io.hirasawa.server.plugin.event.irc.IrcUserLoginEvent
+import io.hirasawa.server.plugin.event.irc.IrcUserProtocolMessageEvent
 import java.io.DataOutputStream
 import java.net.Socket
 import kotlin.collections.ArrayList
@@ -35,10 +37,13 @@ class IrcServer(private val defaultPort: Int) {
 
     fun handleCommand(ircUser: IrcUser, command: String, args: Array<String>) {
         println("Handle: $command")
-        registeredCommands[command.uppercase()]?.handle(ircUser, command, args)
+        IrcUserProtocolMessageEvent(ircUser, command, args).call().then {
+            registeredCommands[command.uppercase()]?.handle(ircUser, command, args)
+        }
     }
 
     fun addUser(ircUser: IrcUser, outputStream: DataOutputStream, socket: Socket) {
+        IrcUserLoginEvent(ircUser).call()
         connectedUsers.add(ircUser)
         outputStreams[ircUser] = outputStream
         sockets[ircUser] = socket
