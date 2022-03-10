@@ -48,7 +48,6 @@ class IrcParserThread(private val socket: Socket) : Runnable {
             // We're still doing the handshake
             // We're quite basic so we're just gonna handle the USER command as the login
             try {
-                println("$command ${args.joinToString(" ")}")
                 when (command) {
                     "USER" -> {
                         if ((username == "" || password == "") || !Hirasawa.authenticateIrc(username, password)) {
