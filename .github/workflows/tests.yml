@@ -21,8 +21,8 @@ jobs:
       run: chmod +x gradlew
     - name: Test with Gradle
       run: ./gradlew test
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1
+    - name: Upload test report
+      uses: actions/upload-artifact@v3
       with:
         name: gradle-report
-        path: /home/connor/Code/Hirasawa-Project/build/reports/tests/test/**
+        path: build/reports/tests/test/**
