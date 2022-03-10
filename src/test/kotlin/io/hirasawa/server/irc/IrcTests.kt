@@ -70,6 +70,30 @@ class IrcTests {
     }
 
     @Test
+    fun testCanJoinAndLeaveIrcWithColonToken() {
+        createUser("TCJALI")
+        val (socket, writer, reader) = connectToIrc("TCJALI", ":ircToken")
+
+        assertEquals(":$host 001 TCJALI Welcome to Hirasawa!", reader.nextLine())
+        assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version TESTING", reader.nextLine())
+        assertEquals(":$host 003 TCJALI This server was created sometime", reader.nextLine())
+        assertEquals(":$host 004 TCJALI $host Hirasawa o o", reader.nextLine())
+        assertEquals(":$host 251 TCJALI :There are 2 users online", reader.nextLine())
+        assertEquals(":$host 372 TCJALI :This is an example of a MOTD for the IRC server", reader.nextLine())
+        assertEquals(":$host 372 TCJALI :set this to whatever you want", reader.nextLine())
+
+        assertEquals(1, Hirasawa.irc.connectedUsers.size)
+
+        writer.writeBytesAndFlush("QUIT\r\n")
+
+        Thread.sleep(1000)
+
+        assertEquals(0, Hirasawa.irc.connectedUsers.size)
+        assertTrue(socket.getInputStream().read() == -1) // Basic check to see if socket is closed
+        socket.close()
+    }
+
+    @Test
     fun testWillGetRejectedForWrongPassword() {
         createUser("TWGRFWP")
         val (socket, _, reader) = connectToIrc("TWGRFWP", "Incorrect token")
