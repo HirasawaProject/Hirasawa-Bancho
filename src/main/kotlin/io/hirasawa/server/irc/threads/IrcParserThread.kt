@@ -4,6 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
+import io.hirasawa.server.irc.servercommands.PingCommand
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.BufferedInputStream
@@ -47,6 +48,7 @@ class IrcParserThread(private val socket: Socket) : Runnable {
             // We're still doing the handshake
             // We're quite basic so we're just gonna handle the USER command as the login
             try {
+                println("$command ${args.joinToString(" ")}")
                 when (command) {
                     "USER" -> {
                         if ((username == "" || password == "") || !Hirasawa.authenticateIrc(username, password)) {
@@ -75,7 +77,13 @@ class IrcParserThread(private val socket: Socket) : Runnable {
                         username = args[0]
                     }
                     "PASS" -> {
-                        password = args[0]
+                        password = args[0].removePrefix(":")
+                    }
+                    "PING" -> {
+                        writer.writeBytes(Pong().generate(""))
+                    }
+                    "CAP" -> {
+                        writer.writeBytes(Cap().generate(""))
                     }
                 }
             } catch (exception: Exception) {
