@@ -9,7 +9,7 @@ import io.hirasawa.server.routes.HomeRoute
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 
-class InternalIrcPlugin: HirasawaPlugin() {
+class InternalIrcPlugin(private val defaultPort: Int = Hirasawa.config.ircPort): HirasawaPlugin() {
     override fun onEnable() {
         Hirasawa.irc.registerServerCommand("JOIN", JoinCommand())
         Hirasawa.irc.registerServerCommand("LIST", ListCommand())
@@ -17,7 +17,7 @@ class InternalIrcPlugin: HirasawaPlugin() {
         Hirasawa.irc.registerServerCommand("PART", PartCommand())
         Hirasawa.irc.registerServerCommand("PRIVMSG", PrivmsgCommand())
         Hirasawa.irc.registerServerCommand("QUIT", QuitCommand())
-        Hirasawa.irc.start()
+        Hirasawa.irc.start(defaultPort)
     }
 
     override fun onDisable() {
