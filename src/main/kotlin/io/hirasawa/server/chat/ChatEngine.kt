@@ -1,24 +1,27 @@
-package io.hirasawa.server.bancho.chat
+package io.hirasawa.server.chat
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
-import io.hirasawa.server.bancho.chat.command.CommandSender
-import io.hirasawa.server.bancho.chat.message.ChatMessage
-import io.hirasawa.server.bancho.chat.message.GlobalChatMessage
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
+import io.hirasawa.server.chat.command.CommandSender
+import io.hirasawa.server.chat.message.ChatMessage
+import io.hirasawa.server.chat.message.GlobalChatMessage
+import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.irc.clientcommands.Privmsg
+import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.plugin.HirasawaPlugin
-import io.hirasawa.server.plugin.event.bancho.BanchoUserChatEvent
+import io.hirasawa.server.plugin.event.chat.UserChatEvent
 import kotlin.collections.HashMap
 
 class ChatEngine {
     val chatChannels = HashMap<String, ChatChannel>()
     val chatCommands = HashMap<String, Pair<ChatCommand, HirasawaPlugin>>()
     val spectatorChannel = ChatChannel("#spectator", "", false)
+    val connectedUsers = ArrayList<User>()
 
     operator fun set(key: String, value: ChatChannel) {
         chatChannels[key] = value
@@ -48,7 +51,11 @@ class ChatEngine {
                     banchoUser?.sendPacket(ChannelRevokedPacket(destination))
                     handleChat(user, Hirasawa.hirasawaBot.username, message)
                 } else {
-                    handleChat(PrivateChatMessage(user, Hirasawa.banchoUsers[destination]!!, message))
+                    for (connectedUser in connectedUsers) {
+                        if (connectedUser.username == destination) {
+                            handleChat(PrivateChatMessage(user, connectedUser, message))
+                        }
+                    }
                 }
             }
         }
@@ -71,7 +78,7 @@ class ChatEngine {
     }
 
     fun handleChat(chatMessage: ChatMessage) {
-        BanchoUserChatEvent(chatMessage).call().then {
+        UserChatEvent(chatMessage).call().then {
             if (chatMessage is GlobalChatMessage) {
                 handleGlobalChat(chatMessage)
             } else if (chatMessage is PrivateChatMessage) {
@@ -83,9 +90,19 @@ class ChatEngine {
     }
 
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
-        if (chatMessage.destination in Hirasawa.banchoUsers) {
-            Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
+        when (chatMessage.destination) {
+            is BanchoUser -> {
+                if (chatMessage.destination in Hirasawa.banchoUsers) {
+                    Hirasawa.banchoUsers[chatMessage.destination]?.sendPacket(SendMessagePacket(chatMessage))
+                }
+            }
+            is IrcUser -> {
+                if (chatMessage.destination in Hirasawa.irc.connectedUsers) {
+                    Hirasawa.irc.sendToUser(chatMessage.destination, Privmsg(chatMessage))
+                }
+            }
         }
+
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
@@ -119,6 +136,18 @@ class ChatEngine {
             if (pair.second == plugin) {
                 iterator.remove()
             }
+        }
+    }
+
+    fun addUser(user: User) {
+        connectedUsers.add(user)
+    }
+
+    fun removeUser(user: User) {
+        connectedUsers.remove(user)
+
+        for (channel in chatChannels) {
+            channel.value.removeUser(user)
         }
     }
 }

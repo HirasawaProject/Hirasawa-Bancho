@@ -1,11 +1,11 @@
 package io.hirasawa.server
 
-import io.hirasawa.server.bancho.chat.ChatChannel
-import io.hirasawa.server.bancho.chat.command.ConsoleCommandSender
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.command.ConsoleCommandSender
 import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalGameApiPlugin
+import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalWebFrontendPlugin
-import io.hirasawa.server.webserver.enums.CommonDomains
 import java.io.File
 
 fun main() {
@@ -15,6 +15,7 @@ fun main() {
     Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalWebFrontendPlugin(), InternalWebFrontendPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalGameApiPlugin(), InternalGameApiPlugin.descriptor)
+    Hirasawa.pluginManager.loadPlugin(InternalIrcPlugin(), InternalIrcPlugin.descriptor)
 
     // Load user provided plugins
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)

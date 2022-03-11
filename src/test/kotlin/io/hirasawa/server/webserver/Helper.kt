@@ -19,13 +19,14 @@ import kotlin.random.Random
 
 class Helper {
     companion object {
-        fun createUser(username: String): User {
+        fun createUser(username: String, ircToken: String? = "ircToken"): User {
             return BanchoUser(transaction {
                 val userId = UsersTable.insertAndGetId {
                     it[UsersTable.username] = username
                     it[UsersTable.password] = BCrypt.hashpw("", BCrypt.gensalt())
                     it[UsersTable.banned] = false
                     it[UsersTable.mutedUntil] = 0
+                    it[UsersTable.ircToken] = ircToken
                 }
 
                 UsersTable.select { UsersTable.id eq userId }.first()

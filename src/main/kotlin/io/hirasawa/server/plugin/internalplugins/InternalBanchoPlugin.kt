@@ -66,6 +66,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
     private fun registerCommands() {
         registerCommand(TestCommand())
         registerCommand(HelpCommand())
+        registerCommand(PingCommand())
         registerCommand(ReloadCommand())
         registerCommand(RankCommand())
         registerCommand(ReportCommand())

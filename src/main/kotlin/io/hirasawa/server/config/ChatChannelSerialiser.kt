@@ -1,7 +1,7 @@
 package io.hirasawa.server.config
 
 import com.google.gson.*
-import io.hirasawa.server.bancho.chat.ChatChannel
+import io.hirasawa.server.chat.ChatChannel
 import java.lang.reflect.Type
 
 class ChatChannelSerialiser: JsonDeserializer<ChatChannel>, JsonSerializer<ChatChannel> {

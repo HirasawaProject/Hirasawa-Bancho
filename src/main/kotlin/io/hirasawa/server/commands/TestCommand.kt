@@ -1,10 +1,7 @@
 package io.hirasawa.server.commands
 
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
-import io.hirasawa.server.bancho.chat.command.CommandSender
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
-import io.hirasawa.server.bancho.packets.SendMessagePacket
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.bancho.user.BanchoUser
 
 class TestCommand: ChatCommand("test", "Test command", "hirasawa.command.test") {

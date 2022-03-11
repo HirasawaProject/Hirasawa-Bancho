@@ -1,10 +1,9 @@
 package io.hirasawa.server
 
 import com.google.gson.GsonBuilder
-import io.hirasawa.server.bancho.chat.ChatChannel
-import io.hirasawa.server.bancho.chat.ChatEngine
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.ChatEngine
 import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.bancho.objects.BanchoUserMap
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
@@ -14,8 +13,11 @@ import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.database.tables.*
+import io.hirasawa.server.irc.IrcServer
+import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
+import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.osuapi.OsuApi
 import io.hirasawa.server.permissions.PermissionEngine
 import io.hirasawa.server.permissions.PermissionGroup
@@ -37,7 +39,6 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.typeOf
 
 class Hirasawa {
     companion object {
@@ -52,6 +53,7 @@ class Hirasawa {
         val pluginManager = PluginManager()
         val chatEngine = ChatEngine()
         val pipeline = PipelineManager()
+        val irc = IrcServer(config.ircPort)
         val osuApi = OsuApi(config.osuApiKey)
         val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
         lateinit var permissionEngine: PermissionEngine
@@ -59,11 +61,25 @@ class Hirasawa {
         val isUpdateRequired get() = updateChecker.checkUpdate()
 
         lateinit var hirasawaBot: HirasawaBot
-        val banchoUsers = BanchoUserMap()
+        val banchoUsers = UserMap<BanchoUser>()
 
+        /**
+         * Sends a BanchoPacket to all connected users on Bancho
+         *
+         * @param banchoPacket The packet to send
+         */
         fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
             for (user in banchoUsers) {
                 user.sendPacket(banchoPacket)
+            }
+        }
+
+        /**
+         * Send IRC reply to all connected users over IRC
+         */
+        fun sendIrcReplyToAll(ircProtocolReply: IrcProtocolReply) {
+            for (user in irc.connectedUsers) {
+                user.sendReply(ircProtocolReply)
             }
         }
 
@@ -139,6 +155,12 @@ class Hirasawa {
             } ?: return false
 
             return BCrypt.checkpw(password, result[UsersTable.password])
+        }
+
+        fun authenticateIrc(username: String, ircToken: String): Boolean {
+            return transaction {
+                UsersTable.select { UsersTable.username eq username and (UsersTable.ircToken eq ircToken) }.empty().not()
+            }
         }
 
         // TODO move out

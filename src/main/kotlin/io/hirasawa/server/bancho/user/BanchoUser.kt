@@ -1,14 +1,12 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
-import io.hirasawa.server.permissions.PermissionGroup
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateJoinEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateLeaveEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateSwitchEvent
@@ -49,16 +47,6 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
       */
     fun updateKeepAlive() {
         lastKeepAlive = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()).toInt()
-    }
-
-    /**
-     * Sends a private chat message to this user
-     *
-     * @param from The user that sent the chat message
-     * @param message The message sent to the user
-     */
-    override fun sendPrivateMessage(from: User, message: String) {
-        Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
     }
 
     /**

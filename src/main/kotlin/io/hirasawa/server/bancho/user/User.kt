@@ -1,7 +1,8 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.CommandSender
+import io.hirasawa.server.chat.command.CommandSender
+import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.database.tables.FriendsTable
 import io.hirasawa.server.database.tables.PermissionGroupUsersTable
 import io.hirasawa.server.database.tables.PermissionGroupsTable
@@ -15,7 +16,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
  */
 abstract class User(val id: Int, val username: String, val timezone: Byte, val countryCode: Byte ,val longitude: Float,
                     val latitude: Float, val isBanned: Boolean): CommandSender {
-    abstract fun sendPrivateMessage(from: User, message: String)
     val friends: ArrayList<User> by lazy {
         val arrayList = ArrayList<User>()
         val userId = this.id
@@ -53,5 +53,15 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
 
     fun removeGroup(group: PermissionGroup) {
         permissionGroups.remove(group)
+    }
+
+    /**
+     * Sends a private chat message to this user
+     *
+     * @param from The user that sent the chat message
+     * @param message The message sent to the user
+     */
+    fun sendPrivateMessage(from: User, message: String) {
+        Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
     }
 }
