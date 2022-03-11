@@ -1,7 +1,9 @@
 package io.hirasawa.server.plugin
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.config.PluginDescriptorSerialiser
 import io.hirasawa.server.logger.PluginLogger
 import io.hirasawa.server.plugin.event.plugin.PluginLoadEvent
 import io.hirasawa.server.plugin.event.plugin.PluginUnloadEvent
@@ -15,6 +17,9 @@ import kotlin.reflect.full.createInstance
 
 class PluginManager {
     val loadedPlugins = HashMap<String, HirasawaPlugin>()
+    private val gson = GsonBuilder()
+        .registerTypeAdapter(PluginDescriptor::class.java, PluginDescriptorSerialiser())
+        .create()
 
     fun loadPlugin(hirasawaPlugin: HirasawaPlugin, pluginDescriptor: PluginDescriptor) {
         hirasawaPlugin.pluginDescriptor = pluginDescriptor
@@ -61,7 +66,7 @@ class PluginManager {
                     throw FileNotFoundException("Plugin does not contain descriptor files")
                 val reader = InputStreamReader(jarFile.getInputStream(entry))
 
-                val descriptor = Gson().fromJson(reader, PluginDescriptor::class.java)
+                val descriptor = gson.fromJson(reader, PluginDescriptor::class.java)
 
                 val loader: ClassLoader = URLClassLoader.newInstance(
                     arrayOf(file.toURI().toURL()),

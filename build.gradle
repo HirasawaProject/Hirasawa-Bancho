@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'io.hirasawa'
-version '20220305'
+version '0.5.0'
 
 sourceCompatibility = 1.8
 

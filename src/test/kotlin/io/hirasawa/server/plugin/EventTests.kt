@@ -4,6 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.plugin.event.*
 import io.hirasawa.server.plugin.event.plugin.PluginLoadEvent
 import io.hirasawa.server.plugin.event.plugin.PluginUnloadEvent
+import io.hirasawa.server.update.SemVer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -114,7 +115,7 @@ class EventTests {
             }
         }, this.plugin)
 
-        Hirasawa.pluginManager.loadPlugin(testPlugin, PluginDescriptor("name", "version", "author", "main"))
+        Hirasawa.pluginManager.loadPlugin(testPlugin, PluginDescriptor("name", SemVer.parse("1.0.0"), "author", "main"))
         Hirasawa.pluginManager.unloadPlugin("name")
 
         assertTrue(loaded)

@@ -6,6 +6,7 @@ import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalGameApiPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalWebFrontendPlugin
+import io.hirasawa.server.update.Release
 import java.io.File
 
 fun main() {
@@ -24,7 +25,7 @@ fun main() {
 
     if (Hirasawa.isUpdateRequired) {
         println("You are running an outdated version of Hirasawa, please update by going to the following link")
-        println(Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl)
+        println(Hirasawa.updateChecker.latestRelease?.getRelease(Release.AssetType.HIRASAWA_RELEASE)?.browserDownloadUrl)
     }
 
     // Hardcoded fake channel to get console responses
