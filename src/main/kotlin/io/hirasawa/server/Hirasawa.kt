@@ -56,7 +56,7 @@ class Hirasawa {
         val pipeline = PipelineManager()
         val irc = IrcServer(config.ircPort)
         val osuApi = OsuApi(config.osuApiKey)
-        val version = SemVer.parse(Hirasawa::class.java.`package`.implementationVersion ?: "0.0.0-localbuild")
+        val version = SemVer.parse(Hirasawa::class.java.`package`.implementationVersion ?: "0.0.0-noversion+noupdate")
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
         val isUpdateRequired get() = updateChecker.checkUpdate()
