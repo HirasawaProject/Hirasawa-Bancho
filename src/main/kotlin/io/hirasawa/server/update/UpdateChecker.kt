@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import io.hirasawa.server.Hirasawa
 import okhttp3.OkHttpClient
 import java.lang.IllegalArgumentException
+import java.lang.NullPointerException
 
 class UpdateChecker {
     var isUpdateRequired = false
@@ -14,7 +15,7 @@ class UpdateChecker {
     fun checkUpdate(): Boolean {
         val client = OkHttpClient()
         val request = okhttp3.Request.Builder()
-            .url("https://api.github.com/repos/Hirasawa-Project/HirasawaServer/releases/latest")
+            .url("https://api.github.com/repos/HirasawaProject/Hirasawa-Server/releases/latest")
             .build()
 
         val response = client.newCall(request).execute()
@@ -26,16 +27,22 @@ class UpdateChecker {
         val release = gson.fromJson(response.body?.string(), Release::class.java)
         if (release != null) {
             try {
-
+                isUpdateRequired = Hirasawa.version < release.semver
+                latestRelease = release
             } catch (exception: IllegalArgumentException) {
-                println("Latest version of Hirasawa can't be parsed, either your version is too old or the latest " +
-                        "release is broken")
-                println("You may need to update manually if you're on an old version or open a ticket for this issue")
+                printError()
             }
-            isUpdateRequired = Hirasawa.version < release.semver
-            latestRelease = release
+        } else {
+            printError()
         }
 
         return isUpdateRequired
     }
+
+    private fun printError() {
+        println("Latest version of Hirasawa can't be parsed, either your version is too old or the latest " +
+                "release is broken")
+        println("You may need to update manually if you're on an old version or open a ticket for this issue")
+    }
+
 }
