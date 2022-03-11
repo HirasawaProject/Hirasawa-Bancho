@@ -20,6 +20,7 @@ class IrcTests {
         Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
     }
     private val host = CommonDomains.HIRASAWA_IRC
+    private val version = Hirasawa.version
 
     private fun connectToIrc(username: String, ircToken: String): Triple<Socket, DataOutputStream, Scanner> {
         val socket = Socket("localhost", 7000)
@@ -51,7 +52,7 @@ class IrcTests {
         val (socket, writer, reader) = connectToIrc("TCJALI", "ircToken")
 
         assertEquals(":$host 001 TCJALI Welcome to Hirasawa!", reader.nextLine())
-        assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version TESTING", reader.nextLine())
+        assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version $version", reader.nextLine())
         assertEquals(":$host 003 TCJALI This server was created sometime", reader.nextLine())
         assertEquals(":$host 004 TCJALI $host Hirasawa o o", reader.nextLine())
         assertEquals(":$host 251 TCJALI :There are 2 users online", reader.nextLine())
@@ -75,7 +76,7 @@ class IrcTests {
         val (socket, writer, reader) = connectToIrc("TCJALI", ":ircToken")
 
         assertEquals(":$host 001 TCJALI Welcome to Hirasawa!", reader.nextLine())
-        assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version TESTING", reader.nextLine())
+        assertEquals(":$host 002 TCJALI Your host is Hirasawa, running version $version", reader.nextLine())
         assertEquals(":$host 003 TCJALI This server was created sometime", reader.nextLine())
         assertEquals(":$host 004 TCJALI $host Hirasawa o o", reader.nextLine())
         assertEquals(":$host 251 TCJALI :There are 2 users online", reader.nextLine())
