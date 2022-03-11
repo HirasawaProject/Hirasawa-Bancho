@@ -107,4 +107,13 @@ class SemVerTests {
         assertFalse(SemVer.parse("2.1.0") < SemVer.parse("2.0.0"))
         assertFalse(SemVer.parse("2.1.1") < SemVer.parse("2.1.0"))
     }
+
+    @Test
+    fun testSemVerToStringWillGenerateValidStrings() {
+        assertEquals("1.0.0", SemVer.parse("1.0.0").toString())
+        assertEquals("1.2.3", SemVer.parse("1.2.3").toString())
+        assertEquals("1.2.3-prerelease", SemVer.parse("1.2.3-prerelease").toString())
+        assertEquals("1.2.3-prerelease+buildmeta", SemVer.parse("1.2.3-prerelease+buildmeta").toString())
+        assertEquals("1.2.3+buildmeta", SemVer.parse("1.2.3+buildmeta").toString())
+    }
 }
