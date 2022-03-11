@@ -11,7 +11,7 @@ data class Release(val url: String, val assetsUrl: String, val tagName: String, 
     private lateinit var lazySemver: SemVer
     val semver: SemVer get() {
         if (!this::lazySemver.isInitialized) {
-            lazySemver = SemVer.parse(tagName)
+            lazySemver = SemVer.parse(tagName.removePrefix("v"))
         }
         return lazySemver
     }
