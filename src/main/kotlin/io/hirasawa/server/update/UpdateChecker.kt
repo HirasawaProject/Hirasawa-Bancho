@@ -13,6 +13,10 @@ class UpdateChecker {
     var latestRelease: Release? = null
 
     fun checkUpdate(): Boolean {
+        if (Hirasawa.version.buildMetadata == "noupdate") {
+            println("Your build has been configured to ignore updates")
+            return false
+        }
         val client = OkHttpClient()
         val request = okhttp3.Request.Builder()
             .url("https://api.github.com/repos/HirasawaProject/Hirasawa-Server/releases/latest")
