@@ -1,6 +1,7 @@
 package io.hirasawa.server.plugin.internalplugins
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.commands.SetupIrcCommand
 import io.hirasawa.server.irc.servercommands.*
 import io.hirasawa.server.irc.threads.IrcServerThread
 import io.hirasawa.server.plugin.HirasawaPlugin
@@ -17,6 +18,8 @@ class InternalIrcPlugin(private val defaultPort: Int = Hirasawa.config.ircPort):
         Hirasawa.irc.registerServerCommand("PART", PartCommand())
         Hirasawa.irc.registerServerCommand("PRIVMSG", PrivmsgCommand())
         Hirasawa.irc.registerServerCommand("QUIT", QuitCommand())
+
+        registerCommand(SetupIrcCommand())
         Hirasawa.irc.start(defaultPort)
     }
 
