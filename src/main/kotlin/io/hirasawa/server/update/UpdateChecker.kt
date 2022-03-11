@@ -23,9 +23,18 @@ class UpdateChecker {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
 
-        val releases = gson.fromJson<Releases>(response.body?.string(), Releases::class.java)
-        isUpdateRequired = currentVersion < releases.tagName.toFloat()
-        latestRelease = releases
+        val release = gson.fromJson(response.body?.string(), Release::class.java)
+        if (release != null) {
+            try {
+
+            } catch (exception: IllegalArgumentException) {
+                println("Latest version of Hirasawa can't be parsed, either your version is too old or the latest " +
+                        "release is broken")
+                println("You may need to update manually if you're on an old version or open a ticket for this issue")
+            }
+            isUpdateRequired = Hirasawa.version < release.semver
+            latestRelease = release
+        }
 
         return isUpdateRequired
     }

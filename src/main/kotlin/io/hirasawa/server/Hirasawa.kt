@@ -24,6 +24,7 @@ import io.hirasawa.server.permissions.PermissionGroup
 import io.hirasawa.server.pipeline.PipelineManager
 import io.hirasawa.server.plugin.PluginManager
 import io.hirasawa.server.plugin.event.EventManager
+import io.hirasawa.server.update.SemVer
 import io.hirasawa.server.update.UpdateChecker
 import io.hirasawa.server.webserver.Webserver
 import org.jetbrains.exposed.dao.id.EntityID
@@ -55,7 +56,7 @@ class Hirasawa {
         val pipeline = PipelineManager()
         val irc = IrcServer(config.ircPort)
         val osuApi = OsuApi(config.osuApiKey)
-        val version = Hirasawa::class.java.`package`.implementationVersion ?: "TESTING"
+        val version = SemVer.parse(Hirasawa::class.java.`package`.implementationVersion)
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
         val isUpdateRequired get() = updateChecker.checkUpdate()
