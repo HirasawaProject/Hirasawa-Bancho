@@ -5,17 +5,16 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.hirasawa.server.Hirasawa
 import okhttp3.OkHttpClient
+import java.lang.IllegalArgumentException
 
 class UpdateChecker {
     var isUpdateRequired = false
-    var latestRelease: Releases? = null
+    var latestRelease: Release? = null
 
     fun checkUpdate(): Boolean {
-        val currentVersion = Hirasawa.version.toFloatOrNull() ?: return false
-
         val client = OkHttpClient()
         val request = okhttp3.Request.Builder()
-            .url("https://api.github.com/repos/cg0/Hirasawa-Project/releases/latest")
+            .url("https://api.github.com/repos/Hirasawa-Project/HirasawaServer/releases/latest")
             .build()
 
         val response = client.newCall(request).execute()
