@@ -8,7 +8,6 @@ import io.hirasawa.server.webserver.routingengine.nodes.*
 
 class RoutingEngine {
     private val routingTree = DomainRouteNode()
-    private val controllerCache = HashMap<String, Any>()
 
     operator fun set(path: String, method: HttpMethod = HttpMethod.GET, controllerCallable: HttpCallable) {
         val routeSegments = path.split("/")
@@ -48,10 +47,5 @@ class RoutingEngine {
         routeSegments.removeAll(listOf(""))
 
         return routingTree.handle(routeSegments, httpMethod, HashMap())
-    }
-
-    private fun FunctionCallable.addToCache(instanceName: String): FunctionCallable {
-        this@RoutingEngine.controllerCache[instanceName] = this.instance
-        return this
     }
 }
