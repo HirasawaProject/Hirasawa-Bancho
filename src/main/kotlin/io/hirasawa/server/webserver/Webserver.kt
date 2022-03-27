@@ -2,22 +2,24 @@ package io.hirasawa.server.webserver
 
 import io.hirasawa.server.logger.FileLogger
 import io.hirasawa.server.webserver.enums.HttpMethod
-import io.hirasawa.server.webserver.internalroutes.errors.RouteNotFoundRoute
 import io.hirasawa.server.webserver.objects.MutableHeaders
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.*
+import io.hirasawa.server.webserver.respondable.HttpRespondable
+import io.hirasawa.server.webserver.routingengine.RoutingEngine
+import io.hirasawa.server.webserver.routingengine.httpcallable.AssetCallable
+import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
+import io.hirasawa.server.webserver.routingengine.httpcallable.LambdaCallable
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.io.File
-import java.util.*
-import java.util.regex.Pattern
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.reflect.KFunction
 
 class Webserver(val httpPort: Int, val httpsPort: Int) {
     // Key: host, value RouteNode "tree"-like datatype
-    private val routes = HashMap<String, RouteNode>()
+    private val routingEngine = RoutingEngine()
     private val defaultHeaders = MutableHeaders(HashMap())
     val accessLogger = FileLogger(File("logs/webserver/access.txt"))
     val errorLogger = FileLogger(File("logs/webserver/error.txt"))
@@ -38,10 +40,10 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param host The domain the route should run under
      * @param path The url path, eg /
      * @param httpMethod The type of HTTP request, eg GET, POST
-     * @param route The instance of the route
+     * @param function The function object to invoke
      */
-    fun addRoute(host: String, path: String, httpMethod: HttpMethod, route: Route) {
-        addNode(host, path, httpMethod, RouteTailNode(route))
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, function: KFunction<HttpRespondable>) {
+        routingEngine["$host$path", httpMethod] = HttpCallable.fromKFunction(function)
     }
 
     /**
@@ -53,75 +55,44 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param httpMethod The type of HTTP request, eg GET, POST
      * @param route The instance of the route
      */
-    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
-        addRoute(host.toString(), path, httpMethod, route)
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, response: () -> HttpRespondable) {
+        routingEngine["$host$path", httpMethod] = LambdaCallable(response)
     }
 
     /**
-     * Add a node to the route tree
+     * Adds a route to the internal webserver
      *
-     * This allows custom nodes to be added that are more simple than the default features
-     * @paramhost The domain the route should run under
+     * You can also use parameters in the path e.g: /u/{user}
+     * @param host The domain the route should run under
      * @param path The url path, eg /
      * @param httpMethod The type of HTTP request, eg GET, POST
-     * @param routeNode The route node to be inserted
+     * @param route The instance of the route
      */
-    fun addNode(host: Any, path: String, httpMethod: HttpMethod, routeNode: RouteNode) {
-        val hostString = host.toString()
-        if (hostString !in routes.keys) {
-            routes[hostString] = DirectoryNode(RouteContainerNode(), HashMap())
-        }
-
-        val routeSegments = ArrayList<String>()
-        val routeParameters = ArrayList<String>()
-
-        val pattern = Regex("\\{(.+)}")
-        for (segment in path.split("/")) {
-            if (segment.isBlank()) continue
-            if (pattern.matches(segment)) {
-                pattern.find(segment)?.groupValues?.get(1)?.let { routeParameters.add(it) }
-            } else {
-                routeSegments.add(segment)
-            }
-        }
-
-        fun addNode(routeSegments: List<String>, currentNode: RouteNode) {
-            if (routeSegments.isEmpty()) {
-                if (currentNode is DirectoryNode) {
-                    currentNode.index.methods[httpMethod] = routeNode
-                }
-            } else if (routeSegments.size == 1 && routeParameters.isNotEmpty()) {
-                if (currentNode is DirectoryNode) {
-                    val routeContainerNode = RouteContainerNode()
-                    routeContainerNode.methods[httpMethod] = routeNode
-                    currentNode.routes[routeSegments[0]] = ParameterisedRouteNode(routeParameters, routeContainerNode)
-                    return
-                }
-            } else {
-                if (currentNode is DirectoryNode) {
-                    if (routeSegments[0] !in currentNode.routes) {
-                        currentNode.routes[routeSegments[0]] = DirectoryNode(RouteContainerNode(), HashMap())
-                    }
-
-                    addNode(routeSegments.drop(1), currentNode.routes[routeSegments[0]]!!)
+    @Deprecated("Please use the new MVC system", level = DeprecationLevel.WARNING,
+        replaceWith = ReplaceWith("addRoute(host, path, httpMethod, function)")
+    )
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
+        // Hacky workaround to create a lambda that creates and returns an HttpRespondable object on the fly
+        addRoute(host, path, httpMethod) {
+            object: HttpRespondable {
+                override fun respond(request: Request, response: Response) {
+                    route.handle(request, response)
                 }
             }
         }
-
-        addNode(routeSegments, routes[hostString]!!)
     }
 
     /**
      * Add an asset as a route
      *
      * This allows accessing of files via the webserver, to allow access to stuff like images, HTML and the like
-     * @paramhost The domain the route should run under
+     * @param host The domain the route should run under
      * @param path The url path, eg /
      * @param httpMethod The type of HTTP request, eg GET, POST
      * @param assetLocation Where the asset exists on disk
      */
     fun addAsset(host: Any, path: String, httpMethod: HttpMethod, assetLocation: String) {
-        this.addNode(host, path, httpMethod, AssetNode(assetLocation))
+        routingEngine["$host$path", httpMethod] = AssetCallable(assetLocation)
     }
 
     /**
@@ -145,30 +116,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param httpMethod The HTTP method to check against
      */
     fun runRoute(host: String, route: String, httpMethod: HttpMethod, request: Request, response: Response) {
-        if (host in routes.keys) {
-            fun search(routeNode: RouteNode, routeArray: List<String>) {
-                if (routeNode is DirectoryNode) {
-                    if (routeArray.isEmpty()) {
-                        return routeNode.handle(httpMethod, routeArray, request, response)
-                    } else {
-                        val innerRoute = routeNode.routes[routeArray[0]]
-                        if (innerRoute != null) {
-                            search(innerRoute, routeArray.drop(1))
-                        } else {
-                            RouteNotFoundRoute().handle(request, response)
-                        }
-                    }
-                } else if (routeNode is ParameterisedRouteNode) {
-                    routeNode.handle(httpMethod, routeArray, request, response)
-                }
-            }
-
-            val routeArray = route.split("/").filter { it.isNotEmpty() }
-
-            search(routes[host]!!, routeArray)
-        } else {
-            return RouteNotFoundRoute().handle(request, response)
-        }
+        routingEngine["$host$route", httpMethod].respond(request, response)
     }
 
     /**
@@ -199,7 +147,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param to The aliased domain
      */
     fun cloneRoutes(from: String, to: String) {
-        routes[to] = routes[from] ?: return
+//        routes[to] = routes[from] ?: return
     }
 
     /**

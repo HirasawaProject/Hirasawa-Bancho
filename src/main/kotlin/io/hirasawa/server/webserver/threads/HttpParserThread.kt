@@ -7,11 +7,11 @@ import io.hirasawa.server.webserver.Webserver
 import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
+import io.hirasawa.server.webserver.exceptions.HttpException
 import io.hirasawa.server.webserver.handlers.CookieHandler
 import io.hirasawa.server.webserver.handlers.HttpHeaderHandler
 import io.hirasawa.server.webserver.handlers.UrlSegmentHandler
-import io.hirasawa.server.webserver.internalroutes.errors.InternalServerErrorRoute
-import io.hirasawa.server.webserver.internalroutes.errors.RouteForbidden
+import io.hirasawa.server.webserver.internalroutes.errors.*
 import io.hirasawa.server.webserver.objects.Cookie
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
@@ -72,6 +72,21 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
                 )
             }
 
+        } catch(e: HttpException) {
+            response.headers.clear()
+            for ((key, value) in webserver.getDefaultHeaders()) {
+                response.headers[key] = value
+            }
+            // This is temporary before you can register your own error pages as well as a generic error page
+            // TODO Add ability to register error pages
+            when (e.httpStatus) {
+                HttpStatus.BAD_REQUEST -> BadRequestRoute().handle(request, response)
+                HttpStatus.INTERNAL_SERVER_ERROR -> InternalServerErrorRoute().handle(request, response)
+                HttpStatus.FORBIDDEN -> RouteForbidden().handle(request, response)
+                HttpStatus.METHOD_NOT_ALLOWED -> RouteMethodNotAllowed().handle(request, response)
+                HttpStatus.NOT_FOUND -> RouteNotFoundRoute().handle(request, response)
+                else -> InternalServerErrorRoute().handle(request, response)
+            }
         } catch (e: Exception) {
             val stringWriter = StringWriter()
             e.printStackTrace(PrintWriter(stringWriter))
@@ -85,6 +100,7 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             InternalServerErrorRoute().handle(request, response)
         }
 
+        response.flush()
         response.close()
     }
 }
