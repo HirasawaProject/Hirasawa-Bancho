@@ -44,9 +44,10 @@ class RoutingEngine {
     }
 
     operator fun get(key: String, httpMethod: HttpMethod = HttpMethod.GET): HttpRespondable {
-        val routeSegments = key.split("/")
+        val routeSegments = key.split("/") as ArrayList<String>
+        routeSegments.removeAll(listOf(""))
 
-        return routingTree.handle(routeSegments as ArrayList<String>, httpMethod, HashMap())
+        return routingTree.handle(routeSegments, httpMethod, HashMap())
     }
 
     private fun FunctionCallable.addToCache(instanceName: String): FunctionCallable {
