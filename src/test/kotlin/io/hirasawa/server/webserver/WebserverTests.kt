@@ -7,6 +7,8 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Cookie
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
+import io.hirasawa.server.webserver.respondable.BasicRespondable
+import io.hirasawa.server.webserver.respondable.CustomRespondable
 import io.hirasawa.server.webserver.route.Route
 import kotlinx.html.body
 import kotlinx.html.p
@@ -17,7 +19,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
+import java.lang.Exception
 import java.nio.file.Files
+import kotlin.io.path.createTempFile
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -29,12 +33,11 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseGetParams() {
-        webserver.addRoute("localhost", "/getparams", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/getparams", HttpMethod.GET) {
+            CustomRespondable { request, response ->
                 response.writeText(request.get.toString())
             }
-        })
+        }
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/getparams?foo=bar&bar=baz")
@@ -48,12 +51,11 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParsePostParams() {
-        webserver.addRoute("localhost", "/postparams", HttpMethod.POST, object :
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/postparams", HttpMethod.POST) {
+            CustomRespondable { request, response ->
                 response.writeText(request.post.toString())
             }
-        })
+        }
 
         val formBody = FormBody.Builder()
             .add("foo", "bar")
@@ -73,12 +75,11 @@ class WebserverTests {
 
     @Test
     fun testDoesThrownErrorGiveErrorRoute() {
-        webserver.addRoute("localhost", "/error", HttpMethod.GET, object :
-            Route {
-            override fun handle(request: Request, response: Response) {
-                throw Exception("foo")
+        webserver.addRoute("localhost", "/error", HttpMethod.GET) {
+            CustomRespondable { _, _ ->
+                throw Exception()
             }
-        })
+        }
 
         val errorLogBefore = Files.readAllLines(File("logs/webserver/error.txt").toPath())
 
@@ -101,12 +102,11 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseParameterisedRouteNodes() {
-        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) {
+            CustomRespondable { request, response ->
                 response.writeText(request.routeParameters.toString())
             }
-        })
+        }
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/params/101/Hirasawa")
@@ -115,17 +115,16 @@ class WebserverTests {
         val response = client.newCall(request).execute()
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals("{number=101, name=Hirasawa}", response.body?.string())
+        assertEquals("{name=Hirasawa, number=101}", response.body?.string())
     }
 
     @Test
     fun testDoesWebserverErrorOnIncorrectParameterisedRouteNode() {
-        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) {
+            CustomRespondable { request, response ->
                 response.writeText(request.routeParameters.toString())
             }
-        })
+        }
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/params/101")
@@ -135,20 +134,38 @@ class WebserverTests {
 
         val body = response.body?.string()!!
 
-        assertEquals(HttpStatus.BAD_REQUEST.code, response.code)
-        assertEquals("198", response.headers["Content-Length"])
-        assert(body.contains("Bad Request"))
+        assertEquals(HttpStatus.NOT_FOUND.code, response.code)
+        assertEquals("115", response.headers["Content-Length"])
+        assert(body.contains("Not Found"))
         assert(body.contains("GET (/params/101)"))
+    }
+
+    @Test
+    fun testDoesWebserverSupportParameterisedRouteNodesWithOutOfSequence() {
+        webserver.addRoute("localhost", "/test/{number}/{name}/foo/{bar}", HttpMethod.GET) {
+            CustomRespondable { request, response ->
+                response.writeText(request.routeParameters.toString())
+            }
+        }
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/test/101/Hirasawa/foo/test")
+            .build()
+
+        val response = client.newCall(request).execute()
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals("{name=Hirasawa, number=101, bar=test}", response.body?.string())
     }
 
     @Test
     fun doesLogIncreaseWhenLogging() {
         val file = createTempFile()
-        val logger = FileLogger(file)
+        val logger = FileLogger(file.toFile())
 
-        val logBefore = Files.readAllLines(file.toPath())
+        val logBefore = Files.readAllLines(file)
         logger.log("This is a test")
-        val logAfter = Files.readAllLines(file.toPath())
+        val logAfter = Files.readAllLines(file)
 
         assert(logBefore.size < logAfter.size)
         assert("This is a test" in logAfter.last())
@@ -158,9 +175,9 @@ class WebserverTests {
     fun doesAssetNodeWorkWithTextFiles() {
         val fileText = "This is a test text file"
         val tempFile = createTempFile()
-        Files.write(tempFile.toPath(), fileText.toByteArray())
+        Files.write(tempFile, fileText.toByteArray())
 
-        webserver.addAsset("localhost", "/asset/text", HttpMethod.GET, tempFile.absolutePath)
+        webserver.addAsset("localhost", "/asset/text", HttpMethod.GET, tempFile.toString())
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/asset/text")
@@ -179,9 +196,9 @@ class WebserverTests {
         val pngData = Base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
                 "AAABJRU5ErkJggg==")
         val tempFile = createTempFile()
-        Files.write(tempFile.toPath(), pngData)
+        Files.write(tempFile, pngData)
 
-        webserver.addAsset("localhost", "/asset/png", HttpMethod.GET, tempFile.absolutePath)
+        webserver.addAsset("localhost", "/asset/png", HttpMethod.GET, tempFile.toString())
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/asset/png")
@@ -196,12 +213,9 @@ class WebserverTests {
 
     @Test
     fun doesAccessingRouteIncreaseAccessLog() {
-        webserver.addRoute("localhost", "/logtestenabled", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
-                // empty
-            }
-        })
+        webserver.addRoute("localhost", "/logtestenabled", HttpMethod.GET) {
+            BasicRespondable(HttpStatus.OK, "")
+        }
 
         val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
 
@@ -219,12 +233,11 @@ class WebserverTests {
 
     @Test
     fun doesAccessingRouteWithDisabledLoggingNotIncreaseAccessLog() {
-        webserver.addRoute("localhost", "/logtestdisabled", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/logtestdisabled", HttpMethod.GET) {
+            CustomRespondable { _, response ->
                 response.isLoggingEnabled = false
             }
-        })
+        }
 
         val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
 
@@ -275,13 +288,12 @@ class WebserverTests {
 
     @Test
     fun testIpAddressCanBeChangedViaWebRequestEvent() {
-        webserver.addRoute("localhost", "/ipaddress", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/ipaddress", HttpMethod.GET) {
+            CustomRespondable { request, response ->
                 request.ipAddress = "test"
                 response.writeText(request.ipAddress)
             }
-        })
+        }
 
         val accessLogBefore = Files.readAllLines(File("logs/webserver/access.txt").toPath())
 
@@ -311,13 +323,12 @@ class WebserverTests {
             TODO find way for okhttp to handle the cookies on their own
          */
 
-        webserver.addRoute("localhost", "/cookies", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
+        webserver.addRoute("localhost", "/cookies", HttpMethod.GET) {
+            CustomRespondable { request, response ->
                 response.cookies["test-cookie"] = Cookie("test cookie")
                 response.writeText(request.cookies.toString())
             }
-        })
+        }
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/cookies")
@@ -330,5 +341,24 @@ class WebserverTests {
         assertEquals(HttpStatus.OK.code, response.code)
         assertEquals(body, "{bar=baz, foo=bar}")
         assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie; Secure; HttpOnly; SameSite=STRICT")
+    }
+
+    @Test
+    fun doesLegacyRoutingSystemWork() {
+        webserver.addRoute("localhost", "/legacy", HttpMethod.GET, object: Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText("Works")
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/legacy")
+            .build()
+
+        val response = client.newCall(request).execute()
+        val body = response.body?.string()
+
+        assertEquals(HttpStatus.OK.code, response.code)
+        assertEquals(body, "Works")
     }
 }
