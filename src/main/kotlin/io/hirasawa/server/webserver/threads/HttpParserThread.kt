@@ -100,7 +100,6 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             InternalServerErrorRoute().handle(request, response)
         }
 
-        response.flush()
         response.close()
     }
 }

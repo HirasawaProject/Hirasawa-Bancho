@@ -3,7 +3,6 @@ package io.hirasawa.server.webserver.routingengine
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.respondable.HttpRespondable
 import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
-import io.hirasawa.server.webserver.routingengine.httpcallable.FunctionCallable
 import io.hirasawa.server.webserver.routingengine.nodes.*
 
 class RoutingEngine {
@@ -14,7 +13,8 @@ class RoutingEngine {
 
         var lastNode: RouteNode = routingTree
         for (segment in routeSegments) {
-            if (lastNode is DomainRouteNode) {
+            if (lastNode is RouteContainerNode) {
+                if (segment.isEmpty()) break
                 if (segment !in lastNode) {
                     lastNode[segment] = RouteContainerNode()
                 }
@@ -23,20 +23,11 @@ class RoutingEngine {
         }
 
         if (lastNode is RouteContainerNode) {
-            val lastRouteSegment = routeSegments.last()
-            if (lastRouteSegment.isEmpty()) {
-                if (lastNode.index == null) {
-                    lastNode.index = ControllerFunctionRouteTailNode(hashMapOf(method to controllerCallable))
-                }
-                if (lastNode.index is RouteTailNode) {
-                    (lastNode.index as RouteTailNode)[method] = controllerCallable
-                }
-            } else {
-                if (lastRouteSegment !in lastNode) {
-                    lastNode[lastRouteSegment] = ControllerFunctionRouteTailNode(hashMapOf(method to controllerCallable))
-                } else {
-                    (lastNode[lastRouteSegment] as RouteTailNode)[method] = controllerCallable
-                }
+            if (lastNode.index == null) {
+                lastNode.index = ControllerFunctionRouteTailNode(hashMapOf(method to controllerCallable))
+            }
+            if (lastNode.index is RouteTailNode) {
+                (lastNode.index as RouteTailNode)[method] = controllerCallable
             }
 
         }

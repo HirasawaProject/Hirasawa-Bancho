@@ -12,11 +12,21 @@ open class RouteContainerNode: RouteNode {
     var index: RouteTailNode? = null
 
     operator fun get(key: String): RouteNode {
-        return container[key.lowercase()] ?: throw HttpException(HttpStatus.NOT_FOUND)
+        return if (key.isEmpty()) {
+            index ?: throw HttpException(HttpStatus.NOT_FOUND)
+        } else if (key.startsWith('{') && key.endsWith('}')) {
+            container[wildcardRoute] ?: throw HttpException(HttpStatus.NOT_FOUND)
+        } else {
+            container[key.lowercase()] ?: throw HttpException(HttpStatus.NOT_FOUND)
+        }
     }
 
     operator fun set(key: String, value: RouteNode) {
-        if (key.startsWith('{') && key.endsWith('}')) {
+        if (key.isEmpty()) {
+            if (value is RouteTailNode) {
+                index = value
+            }
+        } else if (key.startsWith('{') && key.endsWith('}')) {
             wildcardKey = key.removeSurrounding("{", "}")
             container[wildcardRoute] = value
         } else {
