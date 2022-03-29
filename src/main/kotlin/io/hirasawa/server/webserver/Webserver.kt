@@ -74,7 +74,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
     fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
         // Hacky workaround to create a lambda that creates and returns an HttpRespondable object on the fly
         addRoute(host, path, httpMethod) {
-            object: HttpRespondable {
+            object: HttpRespondable() {
                 override fun respond(request: Request, response: Response) {
                     route.handle(request, response)
                 }
@@ -116,7 +116,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param httpMethod The HTTP method to check against
      */
     fun runRoute(host: String, route: String, httpMethod: HttpMethod, request: Request, response: Response) {
-        routingEngine["$host$route", httpMethod].respond(request, response)
+        routingEngine["$host$route", httpMethod].handle(request, response)
     }
 
     /**

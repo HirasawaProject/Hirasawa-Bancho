@@ -8,7 +8,7 @@ import io.hirasawa.server.webserver.objects.Response
 import java.io.File
 import java.nio.file.Files
 
-class AssetRespondable(private val assetPath: String): HttpRespondable {
+class AssetRespondable(private val assetPath: String): HttpRespondable() {
     override fun respond(request: Request, response: Response) {
         if (File(assetPath).exists()) {
             val filePath = File(assetPath).toPath()

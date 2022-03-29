@@ -4,9 +4,8 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 
-class BasicRespondable(private val httpStatus: HttpStatus, private val message: String): HttpRespondable() {
+class CustomRespondable(private val respondable: (request: Request, response: Response) -> Unit): HttpRespondable() {
     override fun respond(request: Request, response: Response) {
-        response.httpStatus = httpStatus
-        response.writeText(message)
+        respondable.invoke(request, response)
     }
 }

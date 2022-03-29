@@ -12,7 +12,9 @@ class ControllerFunctionRouteTailNode(private val functions: HashMap<HttpMethod,
     }
 
     override fun handle(routeSegments: ArrayList<String>, httpMethod: HttpMethod, routeParameters: HashMap<String, String>): HttpRespondable {
-        return functions[httpMethod]?.call() ?: throw HttpException(HttpStatus.METHOD_NOT_ALLOWED)
+        val respondable = functions[httpMethod]?.call() ?: throw HttpException(HttpStatus.METHOD_NOT_ALLOWED)
+        respondable.routeParameters.putAll(routeParameters)
+        return respondable
     }
 
     override fun getAllMethods(routeSegments: ArrayList<String>): Array<HttpMethod> {
