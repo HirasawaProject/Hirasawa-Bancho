@@ -16,8 +16,12 @@ open class RouteContainerNode: RouteNode {
             index ?: throw HttpException(HttpStatus.NOT_FOUND)
         } else if (key.startsWith('{') && key.endsWith('}')) {
             container[wildcardRoute] ?: throw HttpException(HttpStatus.NOT_FOUND)
-        } else {
+        } else if (key in container){
             container[key.lowercase()] ?: throw HttpException(HttpStatus.NOT_FOUND)
+        } else if (wildcardRoute in container) {
+            container[wildcardRoute] ?: throw HttpException(HttpStatus.NOT_FOUND)
+        } else {
+            throw HttpException(HttpStatus.NOT_FOUND)
         }
     }
 
