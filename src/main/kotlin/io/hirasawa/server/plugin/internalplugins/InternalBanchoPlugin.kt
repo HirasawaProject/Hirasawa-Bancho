@@ -37,7 +37,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         Hirasawa.webserver.addRoute(CommonDomains.OSU_BANCHO, "/", HttpMethod.POST, BanchoRoute())
 
         for (alternative in alternativeBanchoDomains) {
-            Hirasawa.webserver.cloneRoutes(CommonDomains.OSU_BANCHO, alternative)
+            Hirasawa.webserver.cloneDomain(CommonDomains.OSU_BANCHO, alternative)
         }
     }
 

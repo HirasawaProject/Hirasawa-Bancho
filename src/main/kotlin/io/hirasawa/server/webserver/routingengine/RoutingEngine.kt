@@ -39,4 +39,8 @@ class RoutingEngine {
 
         return routingTree.handle(routeSegments, httpMethod, HashMap())
     }
+
+    fun cloneDomain(from: Any, to: Any) {
+        routingTree[to.toString()] = routingTree[from.toString()]
+    }
 }
