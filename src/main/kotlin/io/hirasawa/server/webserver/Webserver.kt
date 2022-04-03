@@ -11,7 +11,6 @@ import io.hirasawa.server.webserver.routingengine.RoutingEngine
 import io.hirasawa.server.webserver.routingengine.httpcallable.AssetCallable
 import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
 import io.hirasawa.server.webserver.routingengine.httpcallable.LambdaCallable
-import io.hirasawa.server.webserver.routingengine.httpcallable.LambdaNoArgsCallable
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.io.File
