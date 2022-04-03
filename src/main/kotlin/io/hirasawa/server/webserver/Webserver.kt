@@ -11,6 +11,7 @@ import io.hirasawa.server.webserver.routingengine.RoutingEngine
 import io.hirasawa.server.webserver.routingengine.httpcallable.AssetCallable
 import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
 import io.hirasawa.server.webserver.routingengine.httpcallable.LambdaCallable
+import io.hirasawa.server.webserver.routingengine.httpcallable.LambdaNoArgsCallable
 import io.hirasawa.server.webserver.threads.HttpServerThread
 import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.io.File
@@ -53,7 +54,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param host The domain the route should run under
      * @param path The url path, eg /
      * @param httpMethod The type of HTTP request, eg GET, POST
-     * @param route The instance of the route
+     * @param response The lambda to invoke
      */
     fun addRoute(host: Any, path: String, httpMethod: HttpMethod, response: (request: Request, response: Response) -> HttpRespondable) {
         routingEngine["$host$path", httpMethod] = LambdaCallable(response)
