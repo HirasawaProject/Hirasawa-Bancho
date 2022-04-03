@@ -23,6 +23,7 @@ data class Response (var httpStatus: HttpStatus, private val wireOutputStream: D
         outputStream.writeBytes(text)
     }
 
+    @Deprecated("Please use the MVC system")
     fun writeRawHtml(block: HTML.() -> Unit) {
         val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument()
         val html = document.create.html{ block() }

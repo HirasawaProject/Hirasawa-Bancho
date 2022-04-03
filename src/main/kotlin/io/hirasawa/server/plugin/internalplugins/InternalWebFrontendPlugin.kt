@@ -1,15 +1,15 @@
 package io.hirasawa.server.plugin.internalplugins
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.controllers.HomeController
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
-import io.hirasawa.server.routes.HomeRoute
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 
 class InternalWebFrontendPlugin: HirasawaPlugin() {
     override fun onEnable() {
-        Hirasawa.webserver.addRoute(CommonDomains.HIRASAWA_WEB, "/", HttpMethod.GET, HomeRoute())
+        Hirasawa.webserver.addRoute(CommonDomains.HIRASAWA_WEB, "/", HttpMethod.GET, HomeController::index)
     }
 
     override fun onDisable() {

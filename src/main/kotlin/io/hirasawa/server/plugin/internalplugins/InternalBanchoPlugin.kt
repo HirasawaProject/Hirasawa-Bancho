@@ -5,9 +5,9 @@ import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.*
+import io.hirasawa.server.controllers.BanchoController
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
-import io.hirasawa.server.routes.BanchoRoute
 import io.hirasawa.server.webserver.enums.CommonDomains
 import io.hirasawa.server.webserver.enums.HttpMethod
 import java.util.concurrent.Executors
@@ -34,7 +34,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         threadExecutor.scheduleAtFixedRate(UserTimeoutThread(), 0, 1, TimeUnit.SECONDS)
 
         // Register web route for Bancho connections
-        Hirasawa.webserver.addRoute(CommonDomains.OSU_BANCHO, "/", HttpMethod.POST, BanchoRoute())
+        Hirasawa.webserver.addRoute(CommonDomains.OSU_BANCHO, "/", HttpMethod.POST, BanchoController::index)
 
         for (alternative in alternativeBanchoDomains) {
             Hirasawa.webserver.cloneDomain(CommonDomains.OSU_BANCHO, alternative)

@@ -55,7 +55,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param httpMethod The type of HTTP request, eg GET, POST
      * @param route The instance of the route
      */
-    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, response: () -> HttpRespondable) {
+    fun addRoute(host: Any, path: String, httpMethod: HttpMethod, response: (request: Request, response: Response) -> HttpRespondable) {
         routingEngine["$host$path", httpMethod] = LambdaCallable(response)
     }
 
@@ -73,7 +73,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
     )
     fun addRoute(host: Any, path: String, httpMethod: HttpMethod, route: Route) {
         // Hacky workaround to create a lambda that creates and returns an HttpRespondable object on the fly
-        addRoute(host, path, httpMethod) {
+        addRoute(host, path, httpMethod) { _, _ ->
             object: HttpRespondable() {
                 override fun respond(request: Request, response: Response) {
                     route.handle(request, response)
@@ -116,7 +116,7 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * @param httpMethod The HTTP method to check against
      */
     fun runRoute(host: String, route: String, httpMethod: HttpMethod, request: Request, response: Response) {
-        routingEngine["$host$route", httpMethod].handle(request, response)
+        routingEngine["$host$route", httpMethod, request, response].handle(request, response)
     }
 
     /**

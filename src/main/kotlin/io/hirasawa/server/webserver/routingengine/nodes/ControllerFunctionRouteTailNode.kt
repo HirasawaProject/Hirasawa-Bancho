@@ -3,6 +3,8 @@ package io.hirasawa.server.webserver.routingengine.nodes
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.exceptions.HttpException
+import io.hirasawa.server.webserver.objects.Request
+import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.respondable.HttpRespondable
 import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
 
@@ -11,8 +13,12 @@ class ControllerFunctionRouteTailNode(private val functions: HashMap<HttpMethod,
         functions[key] = value
     }
 
-    override fun handle(routeSegments: ArrayList<String>, httpMethod: HttpMethod, routeParameters: HashMap<String, String>): HttpRespondable {
-        val respondable = functions[httpMethod]?.call() ?: throw HttpException(HttpStatus.METHOD_NOT_ALLOWED)
+    override fun handle(routeSegments: ArrayList<String>,
+                        httpMethod: HttpMethod,
+                        routeParameters: HashMap<String, String>,
+                        request: Request,
+                        response: Response): HttpRespondable {
+        val respondable = functions[httpMethod]?.call(request, response) ?: throw HttpException(HttpStatus.METHOD_NOT_ALLOWED)
         respondable.routeParameters.putAll(routeParameters)
         return respondable
     }

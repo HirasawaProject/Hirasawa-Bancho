@@ -1,32 +1,18 @@
-package io.hirasawa.server.routes
+package io.hirasawa.server.views
 
-import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.database.tables.BeatmapsTable
-import io.hirasawa.server.database.tables.ScoresTable
+import io.hirasawa.server.mvc.View
 import io.hirasawa.server.objects.Beatmap
+import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
-import io.hirasawa.server.webserver.objects.Request
-import io.hirasawa.server.webserver.objects.Response
-import io.hirasawa.server.webserver.route.Route
 import kotlinx.html.*
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlinx.html.stream.createHTML
+import org.jetbrains.exposed.sql.ResultRow
 
-class BeatmapRoute: Route {
-    override fun handle(request: Request, response: Response) {
-        val beatmapId = request.routeParameters["beatmap"]?.toInt() ?: return
-        val mode = GameMode.values()[request.get["m"]?.toInt() ?: 0]
-
-        val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
-            BeatmapsTable.select {
-                BeatmapsTable.osuId eq beatmapId
-            }.firstOrNull()
-        })
-        val beatmapset = beatmap?.beatmapSet
-
-        response.writeRawHtml {
+class BeatmapView(private val beatmapset: BeatmapSet?,
+                  private val beatmap: Beatmap?,
+                  private val scores: List<ResultRow>): View {
+    override fun render(): String {
+        return createHTML(false).html {
             head {
                 if (beatmapset == null) {
                     title("Beatmap not found")
@@ -78,11 +64,7 @@ class BeatmapRoute: Route {
                             }
                         }
 
-                        transaction {
-                            ScoresTable.select {
-                                (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq mode.ordinal)
-                            }.limit(50).sortedByDescending { ScoresTable.score }
-                        }.forEach {
+                        scores.forEach {
                             val score = Score(it)
                             tr {
                                 td {
@@ -103,7 +85,6 @@ class BeatmapRoute: Route {
                             }
                         }
                     }
-
                 }
             }
         }

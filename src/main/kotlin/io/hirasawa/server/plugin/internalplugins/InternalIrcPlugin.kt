@@ -3,12 +3,8 @@ package io.hirasawa.server.plugin.internalplugins
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.commands.SetupIrcCommand
 import io.hirasawa.server.irc.servercommands.*
-import io.hirasawa.server.irc.threads.IrcServerThread
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
-import io.hirasawa.server.routes.HomeRoute
-import io.hirasawa.server.webserver.enums.CommonDomains
-import io.hirasawa.server.webserver.enums.HttpMethod
 
 class InternalIrcPlugin(private val defaultPort: Int = Hirasawa.config.ircPort): HirasawaPlugin() {
     override fun onEnable() {

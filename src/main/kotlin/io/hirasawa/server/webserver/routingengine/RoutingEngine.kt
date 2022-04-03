@@ -1,6 +1,8 @@
 package io.hirasawa.server.webserver.routingengine
 
 import io.hirasawa.server.webserver.enums.HttpMethod
+import io.hirasawa.server.webserver.objects.Request
+import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.respondable.HttpRespondable
 import io.hirasawa.server.webserver.routingengine.httpcallable.HttpCallable
 import io.hirasawa.server.webserver.routingengine.nodes.*
@@ -33,11 +35,11 @@ class RoutingEngine {
         }
     }
 
-    operator fun get(key: String, httpMethod: HttpMethod = HttpMethod.GET): HttpRespondable {
+    operator fun get(key: String, httpMethod: HttpMethod = HttpMethod.GET, request: Request, response: Response): HttpRespondable {
         val routeSegments = key.split("/") as ArrayList<String>
         routeSegments.removeAll(listOf(""))
 
-        return routingTree.handle(routeSegments, httpMethod, HashMap())
+        return routingTree.handle(routeSegments, httpMethod, HashMap(), request, response)
     }
 
     fun cloneDomain(from: Any, to: Any) {

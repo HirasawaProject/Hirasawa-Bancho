@@ -3,6 +3,8 @@ package io.hirasawa.server.webserver.routingengine.nodes
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.exceptions.HttpException
+import io.hirasawa.server.webserver.objects.Request
+import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.respondable.HttpRespondable
 
 open class RouteContainerNode: RouteNode {
@@ -42,18 +44,22 @@ open class RouteContainerNode: RouteNode {
         return key.lowercase() in container
     }
 
-    override fun handle(routeSegments: ArrayList<String>, httpMethod: HttpMethod, routeParameters: HashMap<String, String>): HttpRespondable {
+    override fun handle(routeSegments: ArrayList<String>,
+                        httpMethod: HttpMethod,
+                        routeParameters: HashMap<String, String>,
+                        request: Request,
+                        response: Response): HttpRespondable {
         if (routeSegments.isEmpty()) {
-            return index?.handle(routeSegments, httpMethod, routeParameters) ?: throw HttpException(HttpStatus.NOT_FOUND)
+            return index?.handle(routeSegments, httpMethod, routeParameters, request, response) ?: throw HttpException(HttpStatus.NOT_FOUND)
         }
         val routeSegment = routeSegments.first()
         if (this.contains(routeSegment)) {
             routeSegments.removeFirst()
-            return this[routeSegment].handle(routeSegments, httpMethod, routeParameters)
+            return this[routeSegment].handle(routeSegments, httpMethod, routeParameters, request, response)
         } else if (this.contains(wildcardRoute)) {
             routeSegments.removeFirst()
-            routeParameters[wildcardKey] = routeSegment
-            return this[routeSegment].handle(routeSegments, httpMethod, routeParameters)
+            request.routeParameters[wildcardKey] = routeSegment
+            return this[routeSegment].handle(routeSegments, httpMethod, routeParameters, request, response)
         }
         throw HttpException(HttpStatus.NOT_FOUND)
     }
