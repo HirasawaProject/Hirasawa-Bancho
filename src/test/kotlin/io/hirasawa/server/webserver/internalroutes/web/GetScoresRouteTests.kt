@@ -2,9 +2,8 @@ package io.hirasawa.server.webserver.internalroutes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.controllers.ScoreController
 import io.hirasawa.server.enums.BeatmapStatus
-import io.hirasawa.server.routes.web.OsuOsz2GetScoresRoute
-import io.hirasawa.server.webserver.Helper
 import io.hirasawa.server.webserver.Helper.Companion.createBeatmap
 import io.hirasawa.server.webserver.Helper.Companion.createBeatmapSet
 import io.hirasawa.server.webserver.Helper.Companion.createScore
@@ -13,13 +12,11 @@ import io.hirasawa.server.webserver.enums.HttpHeader
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
 import io.hirasawa.server.webserver.objects.*
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
-import java.lang.Exception
 import kotlin.collections.HashMap
 
 class GetScoresRouteTests {
@@ -29,8 +26,6 @@ class GetScoresRouteTests {
 
     fun requestRoute(username: String, password: String, gameMode: GameMode, beatmapHash: String,
                      responseBuffer: ByteArrayOutputStream): Response {
-        val route = OsuOsz2GetScoresRoute()
-
         val params = HashMap<String, String>()
         params["us"] = username
         params["ha"] = password
@@ -49,7 +44,7 @@ class GetScoresRouteTests {
         val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer),
             Hirasawa.webserver.getDefaultHeaders(), HashMap())
 
-        route.handle(request, response)
+        ScoreController().get(request).handle(request, response)
         response.close()
 
         return response

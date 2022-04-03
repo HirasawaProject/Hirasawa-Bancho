@@ -1,6 +1,7 @@
 package io.hirasawa.server.webserver
 
 import io.hirasawa.server.logger.FileLogger
+import io.hirasawa.server.mvc.View
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpMethod
 import io.hirasawa.server.webserver.enums.HttpStatus
@@ -9,9 +10,12 @@ import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.respondable.BasicRespondable
 import io.hirasawa.server.webserver.respondable.CustomRespondable
+import io.hirasawa.server.webserver.respondable.ViewRespondable
 import io.hirasawa.server.webserver.route.Route
 import kotlinx.html.body
+import kotlinx.html.html
 import kotlinx.html.p
+import kotlinx.html.stream.createHTML
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import org.bouncycastle.util.encoders.Base64
@@ -33,7 +37,7 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseGetParams() {
-        webserver.addRoute("localhost", "/getparams", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/getparams", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
                 response.writeText(request.get.toString())
             }
@@ -51,7 +55,7 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParsePostParams() {
-        webserver.addRoute("localhost", "/postparams", HttpMethod.POST) {
+        webserver.addRoute("localhost", "/postparams", HttpMethod.POST) { _, _ ->
             CustomRespondable { request, response ->
                 response.writeText(request.post.toString())
             }
@@ -75,7 +79,7 @@ class WebserverTests {
 
     @Test
     fun testDoesThrownErrorGiveErrorRoute() {
-        webserver.addRoute("localhost", "/error", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/error", HttpMethod.GET) { _, _ ->
             CustomRespondable { _, _ ->
                 throw Exception()
             }
@@ -102,9 +106,9 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverParseParameterisedRouteNodes() {
-        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
-                response.writeText(request.routeParameters.toString())
+                response.writeText("${request.routeParameters["number"]} ${request.routeParameters["name"]}")
             }
         }
 
@@ -115,12 +119,12 @@ class WebserverTests {
         val response = client.newCall(request).execute()
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals("{name=Hirasawa, number=101}", response.body?.string())
+        assertEquals("101 Hirasawa", response.body?.string())
     }
 
     @Test
     fun testDoesWebserverErrorOnIncorrectParameterisedRouteNode() {
-        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/params/{number}/{name}", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
                 response.writeText(request.routeParameters.toString())
             }
@@ -142,9 +146,10 @@ class WebserverTests {
 
     @Test
     fun testDoesWebserverSupportParameterisedRouteNodesWithOutOfSequence() {
-        webserver.addRoute("localhost", "/test/{number}/{name}/foo/{bar}", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/test/{number}/{name}/foo/{bar}", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
-                response.writeText(request.routeParameters.toString())
+                response.writeText("${request.routeParameters["number"]} ${request.routeParameters["name"]} " +
+                        "${request.routeParameters["bar"]}")
             }
         }
 
@@ -155,7 +160,7 @@ class WebserverTests {
         val response = client.newCall(request).execute()
 
         assertEquals(HttpStatus.OK.code, response.code)
-        assertEquals("{name=Hirasawa, number=101, bar=test}", response.body?.string())
+        assertEquals("101 Hirasawa test", response.body?.string())
     }
 
     @Test
@@ -213,7 +218,7 @@ class WebserverTests {
 
     @Test
     fun doesAccessingRouteIncreaseAccessLog() {
-        webserver.addRoute("localhost", "/logtestenabled", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/logtestenabled", HttpMethod.GET) { _, _ ->
             BasicRespondable(HttpStatus.OK, "")
         }
 
@@ -233,7 +238,7 @@ class WebserverTests {
 
     @Test
     fun doesAccessingRouteWithDisabledLoggingNotIncreaseAccessLog() {
-        webserver.addRoute("localhost", "/logtestdisabled", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/logtestdisabled", HttpMethod.GET) { _, _ ->
             CustomRespondable { _, response ->
                 response.isLoggingEnabled = false
             }
@@ -255,19 +260,19 @@ class WebserverTests {
 
     @Test
     fun doesHtmlDslWork() {
-        webserver.addRoute("localhost", "/htmldsl", HttpMethod.GET, object:
-            Route {
-            override fun handle(request: Request, response: Response) {
-                response.writeRawHtml {
-                    body {
-                        p {
-                            text("Hello world")
+        webserver.addRoute("localhost", "/htmldsl", HttpMethod.GET) { _, _ ->
+            ViewRespondable(object: View {
+                override fun render(): String {
+                    return createHTML(true).html {
+                        body {
+                            p {
+                                +"Hello world"
+                            }
                         }
                     }
                 }
-            }
-        })
-
+            })
+        }
 
         val request = okhttp3.Request.Builder()
             .url("http://localhost:8181/htmldsl")
@@ -288,7 +293,7 @@ class WebserverTests {
 
     @Test
     fun testIpAddressCanBeChangedViaWebRequestEvent() {
-        webserver.addRoute("localhost", "/ipaddress", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/ipaddress", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
                 request.ipAddress = "test"
                 response.writeText(request.ipAddress)
@@ -323,7 +328,7 @@ class WebserverTests {
             TODO find way for okhttp to handle the cookies on their own
          */
 
-        webserver.addRoute("localhost", "/cookies", HttpMethod.GET) {
+        webserver.addRoute("localhost", "/cookies", HttpMethod.GET) { _, _ ->
             CustomRespondable { request, response ->
                 response.cookies["test-cookie"] = Cookie("test cookie")
                 response.writeText(request.cookies.toString())
