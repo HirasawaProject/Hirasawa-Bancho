@@ -20,7 +20,7 @@ class InternalGameApiPlugin: HirasawaPlugin() {
     }
 
     override fun onDisable() {
-        // TODO allow ability to remove web routes
+        unregisterWebRoutes()
     }
 
     private fun registerWebRoutes() {
@@ -35,6 +35,16 @@ class InternalGameApiPlugin: HirasawaPlugin() {
                 response.redirect("https://${Hirasawa.config.domain}")
             }
         })
+    }
+
+    private fun unregisterWebRoutes() {
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/web/osu-osz2-getscores.php", HttpMethod.GET)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular.php", HttpMethod.POST)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/web/osu-submit-modular-selector.php", HttpMethod.POST)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/b/{beatmap}", HttpMethod.GET)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/web/osu-search.php", HttpMethod.GET)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/d/{beatmap}", HttpMethod.GET)
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_WEB, "/", HttpMethod.GET)
     }
 
     companion object {

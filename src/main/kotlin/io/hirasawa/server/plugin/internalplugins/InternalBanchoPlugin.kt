@@ -47,6 +47,8 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         threadExecutor.shutdown()
         Hirasawa.banchoUsers.remove(Hirasawa.hirasawaBot)
         // TODO add ability to remove web routes and registered packets
+
+        Hirasawa.webserver.removeRoute(CommonDomains.OSU_BANCHO, "/", HttpMethod.POST)
     }
 
     private fun registerPackets() {

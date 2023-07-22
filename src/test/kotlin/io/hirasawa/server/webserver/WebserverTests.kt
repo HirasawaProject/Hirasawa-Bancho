@@ -331,4 +331,82 @@ class WebserverTests {
         assertEquals(body, "{bar=baz, foo=bar}")
         assertEquals(response.header("Set-Cookie"), "test-cookie=test cookie; Secure; HttpOnly; SameSite=STRICT")
     }
+
+    @Test
+    fun canYouAddAndRemoveARouteNode() {
+        webserver.addRoute("localhost", "/test", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText("Test")
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/test")
+            .build()
+
+        val response1 = client.newCall(request).execute()
+        val body1 = response1.body?.string()
+
+        assertEquals(HttpStatus.OK.code, response1.code)
+        assertEquals(body1, "Test")
+
+        webserver.removeRoute("localhost", "/test", HttpMethod.GET)
+
+        val response2 = client.newCall(request).execute()
+
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED.code, response2.code)
+    }
+
+    @Test
+    fun canYouAddAndRemoveARouteNodeWithParams() {
+        webserver.addRoute("localhost", "/test/{param}", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText("Test")
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/test/foo")
+            .build()
+
+        val response1 = client.newCall(request).execute()
+        val body1 = response1.body?.string()
+
+        assertEquals(HttpStatus.OK.code, response1.code)
+        assertEquals(body1, "Test")
+
+        webserver.removeRoute("localhost", "/test/{param}", HttpMethod.GET)
+
+        val response2 = client.newCall(request).execute()
+
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED.code, response2.code)
+    }
+
+    @Test
+    fun canYouAddAndRemoveARouteNodeAtRoot() {
+        webserver.addRoute("localhost", "/", HttpMethod.GET, object:
+            Route {
+            override fun handle(request: Request, response: Response) {
+                response.writeText("Test")
+            }
+        })
+
+        val request = okhttp3.Request.Builder()
+            .url("http://localhost:8181/")
+            .build()
+
+        val response1 = client.newCall(request).execute()
+        val body1 = response1.body?.string()
+
+        assertEquals(HttpStatus.OK.code, response1.code)
+        assertEquals("Test", body1)
+
+        webserver.removeRoute("localhost", "/", HttpMethod.GET)
+
+        val response2 = client.newCall(request).execute()
+
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED.code, response2.code)
+    }
 }
