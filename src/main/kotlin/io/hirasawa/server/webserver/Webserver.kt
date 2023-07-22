@@ -211,4 +211,67 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
     fun cloneRoutes(from: Any, to: Any) {
         cloneRoutes(from.toString(), to.toString())
     }
+
+    /**
+     * Removes a route from the internal webserver
+     *
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     */
+    fun removeRoute(host: String, path: String, httpMethod: HttpMethod) {
+        removeNode(host, path, httpMethod)
+    }
+
+    /**
+     * Adds a route to the internal webserver
+     *
+     * You can also use parameters in the path e.g: /u/{user}
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param route The instance of the route
+     */
+    fun removeRoute(host: Any, path: String, httpMethod: HttpMethod) {
+        removeRoute(host.toString(), path, httpMethod)
+    }
+
+    /**
+     * Removes a node from the route tree
+     *
+     * @paramhost The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     */
+    fun removeNode(host: Any, path: String, httpMethod: HttpMethod) {
+        val hostString = host.toString()
+
+        val routeSegments = ArrayList<String>()
+        val routeParameters = ArrayList<String>()
+
+        val pattern = Regex("\\{(.+)}")
+        for (segment in path.split("/")) {
+            if (segment.isBlank()) continue
+            if (pattern.matches(segment)) {
+                pattern.find(segment)?.groupValues?.get(1)?.let { routeParameters.add(it) }
+            } else {
+                routeSegments.add(segment)
+            }
+        }
+
+        var lastSegment = routes[hostString]
+        for (segment in routeSegments) {
+            if (lastSegment is DirectoryNode) {
+                lastSegment = lastSegment.routes[segment]
+            }
+        }
+
+        if (lastSegment is DirectoryNode) {
+            if (httpMethod in lastSegment.index.methods) {
+                lastSegment.index.methods.remove(httpMethod)
+            } else {
+                println("NOT FOUND")
+            }
+        }
+    }
 }
