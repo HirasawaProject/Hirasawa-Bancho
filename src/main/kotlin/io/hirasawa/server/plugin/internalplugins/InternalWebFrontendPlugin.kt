@@ -13,7 +13,7 @@ class InternalWebFrontendPlugin: HirasawaPlugin() {
     }
 
     override fun onDisable() {
-        // TODO add ability to remove web routes
+        Hirasawa.webserver.removeRoute(CommonDomains.HIRASAWA_WEB, "/", HttpMethod.GET)
     }
 
     companion object {
