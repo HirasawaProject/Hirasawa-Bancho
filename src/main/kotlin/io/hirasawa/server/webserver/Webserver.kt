@@ -254,9 +254,8 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
             if (segment.isBlank()) continue
             if (pattern.matches(segment)) {
                 pattern.find(segment)?.groupValues?.get(1)?.let { routeParameters.add(it) }
-            } else {
-                routeSegments.add(segment)
             }
+            routeSegments.add(segment)
         }
 
         var lastSegment = routes[hostString]
@@ -264,13 +263,19 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
             if (lastSegment is DirectoryNode) {
                 lastSegment = lastSegment.routes[segment]
             }
+            if (lastSegment is ParameterisedRouteNode) {
+                lastSegment = lastSegment.route
+            }
         }
 
         if (lastSegment is DirectoryNode) {
             if (httpMethod in lastSegment.index.methods) {
                 lastSegment.index.methods.remove(httpMethod)
-            } else {
-                println("NOT FOUND")
+            }
+        }
+        if (lastSegment is RouteContainerNode) {
+            if (httpMethod in lastSegment.methods) {
+                lastSegment.methods.remove(httpMethod)
             }
         }
     }
