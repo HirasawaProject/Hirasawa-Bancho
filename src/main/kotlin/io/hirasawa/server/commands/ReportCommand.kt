@@ -42,7 +42,7 @@ class ReportCommand: ChatCommand("report", "Report a player to the mods", "hiras
         transaction {
             ReportsTable.insertAndGetId {
                 it[ReportsTable.reporterId] = reporter.id
-                it[ReportsTable.reporteeId] = reportee.id
+                it[ReportsTable.userId] = reportee.id
                 it[ReportsTable.reason] = reason
             }
         }
