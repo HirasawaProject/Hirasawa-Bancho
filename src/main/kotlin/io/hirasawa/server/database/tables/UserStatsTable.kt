@@ -6,7 +6,7 @@ object UserStatsTable: Table("user_stats") {
     val userId = integer("user_id")
     val rankedScore = long("ranked_score")
     val accuracy = float("accuracy")
-    val playcount = integer("playcount")
+    val playcount = integer("play_count")
     val totalScore = long("total_score")
     val rank = integer("rank")
     val pp = short("pp")
