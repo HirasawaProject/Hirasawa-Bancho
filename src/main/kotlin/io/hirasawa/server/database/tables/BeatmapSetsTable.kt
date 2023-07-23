@@ -2,7 +2,7 @@ package io.hirasawa.server.database.tables
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object BeatmapsetsTable: IntIdTable("beatmapsets") {
+object BeatmapSetsTable: IntIdTable("beatmap_sets") {
     val osuId = integer("osu_id")
     val artist = varchar("artist", 255)
     val title = varchar("title", 255)

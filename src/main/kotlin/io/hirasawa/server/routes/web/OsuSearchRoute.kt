@@ -2,7 +2,7 @@ package io.hirasawa.server.routes.web
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
-import io.hirasawa.server.database.tables.BeatmapsetsTable
+import io.hirasawa.server.database.tables.BeatmapSetsTable
 import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.handlers.OsuSearchBeatmapHandler
 import io.hirasawa.server.objects.Beatmap
@@ -38,18 +38,18 @@ class OsuSearchRoute: Route {
             return
         }
 
-        var beatmapSort = BeatmapsetsTable.id
+        var beatmapSort = BeatmapSetsTable.id
         var beatmapQuery = ""
 
         when (query) {
             "Newest" -> {
-                beatmapSort = BeatmapsetsTable.id
+                beatmapSort = BeatmapSetsTable.id
             }
             "Top Rated" -> {
-                beatmapSort = BeatmapsetsTable.id
+                beatmapSort = BeatmapSetsTable.id
             }
             "Most Played" -> {
-                beatmapSort = BeatmapsetsTable.id
+                beatmapSort = BeatmapSetsTable.id
             }
             else -> {
                 beatmapQuery = query
@@ -59,8 +59,8 @@ class OsuSearchRoute: Route {
         val beatmaps = ArrayList<BeatmapSet>()
 
         transaction {
-            BeatmapsetsTable.select {
-                (BeatmapsetsTable.title like "%$beatmapQuery%") or (BeatmapsetsTable.artist like "%$beatmapQuery%")
+            BeatmapSetsTable.select {
+                (BeatmapSetsTable.title like "%$beatmapQuery%") or (BeatmapSetsTable.artist like "%$beatmapQuery%")
             }.limit(page * 100, ((page + 1) * 100).toLong()).sortedBy { beatmapSort }.forEach {
                 beatmaps.add(BeatmapSet(it))
             }

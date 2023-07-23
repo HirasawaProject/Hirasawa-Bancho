@@ -22,7 +22,7 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
         timezone, countryCode, longitude, latitude, isBanned) {
 
     constructor(result: ResultRow): this(result[UsersTable.id].value, result[UsersTable.username], 0, 0, 0F ,0F,
-        UUID.randomUUID(), result[UsersTable.banned])
+        UUID.randomUUID(), result[UsersTable.isBanned])
 
     val packetCache = Stack<BanchoPacket>()
     var status = BanchoStatus()

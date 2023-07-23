@@ -90,18 +90,18 @@ class Helper {
 
         fun createBeatmapSet(artist: String, title: String, status: BeatmapStatus): BeatmapSet {
             return BeatmapSet(transaction {
-                val mapsetId = BeatmapsetsTable.insertAndGetId {
-                    it[BeatmapsetsTable.artist] = artist
-                    it[BeatmapsetsTable.title] = title
-                    it[BeatmapsetsTable.status] = status.id
-                    it[BeatmapsetsTable.osuId] = Random.nextInt()
-                    it[BeatmapsetsTable.mapperName] = "Unknown"
-                    it[BeatmapsetsTable.genreId] = 0
-                    it[BeatmapsetsTable.languageId] = 0
-                    it[BeatmapsetsTable.rating] = 0F
+                val mapsetId = BeatmapSetsTable.insertAndGetId {
+                    it[BeatmapSetsTable.artist] = artist
+                    it[BeatmapSetsTable.title] = title
+                    it[BeatmapSetsTable.status] = status.id
+                    it[BeatmapSetsTable.osuId] = Random.nextInt()
+                    it[BeatmapSetsTable.mapperName] = "Unknown"
+                    it[BeatmapSetsTable.genreId] = 0
+                    it[BeatmapSetsTable.languageId] = 0
+                    it[BeatmapSetsTable.rating] = 0F
                 }
 
-                BeatmapsetsTable.select { BeatmapsetsTable.id eq mapsetId }.first()
+                BeatmapSetsTable.select { BeatmapSetsTable.id eq mapsetId }.first()
             })
         }
 

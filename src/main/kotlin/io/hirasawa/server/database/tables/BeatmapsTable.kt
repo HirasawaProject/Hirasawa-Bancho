@@ -4,7 +4,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 
 object BeatmapsTable: IntIdTable("beatmaps") {
     val osuId = integer("osu_id").uniqueIndex()
-    val mapsetId = integer("beatmap_set_id").references(BeatmapsetsTable.id)
+    val mapsetId = integer("beatmap_set_id").references(BeatmapSetsTable.id)
     val difficulty = varchar("difficulty", 255)
     val hash = varchar("hash", 32)
     val ranks = integer("ranks")

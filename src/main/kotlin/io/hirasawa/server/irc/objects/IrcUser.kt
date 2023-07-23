@@ -13,7 +13,7 @@ class IrcUser(id: Int, username: String, timezone: Byte, countryCode: Byte, long
     timezone, countryCode, longitude, latitude, isBanned) {
 
     constructor(result: ResultRow): this(result[UsersTable.id].value, result[UsersTable.username], 0, 0, 0F ,0F,
-        UUID.randomUUID(), result[UsersTable.banned])
+        UUID.randomUUID(), result[UsersTable.isBanned])
 
     var lastKeepAlive = 0
 

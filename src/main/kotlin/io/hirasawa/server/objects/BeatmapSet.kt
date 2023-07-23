@@ -2,7 +2,7 @@ package io.hirasawa.server.objects
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.database.tables.BeatmapsTable
-import io.hirasawa.server.database.tables.BeatmapsetsTable
+import io.hirasawa.server.database.tables.BeatmapSetsTable
 import io.hirasawa.server.enums.BeatmapStatus
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
@@ -21,8 +21,8 @@ data class BeatmapSet(val id: Int, val artist: String, val title: String, val st
         difficulties
     }
 
-    constructor(result: ResultRow): this(result[BeatmapsetsTable.id].value, result[BeatmapsetsTable.artist],
-        result[BeatmapsetsTable.title], BeatmapStatus.fromId(result[BeatmapsetsTable.status]),
-        result[BeatmapsetsTable.osuId], result[BeatmapsetsTable.mapperName], result[BeatmapsetsTable.genreId],
-        result[BeatmapsetsTable.languageId], result[BeatmapsetsTable.rating])
+    constructor(result: ResultRow): this(result[BeatmapSetsTable.id].value, result[BeatmapSetsTable.artist],
+        result[BeatmapSetsTable.title], BeatmapStatus.fromId(result[BeatmapSetsTable.status]),
+        result[BeatmapSetsTable.osuId], result[BeatmapSetsTable.mapperName], result[BeatmapSetsTable.genreId],
+        result[BeatmapSetsTable.languageId], result[BeatmapSetsTable.rating])
 }

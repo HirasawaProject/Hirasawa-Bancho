@@ -4,7 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.chat.command.ChatCommand
 import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.database.tables.BeatmapsTable
-import io.hirasawa.server.database.tables.BeatmapsetsTable
+import io.hirasawa.server.database.tables.BeatmapSetsTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -20,8 +20,8 @@ class RankCommand: ChatCommand("rank", "Automatically rank beatmaps from osu!", 
         val mapsetId = args[0].toInt()
 
         if (transaction {
-            BeatmapsetsTable.select {
-                BeatmapsetsTable.osuId eq mapsetId
+            BeatmapSetsTable.select {
+                BeatmapSetsTable.osuId eq mapsetId
             }.count()
         } > 0) {
             context.respond("Mapset already exists")
@@ -31,15 +31,15 @@ class RankCommand: ChatCommand("rank", "Automatically rank beatmaps from osu!", 
         val beatmaps = Hirasawa.osuApi.getBeatmaps(mapsetId = mapsetId)
 
         transaction {
-            val id = BeatmapsetsTable.insertAndGetId {
-                it[BeatmapsetsTable.artist] = beatmaps.first().artist
-                it[BeatmapsetsTable.title] = beatmaps.first().title
-                it[BeatmapsetsTable.status] = 3
-                it[BeatmapsetsTable.osuId] = beatmaps.first().beatmapsetId
-                it[BeatmapsetsTable.mapperName] = beatmaps.first().creator
-                it[BeatmapsetsTable.genreId] = beatmaps.first().genreId
-                it[BeatmapsetsTable.languageId] = beatmaps.first().languageId
-                it[BeatmapsetsTable.rating] = beatmaps.first().rating
+            val id = BeatmapSetsTable.insertAndGetId {
+                it[BeatmapSetsTable.artist] = beatmaps.first().artist
+                it[BeatmapSetsTable.title] = beatmaps.first().title
+                it[BeatmapSetsTable.status] = 3
+                it[BeatmapSetsTable.osuId] = beatmaps.first().beatmapsetId
+                it[BeatmapSetsTable.mapperName] = beatmaps.first().creator
+                it[BeatmapSetsTable.genreId] = beatmaps.first().genreId
+                it[BeatmapSetsTable.languageId] = beatmaps.first().languageId
+                it[BeatmapSetsTable.rating] = beatmaps.first().rating
             }
 
             commit()
