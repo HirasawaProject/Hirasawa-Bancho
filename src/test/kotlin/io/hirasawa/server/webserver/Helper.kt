@@ -24,7 +24,7 @@ class Helper {
                 val userId = UsersTable.insertAndGetId {
                     it[UsersTable.username] = username
                     it[UsersTable.password] = BCrypt.hashpw("", BCrypt.gensalt())
-                    it[UsersTable.banned] = false
+                    it[UsersTable.isBanned] = false
                     it[UsersTable.mutedUntil] = 0
                     it[UsersTable.ircToken] = ircToken
                 }
