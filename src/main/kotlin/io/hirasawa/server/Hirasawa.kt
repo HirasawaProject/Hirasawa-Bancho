@@ -90,7 +90,7 @@ class Hirasawa {
         }
 
         fun initDatabase(memoryDatabase: Boolean = false) {
-            if (true) {
+            if (memoryDatabase) {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
@@ -132,91 +132,6 @@ class Hirasawa {
             })
 
             this.hirasawaBot = HirasawaBot(hirasawaBotUser)
-
-            transaction {
-                val userId = UsersTable.insertAndGetId {
-                    it[UsersTable.username] = "Connor"
-                    it[UsersTable.password] = BCrypt.hashpw("b2e1435a850ed48e6327ad6011a6bb30", BCrypt.gensalt())
-                    it[UsersTable.isBanned] = false
-                    it[UsersTable.mutedUntil] = 0
-                    it[UsersTable.ircToken] = ""
-                }
-
-                UserStatsTable.insert {
-                    it[UserStatsTable.userId] = userId.value
-                    it[UserStatsTable.rankedScore] = 0
-                    it[UserStatsTable.accuracy] = 0F
-                    it[UserStatsTable.playcount] = 0
-                    it[UserStatsTable.totalScore] = 0
-                    it[UserStatsTable.rank] = 1
-                    it[UserStatsTable.pp] = 1000
-                    it[UserStatsTable.gamemode] = 0
-                }
-            }
-
-            transaction {
-                val userId = UsersTable.insertAndGetId {
-                    it[UsersTable.username] = "Connor2"
-                    it[UsersTable.password] = BCrypt.hashpw("b2e1435a850ed48e6327ad6011a6bb30", BCrypt.gensalt())
-                    it[UsersTable.isBanned] = false
-                    it[UsersTable.mutedUntil] = 0
-                    it[UsersTable.ircToken] = ""
-                }
-
-                UserStatsTable.insert {
-                    it[UserStatsTable.userId] = userId.value
-                    it[UserStatsTable.rankedScore] = 0
-                    it[UserStatsTable.accuracy] = 0.50F
-                    it[UserStatsTable.playcount] = 0
-                    it[UserStatsTable.totalScore] = 0
-                    it[UserStatsTable.rank] = 2
-                    it[UserStatsTable.pp] = 512
-                    it[UserStatsTable.gamemode] = 0
-                }
-            }
-
-            val beatmaps = Hirasawa.osuApi.getBeatmaps(mapsetId = 444335)
-
-            transaction {
-                val id = BeatmapSetsTable.insertAndGetId {
-                    it[BeatmapSetsTable.artist] = beatmaps.first().artist
-                    it[BeatmapSetsTable.title] = beatmaps.first().title
-                    it[BeatmapSetsTable.status] = 3
-                    it[BeatmapSetsTable.osuId] = beatmaps.first().beatmapsetId
-                    it[BeatmapSetsTable.mapperName] = beatmaps.first().creator
-                    it[BeatmapSetsTable.genreId] = beatmaps.first().genreId
-                    it[BeatmapSetsTable.languageId] = beatmaps.first().languageId
-                    it[BeatmapSetsTable.rating] = beatmaps.first().rating
-                }
-
-                commit()
-
-                for (beatmap in beatmaps) {
-                    BeatmapsTable.insert {
-                        it[BeatmapsTable.mapsetId] = id.value
-                        it[BeatmapsTable.difficulty] = beatmap.version
-                        it[BeatmapsTable.hash] = beatmap.fileMd5
-                        it[BeatmapsTable.ranks] = 0
-                        it[BeatmapsTable.offset] = 0F
-                        it[BeatmapsTable.osuId] = beatmap.beatmapId
-                        it[BeatmapsTable.totalLength] = beatmap.totalLength
-                        it[BeatmapsTable.hitLength] = beatmap.hitLength
-                        it[BeatmapsTable.circleSize] = beatmap.diffSize
-                        it[BeatmapsTable.overallDifficulty] = beatmap.diffOverall
-                        it[BeatmapsTable.approachRate] = beatmap.diffApproach
-                        it[BeatmapsTable.healthDrain] = beatmap.diffDrain
-                        it[BeatmapsTable.gamemode] = beatmap.mode
-                        it[BeatmapsTable.countNormal] = beatmap.countNormal
-                        it[BeatmapsTable.countSlider] = beatmap.countSlider
-                        it[BeatmapsTable.countSpinner] = beatmap.countSpinner
-                        it[BeatmapsTable.bpm] = beatmap.bpm
-                        it[BeatmapsTable.hasStoryboard] = beatmap.storyboard
-                        it[BeatmapsTable.maxCombo] = beatmap.maxCombo
-                        it[BeatmapsTable.playCount] = 0
-                        it[BeatmapsTable.passCount] = 0
-                    }
-                }
-            }
         }
 
         private fun loadConfig(): HirasawaConfig {
