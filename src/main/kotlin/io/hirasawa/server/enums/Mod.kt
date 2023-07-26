@@ -33,7 +33,8 @@ enum class Mod(val id: Int) {
     KEY1(1 shl 26),
     KEY3(1 shl 27),
     KEY2(1 shl 28),
-    SCORE_V2(1 shl 29);
+    SCORE_V2(1 shl 29),
+    KEY_MODS((KEY1 + KEY2 + KEY3 + KEY4 + KEY5 + KEY6 + KEY7 + KEY8).toInt());
 
     operator fun plus(mod: Mod): Mods {
         return Mods(arrayListOf(this, mod))
