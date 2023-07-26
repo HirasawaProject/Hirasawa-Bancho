@@ -7,6 +7,7 @@ import io.hirasawa.server.bancho.packets.multiplayer.*
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
+import io.hirasawa.server.plugin.event.bancho.multiplayer.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -108,6 +109,7 @@ data class MultiplayerMatch(
     }
 
     fun sendUpdate() {
+        BanchoMatchGenericChangeEvent(this).call()
         sendPacketToAll(MatchUpdatePacket(this))
         Hirasawa.multiplayer.sendUpdate(this)
     }
@@ -126,6 +128,11 @@ data class MultiplayerMatch(
         if (!canJoin()) {
             return false
         }
+        val matchJoinEvent = BanchoUserMatchJoinEvent(user, this).call()
+        if (matchJoinEvent.isCancelled) {
+            return false
+        }
+
         for ((index: Int, status: MatchSlotStatus) in slotStatus.withIndex()) {
             if (status == MatchSlotStatus.OPEN) {
                 slotUser[index] = user
@@ -139,7 +146,8 @@ data class MultiplayerMatch(
     }
 
     fun removeFromMatch(user: BanchoUser) {
-        user.currentMatch = null
+        BanchoUserMatchLeaveEvent(user, this, getUserSlot(user)).call()
+                    user.currentMatch = null
         for ((index: Int, scannedUser: BanchoUser?) in slotUser.withIndex()) {
             if (scannedUser == user) {
                 slotUser[index] = null
@@ -173,53 +181,70 @@ data class MultiplayerMatch(
 
     fun changeSlot(slot: Int, user: BanchoUser) {
         val originalSlot = getUserSlot(user)
-        if (slotStatus[slot] == MatchSlotStatus.OPEN) {
-            slotUser[slot] = user
-            slotStatus[slot] = slotStatus[originalSlot]
-            slotTeam[slot] = slotTeam[originalSlot]
+        BanchoUserMatchSlotChangeEvent(user, this, originalSlot, slot).call().then {
+            if (slotStatus[slot] == MatchSlotStatus.OPEN) {
+                slotUser[slot] = user
+                slotStatus[slot] = slotStatus[originalSlot]
+                slotTeam[slot] = slotTeam[originalSlot]
 
-            slotUser[originalSlot] = null
-            slotStatus[originalSlot] = MatchSlotStatus.OPEN
-            slotTeam[originalSlot] = MatchSlotTeam.NONE
-            sendUpdate()
+                slotUser[originalSlot] = null
+                slotStatus[originalSlot] = MatchSlotStatus.OPEN
+                slotTeam[originalSlot] = MatchSlotTeam.NONE
+                sendUpdate()
+            }
         }
     }
 
     fun toggleSlot(slot: Int) {
-        if (slotStatus[slot] == MatchSlotStatus.OPEN) {
-            slotStatus[slot] = MatchSlotStatus.LOCKED
+        val from = slotStatus[slot]
+        val to = if (slotStatus[slot] == MatchSlotStatus.OPEN) {
+            MatchSlotStatus.LOCKED
         } else if (slotStatus[slot] == MatchSlotStatus.LOCKED) {
-            slotStatus[slot] = MatchSlotStatus.OPEN
+            MatchSlotStatus.OPEN
+        } else {
+            from
         }
 
-        sendUpdate()
+        BanchoMatchToggleSlotEvent(this, slot, from, to).call().then {
+            slotStatus[slot] = to
+
+            sendUpdate()
+        }
     }
 
-    fun setReady(banchoUser: BanchoUser, isReady: Boolean) {
-        slotStatus[getUserSlot(banchoUser)] = if (isReady) {
+    fun setReady(user: BanchoUser, isReady: Boolean) {
+        val from = slotStatus[getUserSlot(user)]
+        val to = if (isReady) {
              MatchSlotStatus.READY
         } else {
             MatchSlotStatus.NOT_READY
         }
 
-        sendUpdate()
+        BanchoUserMatchReadyStateChangeEvent(user, this, from, to).call().then {
+            slotStatus[getUserSlot(user)] = to
+
+            sendUpdate()
+        }
     }
 
     fun setMods(user: BanchoUser, mods: Mods) {
-        var globalMods = mods
-        if (specialModes has MatchSpecialMode.FREE_MOD) {
-            val freeMods: Mods = mods and Hirasawa.config.multiplayerFreeMods
-            globalMods -= freeMods
+        BanchoUserMatchModsChangeEvent(user, this, this.activeMods, mods).call().then {
+            var globalMods = mods
+            if (specialModes has MatchSpecialMode.FREE_MOD) {
+                val freeMods: Mods = mods and Hirasawa.config.multiplayerFreeMods
+                globalMods -= freeMods
 
-            slotMods[getUserSlot(user)] = mods
+                slotMods[getUserSlot(user)] = mods
+            }
+
+            if (user == host) {
+                setGlobalMods(globalMods)
+            } else {
+                // Make sure we always send an update
+                sendUpdate()
+            }
         }
 
-        if (user == host) {
-            setGlobalMods(globalMods)
-        } else {
-            // Make sure we always send an update
-            sendUpdate()
-        }
     }
 
     fun setGlobalMods(mods: Mods) {
@@ -229,35 +254,45 @@ data class MultiplayerMatch(
     }
 
     fun setSlotStatus(user: BanchoUser, status: MatchSlotStatus) {
-        slotStatus[getUserSlot(user)] = status
+        BanchoUserSlotStatusChangeEvent(user, this, slotStatus[getUserSlot(user)], status).call().then {
+            slotStatus[getUserSlot(user)] = status
 
-        sendUpdate()
+            sendUpdate()
+        }
     }
 
     fun setLoaded(user: BanchoUser) {
-        loaded.add(user)
-        if (loaded.size == this.size) {
-            sendPacketToAll(MatchAllPlayersLoaded())
-            loaded.clear()
+        BanchoUserMatchGameLoadedEvent(user, this).call().then {
+            loaded.add(user)
+            if (loaded.size == this.size) {
+                BanchoMatchGameLoadedEvent(this).call()
+                sendPacketToAll(MatchAllPlayersLoaded())
+                loaded.clear()
+            }
         }
     }
 
     fun setFinished(user: BanchoUser) {
-        finished.add(user)
-        slotStatus[getUserSlot(user)] = MatchSlotStatus.NOT_READY
+        BanchoUserMatchGameFinishedEvent(user, this).call().then {
+            finished.add(user)
+            slotStatus[getUserSlot(user)] = MatchSlotStatus.NOT_READY
 
-        sendUpdate()
+            sendUpdate()
 
-        if (finished.size == this.size) {
-            sendPacketToAll(MatchCompletePacket())
-            finished.clear()
+            if (finished.size == this.size) {
+                // BanchoMatchFinishedEvent(user, this).call()
+                sendPacketToAll(MatchCompletePacket())
+                finished.clear()
+            }
         }
     }
 
     fun setHost(host: BanchoUser) {
-        this.hostId = host.id
-        sendUpdate()
-        host.sendPacket(MatchTransferHostPacket())
+        BanchoMatchHostChangeEvent(this, this.host!!, host).call().then {
+            this.hostId = host.id
+            sendUpdate()
+            host.sendPacket(MatchTransferHostPacket())
+        }
     }
 
     fun setHostSlot(hostSlot: Int) {
@@ -265,35 +300,50 @@ data class MultiplayerMatch(
     }
 
     fun startGame() {
-        for (multiUser: BanchoUser? in slotUser) {
-            if (multiUser != null) {
-                setSlotStatus(multiUser, MatchSlotStatus.PLAYING)
+        BanchoMatchStartEvent(this).call().then {
+            for (multiUser: BanchoUser? in slotUser) {
+                if (multiUser != null) {
+                    setSlotStatus(multiUser, MatchSlotStatus.PLAYING)
+                }
             }
-        }
 
-        this.sendPacketToAll(MatchStartPacket(this))
+            this.sendPacketToAll(MatchStartPacket(this))
+        }
     }
 
     fun sendSkipRequest(user: BanchoUser) {
-        skipped.add(user)
-        if (skipped.size == this.size) {
-            sendPacketToAll(MatchSkipPacket())
-            skipped.clear()
+        BanchoUserMatchSkipRequestEvent(user, this).call().then {
+            skipped.add(user)
+            if (skipped.size == this.size) {
+                BanchoMatchSkippedEvent(this).call()
+                sendPacketToAll(MatchSkipPacket())
+                skipped.clear()
+            }
         }
     }
 
     fun toggleTeam(user: BanchoUser) {
         val userSlot = getUserSlot(user)
-        slotTeam[userSlot] = slotTeam[userSlot].toggle()
-        sendUpdate()
+        BanchoUserMatchTeamChangeEvent(user, this, slotTeam[userSlot], slotTeam[userSlot].toggle()).call().then {
+            slotTeam[userSlot] = slotTeam[userSlot].toggle()
+            sendUpdate()
+        }
     }
 
     fun setGamePassword(password: String) {
-        this.password = password
-        sendPacketToAll(MatchChangePasswordPacket(password))
+        BanchoMatchPasswordChangeEvent(this, this.password, password).call().then {
+            this.password = password
+            sendPacketToAll(MatchChangePasswordPacket(password))
+        }
     }
 
     fun isHost(user: BanchoUser): Boolean = user == host
     fun doesPasswordMatch(password: String): Boolean = password == this.password
     fun hasPassword(): Boolean = password.isNotBlank()
+    fun handleScoreFrame(user: BanchoUser, scoreFrame: ScoreFrame) {
+        BanchoUserMatchScoreFrameEvent(user, this, scoreFrame).call().then {
+            sendPacketToAll(MatchScoreUpdatePacket(user, scoreFrame))
+        }
+
+    }
 }

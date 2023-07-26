@@ -9,9 +9,11 @@ import io.hirasawa.server.bancho.packets.ChannelJoinSuccessPacket
 import io.hirasawa.server.bancho.packets.multiplayer.MatchUpdatePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.plugin.event.bancho.multiplayer.BanchoUserLobbyJoinEvent
 
 class LobbyJoinPacket: PacketHandler(BanchoPacketType.OSU_LOBBY_JOIN) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
+        BanchoUserLobbyJoinEvent(user).call()
         // For some reason this is its own packet and not just using the standard channel join packet
         user.sendPacket(ChannelJoinSuccessPacket(ChatChannel("#lobby", "Place to find games I guess", false)))
 
