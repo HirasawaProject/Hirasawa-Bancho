@@ -97,6 +97,10 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         registerCommand(RankCommand())
         registerCommand(ReportCommand())
         registerCommand(UserInfoCommand())
+        registerCommand(CreateMatchCommand())
+        registerCommand(StartMatchCommand())
+        registerCommand(MatchHirasawaCommand())
+        registerCommand(MatchAllReadyCommand())
     }
 
     companion object {
