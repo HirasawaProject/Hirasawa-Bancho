@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.ChatEngine
 import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.multiplayer.MultiplayerManager
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
@@ -12,10 +13,12 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
+import io.hirasawa.server.config.ModsSerialiser
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
 import io.hirasawa.server.objects.Beatmap
+import io.hirasawa.server.objects.Mods
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.osuapi.OsuApi
@@ -56,6 +59,7 @@ class Hirasawa {
         val pipeline = PipelineManager()
         val irc = IrcServer(config.ircPort)
         val osuApi = OsuApi(config.osuApiKey)
+        val multiplayer = MultiplayerManager()
         val version = SemVer.parse(Hirasawa::class.java.`package`.implementationVersion ?: "0.0.0-noversion+noupdate")
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
