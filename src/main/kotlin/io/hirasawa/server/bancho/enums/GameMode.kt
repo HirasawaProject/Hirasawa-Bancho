@@ -4,5 +4,9 @@ enum class GameMode {
     OSU,
     TAIKO,
     CATCH_THE_BEAT,
-    MANIA
+    MANIA;
+
+    companion object {
+        fun fromId(id: Byte): GameMode = GameMode.values()[id.toInt()]
+    }
 }
