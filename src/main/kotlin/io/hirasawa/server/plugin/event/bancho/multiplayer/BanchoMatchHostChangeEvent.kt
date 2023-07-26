@@ -7,7 +7,7 @@ import io.hirasawa.server.plugin.event.Cancelable
 import io.hirasawa.server.plugin.event.HirasawaEvent
 
 /**
- * Event that gets called whenever a user changes mods, this is before processing freemods
+ * Event that gets called whenever a multiplayer match changes host
  */
 class BanchoMatchHostChangeEvent(val match: MultiplayerMatch,
                                  val from: BanchoUser,

@@ -5,6 +5,6 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.HirasawaEvent
 
 /**
- * Event that gets called whenever a user changes slots in a multiplayer match
+ * Event that gets called whenever all users submit a skip request
  */
 class BanchoMatchSkippedEvent(val match: MultiplayerMatch): HirasawaEvent<BanchoMatchSkippedEvent>

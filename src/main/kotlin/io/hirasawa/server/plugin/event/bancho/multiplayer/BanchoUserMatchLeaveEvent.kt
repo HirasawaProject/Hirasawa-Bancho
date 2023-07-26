@@ -7,7 +7,7 @@ import io.hirasawa.server.plugin.event.Cancelable
 import io.hirasawa.server.plugin.event.HirasawaEvent
 
 /**
- * Event that gets called whenever a user changes slots in a multiplayer match
+ * Event that gets called whenever a user leaves a multiplayer match
  */
 class BanchoUserMatchLeaveEvent(val user: BanchoUser,
                                 val match: MultiplayerMatch,

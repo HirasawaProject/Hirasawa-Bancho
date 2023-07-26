@@ -5,6 +5,6 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.plugin.event.HirasawaEvent
 
 /**
- * Event that gets called whenever a user changes slots in a multiplayer match
+ * Event that gets called whenever a multiplayer match is removed
  */
 class BanchoMatchGameRemovedEvent(val match: MultiplayerMatch): HirasawaEvent<BanchoMatchGameRemovedEvent>
