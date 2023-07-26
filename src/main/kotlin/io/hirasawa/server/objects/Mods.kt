@@ -1,5 +1,6 @@
 package io.hirasawa.server.objects
 
+import io.hirasawa.server.bancho.enums.MatchSpecialMode
 import io.hirasawa.server.enums.Mod
 
 class Mods(private val modsList: ArrayList<Mod> = ArrayList()) {
@@ -35,8 +36,24 @@ class Mods(private val modsList: ArrayList<Mod> = ArrayList()) {
         return this
     }
 
+    operator fun minus(mods: Mods): Mods {
+        return fromInt(this.toInt() - mods.toInt())
+    }
+
     operator fun contains(mod: Mod): Boolean {
         return modsList.contains(mod)
+    }
+
+    infix fun and(mod: Mod): Mods {
+        return fromInt(this.toInt() and mod.id)
+    }
+
+    infix fun and(mods: Mods): Mods {
+        return fromInt(this.toInt() and mods.toInt())
+    }
+
+    operator fun iterator(): Iterator<Mod> {
+        return modsList.iterator()
     }
 
     companion object {
