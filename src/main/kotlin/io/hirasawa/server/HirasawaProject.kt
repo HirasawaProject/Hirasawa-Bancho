@@ -6,8 +6,10 @@ import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalGameApiPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalWebFrontendPlugin
+import io.hirasawa.server.threads.CacheInvalidationThread
 import io.hirasawa.server.update.Release
 import java.io.File
+import java.util.concurrent.Executors
 
 fun main() {
     println("Starting Hirasawa v${Hirasawa.version}")
@@ -17,6 +19,8 @@ fun main() {
     Hirasawa.pluginManager.loadPlugin(InternalWebFrontendPlugin(), InternalWebFrontendPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalGameApiPlugin(), InternalGameApiPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalIrcPlugin(), InternalIrcPlugin.descriptor)
+    val threadExecutor = Executors.newSingleThreadScheduledExecutor()
+    threadExecutor.scheduleAtFixedRate(CacheInvalidationThread(), 0, 10, java.util.concurrent.TimeUnit.MINUTES)
 
     // Load user provided plugins
     Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
