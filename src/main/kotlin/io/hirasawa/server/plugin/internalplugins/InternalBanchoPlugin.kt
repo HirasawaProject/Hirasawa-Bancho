@@ -2,6 +2,7 @@ package io.hirasawa.server.plugin.internalplugins
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.packethandler.*
+import io.hirasawa.server.bancho.packethandler.multiplayer.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
 import io.hirasawa.server.commands.*
@@ -63,6 +64,29 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         Hirasawa.packetRouter[BanchoPacketType.OSU_START_SPECTATING] = StartSpectatingPacket()
         Hirasawa.packetRouter[BanchoPacketType.OSU_STOP_SPECTATING] = StopSpectatingPacket()
         Hirasawa.packetRouter[BanchoPacketType.OSU_SPECTATE_FRAMES] = SpectateFramesPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_LOBBY_PART] = LobbyPartPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_LOBBY_JOIN] = LobbyJoinPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CREATE] = MatchCreatePacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CHANGE_SETTINGS] = MatchChangeSettingPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CHANGE_SLOT] = MatchChangeSlotPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_LOCK] = MatchLockPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_READY] = MatchReadyPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_NOT_READY] = MatchNotReadyPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CHANGE_MODS] = MatchChangeModsPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_JOIN] = MatchJoinPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_INVITE] = MatchInvitePacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_NO_BEATMAP] = MatchNoBeatmapPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_HAS_BEATMAP] = MatchHasBeatmapPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_START] = MatchStartPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_LOAD_COMPLETE] = MatchLoadCompletePacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_SCORE_UPDATE] = MatchScoreUpdatePacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_FAILED] = MatchFailedPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_COMPLETE] = MatchCompletePacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_PART] = MatchPartPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_TRANSFER_HOST] = MatchTransferHostPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_SKIP_REQUEST] = MatchSkipRequestPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CHANGE_TEAM] = MatchChangeTeamPacket()
+        Hirasawa.packetRouter[BanchoPacketType.OSU_MATCH_CHANGE_PASSWORD] = MatchChangePasswordPacket()
     }
 
     private fun registerCommands() {
@@ -73,6 +97,10 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         registerCommand(RankCommand())
         registerCommand(ReportCommand())
         registerCommand(UserInfoCommand())
+        registerCommand(CreateMatchCommand())
+        registerCommand(StartMatchCommand())
+        registerCommand(MatchHirasawaCommand())
+        registerCommand(MatchAllReadyCommand())
     }
 
     companion object {

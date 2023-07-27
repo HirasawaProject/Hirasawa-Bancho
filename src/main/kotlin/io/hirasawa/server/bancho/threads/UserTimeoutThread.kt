@@ -16,6 +16,7 @@ class UserTimeoutThread: Runnable {
 
                 UserQuitEvent(user, QuitReason.TIMEOUT).call().then {
                     Hirasawa.banchoUsers.remove(user)
+                    Hirasawa.multiplayer.handleUserDisconnect(user)
                 }
 
             }

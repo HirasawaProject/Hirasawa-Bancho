@@ -3,6 +3,7 @@ package io.hirasawa.server.bancho.user
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.objects.BanchoStatus
+import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.database.tables.UserStatsTable
@@ -31,6 +32,8 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
     val spectators = ArrayList<BanchoUser>()
     var spectating: BanchoUser? = null
+    var currentMatch: MultiplayerMatch? = null
+    val isInMatch: Boolean = currentMatch != null
 
     /**
      * Send a packet to the user
