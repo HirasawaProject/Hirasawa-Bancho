@@ -70,6 +70,9 @@ abstract class LookupMap<T>(private val modelClass: KClass<*>,
 
         return amount
     }
+
+    fun getIdCacheInformation() = idCache.getCacheInformation()
+    fun getKeyCacheInformation() = keyCache.getCacheInformation()
     protected abstract fun lookupExternalObject(key: String? = null, id: Int? = null): T?
     protected abstract fun getId(obj: T): Int
     protected abstract fun getKey(obj: T): String
