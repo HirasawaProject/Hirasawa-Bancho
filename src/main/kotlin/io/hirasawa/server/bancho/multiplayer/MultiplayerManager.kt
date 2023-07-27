@@ -45,4 +45,16 @@ class MultiplayerManager {
             subscribedUser.sendPacket(MatchUpdatePacket(match))
         }
     }
+
+    fun handleUserDisconnect(user: BanchoUser) {
+        if (user in subscribedUsers) {
+            unsubscribeToChanges(user)
+        }
+
+        for (match: MultiplayerMatch in matches.values) {
+            if (user in match) {
+                match.removeFromMatch(user)
+            }
+        }
+    }
 }

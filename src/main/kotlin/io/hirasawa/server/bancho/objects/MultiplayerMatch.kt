@@ -364,4 +364,8 @@ data class MultiplayerMatch(
         }
 
     }
+
+    operator fun contains(user: BanchoUser): Boolean {
+        return user in slotUser
+    }
 }
