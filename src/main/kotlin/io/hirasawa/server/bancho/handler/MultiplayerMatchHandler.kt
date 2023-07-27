@@ -61,14 +61,8 @@ class MultiplayerMatchHandler(reader: OsuReader) {
         }
         val seed = reader.readInt()
 
-        val beatmap = Beatmap(transaction {
-            BeatmapsTable.select {
-                BeatmapsTable.hash eq beatmapHash
-            }.first()
-        })
 
-
-        match = MultiplayerMatch(matchId, inProgress, matchType, activeMods, name, password, beatmap,
-            slotStatus, slotTeam, slotPlayer, hostId, mode, matchScoringType, teamType, specialModes, seed)
+        match = MultiplayerMatch(matchId, inProgress, matchType, activeMods, name, password, beatmapName, beatmapId,
+            beatmapHash, slotStatus, slotTeam, slotPlayer, hostId, mode, matchScoringType, teamType, specialModes, seed)
     }
 }

@@ -18,9 +18,9 @@ class BanchoMultiplayerMatchWriter(private val match: MultiplayerMatch): Seriali
         // osu! however does require a value to be given to understand if the match is locked or not so we just send
         // the string "PROTECTED"
         osuWriter.writeString(if(match.hasPassword()) "PROTECTED" else "")
-        osuWriter.writeString(match.beatmap.beatmapSet.title)
-        osuWriter.writeInt(match.beatmap.osuId)
-        osuWriter.writeString(match.beatmap.hash)
+        osuWriter.writeString(match.beatmapName)
+        osuWriter.writeInt(match.beatmapId)
+        osuWriter.writeString(match.beatmapHash)
         for (status: MatchSlotStatus in match.slotStatus) {
             osuWriter.writeByte(status.id)
         }

@@ -5,9 +5,12 @@ import io.hirasawa.server.bancho.enums.*
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.multiplayer.*
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
 import io.hirasawa.server.plugin.event.bancho.multiplayer.*
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -18,7 +21,9 @@ data class MultiplayerMatch(
     var activeMods: Mods,
     var gameName: String,
     var password: String,
-    var beatmap: Beatmap,
+    var beatmapName: String,
+    var beatmapId: Int,
+    var beatmapHash: String,
     var slotStatus: ArrayList<MatchSlotStatus>,
     var slotTeam: ArrayList<MatchSlotTeam>,
     var slotUser: ArrayList<BanchoUser?>,
@@ -37,7 +42,9 @@ data class MultiplayerMatch(
         Mods.fromInt(0),
         gameName,
         password,
-        beatmap,
+        beatmap.beatmapSet.title,
+        beatmap.osuId,
+        beatmap.hash,
         ArrayList(Collections.nCopies(16, MatchSlotStatus.OPEN)),
         ArrayList(Collections.nCopies(16, MatchSlotTeam.NONE)),
         ArrayList(Collections.nCopies(16, null)),
@@ -69,6 +76,15 @@ data class MultiplayerMatch(
             }
             return size
         }
+    val beatmap: Beatmap?
+        get() {
+            val result = transaction {
+                BeatmapsTable.select {
+                    BeatmapsTable.hash eq beatmapHash
+                }.firstOrNull()
+            } ?: return null
+            return Beatmap(result)
+        }
     fun isEmpty() = size == 0
 
     fun update(other: MultiplayerMatch) {
@@ -91,7 +107,9 @@ data class MultiplayerMatch(
         this.matchType = other.matchType
         this.activeMods = other.activeMods
         this.gameName = other.gameName
-        this.beatmap = other.beatmap
+        this.beatmapName = other.beatmapName
+        this.beatmapId = other.beatmapId
+        this.beatmapHash = other.beatmapHash
         this.slotStatus = other.slotStatus
         this.slotTeam = other.slotTeam
         this.slotUser = other.slotUser
