@@ -7,8 +7,11 @@ import java.time.Instant
  * after a specific time
  */
 class CacheMap<K, V> {
-    val hashMap = HashMap<K, V>()
-    val timestamps = HashMap<K, Instant>()
+    private val hashMap = HashMap<K, V>()
+    private val timestamps = HashMap<K, Instant>()
+
+    val size
+    get() = hashMap.size
 
     operator fun get(key: K): V? = hashMap[key]
     operator fun set(key: K, value: V) {
@@ -40,5 +43,15 @@ class CacheMap<K, V> {
         }
 
         return itemsRemoved
+    }
+
+    fun getCacheInformation(): HashMap<K, Pair<Instant, V>> {
+        val cacheInformation = HashMap<K, Pair<Instant, V>>()
+
+        for (item in hashMap) {
+            cacheInformation[item.key] = Pair(timestamps[item.key]!!, item.value)
+        }
+
+        return cacheInformation
     }
 }
