@@ -5,13 +5,14 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
 import kotlin.reflect.KClass
 
 abstract class LookupMap<T>(private val modelClass: KClass<*>,
                             private val keyField: Column<String>,
                             private val idField: Column<Int>): ILookupMap<T> {
-    private val idCache = HashMap<Int, T>()
-    private val keyCache = HashMap<String, T>()
+    private val idCache = CacheMap<Int, T>()
+    private val keyCache = CacheMap<String, T>()
 
     override operator fun get(key: String): T? = get(key = key, id = null)
     override operator fun get(id: Int): T? = get(key = null, id = id)
@@ -61,6 +62,13 @@ abstract class LookupMap<T>(private val modelClass: KClass<*>,
         return modelClass.constructors.find {
             it.parameters.size == 1 && it.parameters[0].type == ResultRow::class
         }?.call(result) as T?
+    }
+
+    fun purgeCacheOlderThan(timestamp: Instant): Int {
+        val amount = idCache.purgeOlderThan(timestamp)
+        keyCache.purgeOlderThan(timestamp)
+
+        return amount
     }
     protected abstract fun lookupExternalObject(key: String? = null, id: Int? = null): T?
     protected abstract fun getId(obj: T): Int
