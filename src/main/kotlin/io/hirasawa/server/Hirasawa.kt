@@ -17,6 +17,8 @@ import io.hirasawa.server.config.ModsSerialiser
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
+import io.hirasawa.server.lookupmaps.BeatmapLookupMap
+import io.hirasawa.server.lookupmaps.BeatmapSetLookupMap
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
 import io.hirasawa.server.objects.Score
@@ -66,6 +68,9 @@ class Hirasawa {
         val updateChecker = UpdateChecker()
         val isUpdateRequired get() = updateChecker.checkUpdate()
 
+        val beatmaps = BeatmapLookupMap()
+        val beatmapSets = BeatmapSetLookupMap()
+
         lateinit var hirasawaBot: HirasawaBot
         val banchoUsers = UserMap<BanchoUser>()
 
@@ -90,7 +95,7 @@ class Hirasawa {
         }
 
         fun initDatabase(memoryDatabase: Boolean = false) {
-            if (memoryDatabase) {
+            if (true) {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {

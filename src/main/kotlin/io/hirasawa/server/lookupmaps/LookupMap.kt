@@ -1,0 +1,68 @@
+package io.hirasawa.server.lookupmaps
+
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.reflect.KClass
+
+abstract class LookupMap<T>(private val modelClass: KClass<*>,
+                            private val keyField: Column<String>,
+                            private val idField: Column<Int>): ILookupMap<T> {
+    private val idCache = HashMap<Int, T>()
+    private val keyCache = HashMap<String, T>()
+
+    override operator fun get(key: String): T? = get(key = key, id = null)
+    override operator fun get(id: Int): T? = get(key = null, id = id)
+
+    private fun get(key: String? = null, id: Int? = null): T? {
+        if (key != null && key in keyCache) {
+            return keyCache[key]
+        }
+        if (id != null && id in idCache) {
+            return idCache[id]
+        }
+
+        val obj = lookupObject(key = key, id = id)
+        if (obj != null) {
+            idCache[getId(obj)] = obj
+            keyCache[getKey(obj)] = obj
+        }
+        return obj
+    }
+
+    private fun lookupObject(key: String? = null, id: Int? = null): T? {
+        if (key == null && id == null) {
+            return null
+        }
+
+        val result = transaction {
+            // Create empty query
+            var query = keyField.table.selectAll()
+
+            key?.let {
+                query = query.andWhere {
+                    keyField eq key
+                }
+            }
+            id?.let {
+                query = query.andWhere {
+                    idField eq id
+                }
+            }
+
+            query.firstOrNull()
+        }
+
+        println(result)
+        println(lookupExternalObject(key, id))
+
+        return modelClass.constructors.find {
+            it.parameters.size == 1 && it.parameters[0].type == ResultRow::class
+        }?.call(result) as T?
+    }
+    protected abstract fun lookupExternalObject(key: String? = null, id: Int? = null): T?
+    protected abstract fun getId(obj: T): Int
+    protected abstract fun getKey(obj: T): String
+}
