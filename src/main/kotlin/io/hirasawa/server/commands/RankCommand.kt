@@ -5,6 +5,7 @@ import io.hirasawa.server.chat.command.ChatCommand
 import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.database.tables.BeatmapSetsTable
 import io.hirasawa.server.enums.DefaultRankingState
+import io.hirasawa.server.osuapi.NoApiKeyException
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -31,10 +32,14 @@ class RankCommand: ChatCommand("rank", "Automatically rank beatmaps from osu!", 
            defaultRankingState = DefaultRankingState.RANK_ALL
         }
 
-        if (Hirasawa.rankBeatmapSet(mapsetId, defaultRankingState)) {
-            context.respond("Beatmap has now been ranked")
-        } else{
-            context.respond("Failed to rank beatmap")
+        try {
+            if (Hirasawa.rankBeatmapSet(mapsetId, defaultRankingState)) {
+                context.respond("Beatmap has now been ranked")
+            } else{
+                context.respond("Failed to rank beatmap")
+            }
+        } catch (noApi: NoApiKeyException) {
+            context.respond("No API key is defined for osu! API")
         }
 
 
