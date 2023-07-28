@@ -130,4 +130,19 @@ class GetScoresRouteTests {
         assert(responseString.contains(taikoUser.username))
         assertFalse(responseString.contains(standardUser.username))
     }
+
+    @Test
+    fun testDoesLeaderboardCorrectlyShowOsuIds() {
+        val user = createUser("DLCSOI")
+
+        val beatmapSet = createBeatmapSet("Artist", "Song", BeatmapStatus.RANKED)
+        val beatmap = createBeatmap(beatmapSet.id, "DLCSOI", 0)
+
+        val responseBuffer = ByteArrayOutputStream()
+        requestRoute(user.username, "", GameMode.OSU, beatmap.hash, responseBuffer)
+
+        val responseString = String(responseBuffer.toByteArray())
+
+        assert(responseString.contains("2|false|${beatmap.osuId}|${beatmapSet.osuId}|0")) // Beatmap info header
+    }
 }
