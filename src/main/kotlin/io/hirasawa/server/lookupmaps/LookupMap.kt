@@ -1,5 +1,6 @@
 package io.hirasawa.server.lookupmaps
 
+import io.hirasawa.server.Hirasawa
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.andWhere
@@ -54,14 +55,9 @@ abstract class LookupMap<T>(private val modelClass: KClass<*>,
             }
 
             query.firstOrNull()
-        }
+        } ?: return lookupExternalObject(key, id)
 
-        println(result)
-        println(lookupExternalObject(key, id))
-
-        return modelClass.constructors.find {
-            it.parameters.size == 1 && it.parameters[0].type == ResultRow::class
-        }?.call(result) as T?
+        return Hirasawa.databaseToObject(modelClass, result)
     }
 
     fun purgeCacheOlderThan(timestamp: Instant): Int {
