@@ -16,7 +16,7 @@ class CreateMatchCommand: ChatCommand("mpcreate", "Says pong back") {
                     BeatmapsTable.id eq 1
                 }.first()
             }
-        ), Hirasawa.hirasawaBot)
+        ), Hirasawa.banchoBot)
 
         return true
     }

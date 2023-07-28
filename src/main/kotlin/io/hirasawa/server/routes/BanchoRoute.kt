@@ -81,9 +81,9 @@ class BanchoRoute: Route {
                     UserPresencePacket(user).write(osuWriter)
 
                     if (user.hasPermission("hirasawa.update.notify") && Hirasawa.isUpdateRequired) {
-                        user.sendPrivateMessage(Hirasawa.hirasawaBot, "You are running an outdated version of " +
+                        user.sendPrivateMessage(Hirasawa.banchoBot, "You are running an outdated version of " +
                                 "Hirasawa, please update by going to the following link")
-                        user.sendPrivateMessage(Hirasawa.hirasawaBot,
+                        user.sendPrivateMessage(Hirasawa.banchoBot,
                             Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl ?: "")
                     }
 

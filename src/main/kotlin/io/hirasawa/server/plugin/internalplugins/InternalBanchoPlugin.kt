@@ -29,7 +29,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
 
         // Add Hirasawa's "BanchoBot" to the player list
         // This allows users to see them as being online
-        Hirasawa.banchoUsers.add(Hirasawa.hirasawaBot)
+        Hirasawa.banchoUsers.add(Hirasawa.banchoBot)
 
         // Timeout users every second
         threadExecutor.scheduleAtFixedRate(UserTimeoutThread(), 0, 1, TimeUnit.SECONDS)
@@ -46,7 +46,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         // Commands and events are automatically removed when disabling a plugin so we just need to work on
         // everything else
         threadExecutor.shutdown()
-        Hirasawa.banchoUsers.remove(Hirasawa.hirasawaBot)
+        Hirasawa.banchoUsers.remove(Hirasawa.banchoBot)
         // TODO add ability to remove web routes and registered packets
 
         Hirasawa.webserver.removeRoute(CommonDomains.OSU_BANCHO, "/", HttpMethod.POST)

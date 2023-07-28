@@ -45,11 +45,11 @@ class ChatEngine {
                 handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
             }
             else -> {
-                if (destination == "BanchoBot" && Hirasawa.hirasawaBot.username != destination) {
+                if (destination == "BanchoBot" && Hirasawa.banchoBot.username != destination) {
                     // Redirect /bb commands to the "real" BanchoBot
                     val banchoUser = Hirasawa.banchoUsers[user.id]
                     banchoUser?.sendPacket(ChannelRevokedPacket(destination))
-                    handleChat(user, Hirasawa.hirasawaBot.username, message)
+                    handleChat(user, Hirasawa.banchoBot.username, message)
                 } else {
                     for (connectedUser in connectedUsers) {
                         if (connectedUser.username == destination) {
