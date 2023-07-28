@@ -3,10 +3,8 @@ package io.hirasawa.server.commands
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.chat.command.ChatCommand
 import io.hirasawa.server.chat.command.CommandContext
-import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.database.tables.BeatmapSetsTable
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
+import io.hirasawa.server.enums.DefaultRankingState
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -28,50 +26,17 @@ class RankCommand: ChatCommand("rank", "Automatically rank beatmaps from osu!", 
             return false
         }
 
-        val beatmaps = Hirasawa.osuApi.getBeatmaps(mapsetId = mapsetId)
-
-        transaction {
-            val id = BeatmapSetsTable.insertAndGetId {
-                it[BeatmapSetsTable.artist] = beatmaps.first().artist
-                it[BeatmapSetsTable.title] = beatmaps.first().title
-                it[BeatmapSetsTable.status] = 3
-                it[BeatmapSetsTable.osuId] = beatmaps.first().beatmapsetId
-                it[BeatmapSetsTable.mapperName] = beatmaps.first().creator
-                it[BeatmapSetsTable.genreId] = beatmaps.first().genreId
-                it[BeatmapSetsTable.languageId] = beatmaps.first().languageId
-                it[BeatmapSetsTable.rating] = beatmaps.first().rating
-            }
-
-            commit()
-
-            for (beatmap in beatmaps) {
-                BeatmapsTable.insert {
-                    it[BeatmapsTable.mapsetId] = id.value
-                    it[BeatmapsTable.difficulty] = beatmap.version
-                    it[BeatmapsTable.hash] = beatmap.fileMd5
-                    it[BeatmapsTable.ranks] = 0
-                    it[BeatmapsTable.offset] = 0F
-                    it[BeatmapsTable.osuId] = beatmap.beatmapId
-                    it[BeatmapsTable.totalLength] = beatmap.totalLength
-                    it[BeatmapsTable.hitLength] = beatmap.hitLength
-                    it[BeatmapsTable.circleSize] = beatmap.diffSize
-                    it[BeatmapsTable.overallDifficulty] = beatmap.diffOverall
-                    it[BeatmapsTable.approachRate] = beatmap.diffApproach
-                    it[BeatmapsTable.healthDrain] = beatmap.diffDrain
-                    it[BeatmapsTable.gamemode] = beatmap.mode
-                    it[BeatmapsTable.countNormal] = beatmap.countNormal
-                    it[BeatmapsTable.countSlider] = beatmap.countSlider
-                    it[BeatmapsTable.countSpinner] = beatmap.countSpinner
-                    it[BeatmapsTable.bpm] = beatmap.bpm
-                    it[BeatmapsTable.hasStoryboard] = beatmap.storyboard
-                    it[BeatmapsTable.maxCombo] = beatmap.maxCombo
-                    it[BeatmapsTable.playCount] = 0
-                    it[BeatmapsTable.passCount] = 0
-                }
-            }
+        var defaultRankingState = Hirasawa.config.defaultRankingState
+        if (defaultRankingState in listOf(DefaultRankingState.UNKNOWN, DefaultRankingState.NOT_SUBMITTED)) {
+           defaultRankingState = DefaultRankingState.RANK_ALL
         }
 
-        context.respond("Beatmap has now been ranked")
+        if (Hirasawa.rankBeatmapSet(mapsetId, defaultRankingState)) {
+            context.respond("Beatmap has now been ranked")
+        } else{
+            context.respond("Failed to rank beatmap")
+        }
+
 
         return true
     }
