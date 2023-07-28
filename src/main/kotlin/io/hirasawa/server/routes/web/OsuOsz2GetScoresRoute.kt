@@ -6,6 +6,7 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.ScoresTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.enums.BeatmapStatus
+import io.hirasawa.server.enums.DefaultRankingState
 import io.hirasawa.server.handlers.GetScoresErrorHeaderHandler
 import io.hirasawa.server.handlers.GetScoresHeaderHandler
 import io.hirasawa.server.handlers.ScoreInfoHandler
@@ -52,7 +53,11 @@ class OsuOsz2GetScoresRoute: Route {
 
             if (beatmap == null || beatmapSet == null) {
                 ClientLeaderboardFailEvent(user, beatmapHash, gamemode).call().then {
-                    GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                    if (Hirasawa.config.defaultRankingState == DefaultRankingState.UNKNOWN) {
+                        GetScoresErrorHeaderHandler(BeatmapStatus.UNKNOWN, false).write(response.outputStream)
+                    } else {
+                        GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                    }
                 }
                 return
             }
