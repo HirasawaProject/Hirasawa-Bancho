@@ -1,6 +1,5 @@
 package io.hirasawa.server.bancho.packethandler
 
-import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.handler.ReplayFrameHandler
 import io.hirasawa.server.bancho.handler.ScoreFrameHandler
 import io.hirasawa.server.bancho.io.OsuReader
@@ -9,7 +8,6 @@ import io.hirasawa.server.bancho.objects.ReplayFrame
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.SpectateFramesPacket
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateFramesEvent
 
 class SpectateFramesPacket: PacketHandler(BanchoPacketType.OSU_SPECTATE_FRAMES) {

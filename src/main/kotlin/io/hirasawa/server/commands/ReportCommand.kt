@@ -47,7 +47,7 @@ class ReportCommand: ChatCommand("report", "Report a player to the mods", "hiras
             }
         }
 
-        Hirasawa.chatEngine.handleChat(Hirasawa.hirasawaBot, "#lounge", "User ${reporter.username} reported " +
+        Hirasawa.chatEngine.handleChat(Hirasawa.banchoBot, "#lounge", "User ${reporter.username} reported " +
                 "${reportee.username} for $reason")
 
         context.respond("Thank you! Your report has been noted and staff have been informed")

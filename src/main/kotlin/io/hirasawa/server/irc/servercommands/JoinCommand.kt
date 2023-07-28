@@ -15,7 +15,7 @@ class JoinCommand: IrcServerCommand {
         channel.addUser(user)
         user.sendReply(RplTopic(channel))
         user.sendReply(RplNameReply(channel, channel.connectedUsers.toTypedArray()))
-        user.sendReply(RplNameReply(channel, arrayOf(Hirasawa.hirasawaBot))) // Fake Hirasawa being in every channel
+        user.sendReply(RplNameReply(channel, arrayOf(Hirasawa.banchoBot))) // Fake Hirasawa being in every channel
         user.sendReply(RplEndOfNames(channel))
     }
 }

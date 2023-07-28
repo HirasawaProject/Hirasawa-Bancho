@@ -10,7 +10,7 @@ import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.bancho.user.HirasawaBot
+import io.hirasawa.server.bancho.user.BanchoBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.config.ModsSerialiser
@@ -73,7 +73,7 @@ class Hirasawa {
         val beatmaps = BeatmapLookupMap()
         val beatmapSets = BeatmapSetLookupMap()
 
-        lateinit var hirasawaBot: HirasawaBot
+        lateinit var banchoBot: BanchoBot
         val banchoUsers = UserMap<BanchoUser>()
 
         /**
@@ -107,7 +107,7 @@ class Hirasawa {
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {
                         UsersTable.insert {
                             it[UsersTable.id] = EntityID<Int>(config.banchoBotId, UsersTable)
-                            it[UsersTable.username] = "HirasawaBot"
+                            it[UsersTable.username] = "BanchoBot"
                             it[UsersTable.password] = ""
                             it[UsersTable.isBanned] = false
                             it[UsersTable.mutedUntil] = 0
@@ -132,13 +132,13 @@ class Hirasawa {
 
             this.permissionEngine = PermissionEngine(permissionGroups)
 
-            val hirasawaBotUser = BanchoUser(transaction {
+            val banchoBotUser = BanchoUser(transaction {
                 UsersTable.select {
                     UsersTable.id eq Hirasawa.config.banchoBotId
                 }.firstOrNull() ?: throw(Exception("User not found"))
             })
 
-            this.hirasawaBot = HirasawaBot(hirasawaBotUser)
+            this.banchoBot = BanchoBot(banchoBotUser)
         }
 
         private fun loadConfig(): HirasawaConfig {
