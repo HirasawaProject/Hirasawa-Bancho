@@ -3,14 +3,13 @@ package io.hirasawa.server.routes.web
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.database.tables.ScoresTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.enums.BeatmapStatus
+import io.hirasawa.server.enums.DefaultRankingState
 import io.hirasawa.server.handlers.GetScoresErrorHeaderHandler
 import io.hirasawa.server.handlers.GetScoresHeaderHandler
 import io.hirasawa.server.handlers.ScoreInfoHandler
-import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Score
 import io.hirasawa.server.plugin.event.score.ClientLeaderboardFailEvent
 import io.hirasawa.server.plugin.event.score.ClientLeaderboardLoadEvent
@@ -49,14 +48,16 @@ class OsuOsz2GetScoresRoute: Route {
 
             ClientLeaderboardPreloadEvent(user, beatmapHash, gamemode).call()
 
-            val beatmap = Hirasawa.databaseToObject<Beatmap>(Beatmap::class, transaction {
-                BeatmapsTable.select { BeatmapsTable.hash eq beatmapHash }.firstOrNull()
-            })
+            val beatmap = Hirasawa.beatmaps[beatmapHash]
             val beatmapSet = beatmap?.beatmapSet
 
             if (beatmap == null || beatmapSet == null) {
                 ClientLeaderboardFailEvent(user, beatmapHash, gamemode).call().then {
-                    GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                    if (Hirasawa.config.defaultRankingState == DefaultRankingState.UNKNOWN) {
+                        GetScoresErrorHeaderHandler(BeatmapStatus.UNKNOWN, false).write(response.outputStream)
+                    } else {
+                        GetScoresErrorHeaderHandler(BeatmapStatus.NOT_SUBMITTED, false).write(response.outputStream)
+                    }
                 }
                 return
             }

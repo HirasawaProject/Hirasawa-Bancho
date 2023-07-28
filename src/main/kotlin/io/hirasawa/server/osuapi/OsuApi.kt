@@ -27,6 +27,7 @@ class OsuApi(private val key: String) {
                     beatmapHash: String? = null,
                     limit: Int = 500,
                     mods: Int = 0): Array<OsuApiBeatmap> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_beatmaps".toHttpUrl().newBuilder()
         httpBuilder.addQueryParameterIfNotNull("since", since)
@@ -53,6 +54,7 @@ class OsuApi(private val key: String) {
                 userName: String? = null,
                 mode: GameMode? = null,
                 eventDays: Int = 1): Array<OsuApiUser> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_user".toHttpUrl().newBuilder()
 
@@ -77,6 +79,7 @@ class OsuApi(private val key: String) {
                   mode: GameMode? = null,
                   mods: Int? = null,
                   limit: Int = 50): Array<OsuApiScore> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_scores".toHttpUrl().newBuilder()
 
@@ -100,6 +103,7 @@ class OsuApi(private val key: String) {
     fun getUserBest(userId: Int? = null,
                     userName: String? = null,
                     limit: Int = 10): Array<OsuApiScore> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_user_best".toHttpUrl().newBuilder()
 
@@ -118,6 +122,7 @@ class OsuApi(private val key: String) {
     }
 
     fun getMatch(matchId: Int): OsuApiMatch {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_match".toHttpUrl().newBuilder()
 
