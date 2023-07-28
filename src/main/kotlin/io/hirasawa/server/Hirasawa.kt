@@ -15,6 +15,8 @@ import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.config.ModsSerialiser
 import io.hirasawa.server.database.tables.*
+import io.hirasawa.server.enums.BeatmapStatus
+import io.hirasawa.server.enums.DefaultRankingState
 import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
 import io.hirasawa.server.lookupmaps.BeatmapLookupMap
@@ -95,7 +97,7 @@ class Hirasawa {
         }
 
         fun initDatabase(memoryDatabase: Boolean = false) {
-            if (true) {
+            if (memoryDatabase) {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
@@ -172,6 +174,86 @@ class Hirasawa {
             return transaction {
                 UsersTable.select { UsersTable.username eq username and (UsersTable.ircToken eq ircToken) }.empty().not()
             }
+        }
+
+        fun rankBeatmapSet(beatmapSetId: Int, rankingState: DefaultRankingState = config.defaultRankingState): Boolean {
+            if (transaction {
+                    BeatmapSetsTable.select {
+                        BeatmapSetsTable.osuId eq beatmapSetId
+                    }.count()
+                } > 0) {
+                return false
+            }
+
+            val beatmaps = osuApi.getBeatmaps(mapsetId = beatmapSetId)
+            if (beatmaps.isEmpty()) {
+                return false
+            }
+
+            if (rankingState == DefaultRankingState.NOT_SUBMITTED || rankingState == DefaultRankingState.UNKNOWN) {
+                return false
+            }
+
+            transaction {
+                val osuBeatmapStatus = BeatmapStatus.fromId(beatmaps.first().approved)
+                val id = BeatmapSetsTable.insertAndGetId {
+                    it[BeatmapSetsTable.artist] = beatmaps.first().artist
+                    it[BeatmapSetsTable.title] = beatmaps.first().title
+                    it[BeatmapSetsTable.status] = when (rankingState) {
+                        DefaultRankingState.RANK_ALL -> {
+                            if (osuBeatmapStatus == BeatmapStatus.LOVED) {
+                                BeatmapStatus.LOVED
+                            } else {
+                                BeatmapStatus.RANKED
+                            }
+                        }
+                        DefaultRankingState.MATCH_OSU -> osuBeatmapStatus
+                        DefaultRankingState.LOVE_UNRANKED -> {
+                            if (osuBeatmapStatus == BeatmapStatus.PENDING) {
+                                BeatmapStatus.LOVED
+                            } else{
+                                osuBeatmapStatus
+                            }
+                        }
+                        else -> BeatmapStatus.NOT_SUBMITTED
+                    }.ordinal
+                    it[BeatmapSetsTable.osuId] = beatmaps.first().beatmapsetId
+                    it[BeatmapSetsTable.mapperName] = beatmaps.first().creator
+                    it[BeatmapSetsTable.genreId] = beatmaps.first().genreId
+                    it[BeatmapSetsTable.languageId] = beatmaps.first().languageId
+                    it[BeatmapSetsTable.rating] = beatmaps.first().rating
+                }
+
+                for (beatmap in beatmaps) {
+                    BeatmapsTable.insert {
+                        it[BeatmapsTable.mapsetId] = id.value
+                        it[BeatmapsTable.difficulty] = beatmap.version
+                        it[BeatmapsTable.hash] = beatmap.fileMd5
+                        it[BeatmapsTable.ranks] = 0
+                        it[BeatmapsTable.offset] = 0F
+                        it[BeatmapsTable.osuId] = beatmap.beatmapId
+                        it[BeatmapsTable.totalLength] = beatmap.totalLength
+                        it[BeatmapsTable.hitLength] = beatmap.hitLength
+                        it[BeatmapsTable.circleSize] = beatmap.diffSize
+                        it[BeatmapsTable.overallDifficulty] = beatmap.diffOverall
+                        it[BeatmapsTable.approachRate] = beatmap.diffApproach
+                        it[BeatmapsTable.healthDrain] = beatmap.diffDrain
+                        it[BeatmapsTable.gamemode] = beatmap.mode
+                        it[BeatmapsTable.countNormal] = beatmap.countNormal
+                        it[BeatmapsTable.countSlider] = beatmap.countSlider
+                        it[BeatmapsTable.countSpinner] = beatmap.countSpinner
+                        it[BeatmapsTable.bpm] = beatmap.bpm
+                        it[BeatmapsTable.hasStoryboard] = beatmap.storyboard
+                        it[BeatmapsTable.maxCombo] = beatmap.maxCombo
+                        it[BeatmapsTable.playCount] = 0
+                        it[BeatmapsTable.passCount] = 0
+                    }
+
+                }
+            }
+
+            return true
+
         }
 
         // TODO move out
