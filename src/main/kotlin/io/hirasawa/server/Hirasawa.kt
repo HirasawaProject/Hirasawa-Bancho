@@ -157,7 +157,7 @@ class Hirasawa {
             val messageDigest = MessageDigest.getInstance("MD5")
             val bytes = messageDigest.digest(password.toByteArray())
             val number = BigInteger(1, bytes)
-            val hashText = number.toString(16).toLowerCase()
+            val hashText = number.toString(16).lowercase()
 
             return authenticate(username, hashText)
         }

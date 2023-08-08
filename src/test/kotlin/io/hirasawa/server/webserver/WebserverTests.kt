@@ -143,7 +143,7 @@ class WebserverTests {
 
     @Test
     fun doesLogIncreaseWhenLogging() {
-        val file = createTempFile()
+        val file = File.createTempFile("logtest", ".log")
         val logger = FileLogger(file)
 
         val logBefore = Files.readAllLines(file.toPath())
@@ -157,7 +157,7 @@ class WebserverTests {
     @Test
     fun doesAssetNodeWorkWithTextFiles() {
         val fileText = "This is a test text file"
-        val tempFile = createTempFile()
+        val tempFile = File.createTempFile("test", "")
         Files.write(tempFile.toPath(), fileText.toByteArray())
 
         webserver.addAsset("localhost", "/asset/text", HttpMethod.GET, tempFile.absolutePath)
@@ -178,7 +178,7 @@ class WebserverTests {
         // Data taken from https://png-pixel.com/
         val pngData = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
                 "AAABJRU5ErkJggg==")
-        val tempFile = createTempFile()
+        val tempFile = File.createTempFile("testimage", "")
         Files.write(tempFile.toPath(), pngData)
 
         webserver.addAsset("localhost", "/asset/png", HttpMethod.GET, tempFile.absolutePath)

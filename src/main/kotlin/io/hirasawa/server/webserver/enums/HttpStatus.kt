@@ -70,7 +70,7 @@ enum class HttpStatus(val code: Int) {
     NETWORK_AUTHENTICATION_REQUIRED(511);
 
     override fun toString(): String {
-        val words = this.name.split("_").map { it.toLowerCase().capitalize() }
+        val words = this.name.split("_").map { it -> it.lowercase().replaceFirstChar { it.uppercase() } }
         return words.joinToString(" ")
     }
 }
