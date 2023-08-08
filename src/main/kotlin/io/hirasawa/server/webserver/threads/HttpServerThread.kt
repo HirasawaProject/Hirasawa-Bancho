@@ -5,7 +5,7 @@ import java.net.ServerSocket
 import java.util.concurrent.Executors
 
 class HttpServerThread(val port: Int, private val webserver: Webserver): Runnable {
-    private val threadPool = Executors.newFixedThreadPool(10)
+    private val threadPool = Executors.newFixedThreadPool(20)
     override fun run() {
         if (port <= 0) {
             return

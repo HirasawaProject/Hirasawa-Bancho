@@ -6,7 +6,7 @@ import io.hirasawa.server.database.DatabaseCredentials
 import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.objects.Mods
 
-data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val ircPort: Int, val database: DatabaseCredentials,
+data class HirasawaConfig (val httpPort: Int, val ircPort: Int, val database: DatabaseCredentials,
                            val channels: List<ChatChannel>, val banchoUserTimeout: Int, val ircUserTimeout: Int,
                            val banchoBotId: Int, val domain: String, val blockedMods: List<Mod>, val osuApiKey: String,
                            val ircWelcomeMessage: String, val ircMotd: List<String>, val multiplayerFreeMods: Mods,
@@ -14,7 +14,6 @@ data class HirasawaConfig (val httpPort: Int, val httpsPort: Int, val ircPort: I
 ) {
     constructor(): this(
         8080,
-        4430,
         6667,
         DatabaseCredentials(),
         arrayListOf(
