@@ -245,6 +245,7 @@ class IrcTests {
         writer.writeBytesAndFlush("LIST\r\n")
         assertEquals(":$host 321 CCLC Channel :Users Name", reader.nextLine())
         assertEquals(":$host 322 CCLC #lounge 1 :Administration channel", reader.nextLine())
+        assertEquals(":$host 322 CCLC #lobby 1 :Lobby stuff", reader.nextLine())
         assertEquals(":$host 322 CCLC #osu 1 :Main channel", reader.nextLine())
         assertEquals(":$host 323 CCLC :End of LIST", reader.nextLine())
 
