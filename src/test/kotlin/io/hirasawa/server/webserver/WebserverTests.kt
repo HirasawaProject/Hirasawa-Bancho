@@ -12,12 +12,12 @@ import kotlinx.html.body
 import kotlinx.html.p
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import org.bouncycastle.util.encoders.Base64
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File
 import java.nio.file.Files
+import java.util.Base64
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
@@ -176,7 +176,7 @@ class WebserverTests {
     @Test
     fun doesAssetNodeWorkWithPngFiles() {
         // Data taken from https://png-pixel.com/
-        val pngData = Base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
+        val pngData = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
                 "AAABJRU5ErkJggg==")
         val tempFile = createTempFile()
         Files.write(tempFile.toPath(), pngData)

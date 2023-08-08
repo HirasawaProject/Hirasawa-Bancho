@@ -116,8 +116,8 @@ class Hirasawa {
                 }
             } else {
                 val dbc = Hirasawa.config.database
-                Database.connect("jdbc:mysql://${dbc.host}/${dbc.database}",
-                    driver = "com.mysql.jdbc.Driver", user = dbc.username, password = dbc.password)
+                Database.connect("jdbc:mariadb://${dbc.host}/${dbc.database}",
+                    driver = "org.mariadb.jdbc.Driver", user = dbc.username, password = dbc.password)
             }
 
 
