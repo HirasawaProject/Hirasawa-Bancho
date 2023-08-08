@@ -3,9 +3,7 @@ package io.hirasawa.server
 import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.command.ConsoleCommandSender
 import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
-import io.hirasawa.server.plugin.internalplugins.InternalGameApiPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
-import io.hirasawa.server.plugin.internalplugins.InternalWebFrontendPlugin
 import io.hirasawa.server.threads.CacheInvalidationThread
 import io.hirasawa.server.update.Release
 import java.io.File
@@ -16,8 +14,6 @@ fun main() {
     Hirasawa.initDatabase()
     // Register internal plugins, these are used to separate out our functionality so users can disable if needed
     Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
-    Hirasawa.pluginManager.loadPlugin(InternalWebFrontendPlugin(), InternalWebFrontendPlugin.descriptor)
-    Hirasawa.pluginManager.loadPlugin(InternalGameApiPlugin(), InternalGameApiPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalIrcPlugin(), InternalIrcPlugin.descriptor)
     val threadExecutor = Executors.newSingleThreadScheduledExecutor()
     threadExecutor.scheduleAtFixedRate(CacheInvalidationThread(), 0, 10, java.util.concurrent.TimeUnit.MINUTES)
