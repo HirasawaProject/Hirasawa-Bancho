@@ -157,7 +157,7 @@ class WebserverTests {
     @Test
     fun doesAssetNodeWorkWithTextFiles() {
         val fileText = "This is a test text file"
-        val tempFile = File.createTempFile("logtest", ".log")
+        val tempFile = File.createTempFile("test", "")
         Files.write(tempFile.toPath(), fileText.toByteArray())
 
         webserver.addAsset("localhost", "/asset/text", HttpMethod.GET, tempFile.absolutePath)
@@ -178,7 +178,7 @@ class WebserverTests {
         // Data taken from https://png-pixel.com/
         val pngData = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQA" +
                 "AAABJRU5ErkJggg==")
-        val tempFile = File.createTempFile("testimage", ".png")
+        val tempFile = File.createTempFile("testimage", "")
         Files.write(tempFile.toPath(), pngData)
 
         webserver.addAsset("localhost", "/asset/png", HttpMethod.GET, tempFile.absolutePath)
