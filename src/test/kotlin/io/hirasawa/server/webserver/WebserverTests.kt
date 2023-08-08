@@ -21,7 +21,7 @@ import java.util.Base64
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebserverTests {
-    private val webserver = Webserver(8181, 0)
+    private val webserver = Webserver(8181)
     private var client = OkHttpClient()
     init {
         webserver.start()

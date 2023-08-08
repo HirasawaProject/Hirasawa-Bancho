@@ -8,21 +8,17 @@ import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.*
 import io.hirasawa.server.webserver.threads.HttpServerThread
-import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.io.File
 import java.util.*
-import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Webserver(val httpPort: Int, val httpsPort: Int) {
+class Webserver(val httpPort: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
     val accessLogger = FileLogger(File("logs/webserver/access.txt"))
     val errorLogger = FileLogger(File("logs/webserver/error.txt"))
-
-    private var sslEnabled = true
 
     init {
         addDefaultHeader("server", "Hirasawa")
@@ -128,9 +124,6 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * Starts the webserver
      */
     fun start() {
-        if (sslEnabled) {
-            Thread(HttpsServerThread(httpsPort)).start()
-        }
         Thread(HttpServerThread(httpPort, this)).start()
     }
 
