@@ -10,7 +10,7 @@ enum class HttpHeader {
     LOCATION;
 
     override fun toString(): String {
-        val words = this.name.split("_").map { it.toLowerCase().capitalize() }
+        val words = this.name.split("_").map { it -> it.lowercase().replaceFirstChar { it.uppercase() } }
         return words.joinToString("-")
     }
 }

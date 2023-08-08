@@ -18,7 +18,7 @@ class MultipartFormHandler(byteArray: ByteArray, boundary: String) {
         val elementLine = ArrayList<Byte>()
 
         for (byte in byteArray) {
-            val newChar = byte.toChar()
+            val newChar = Char(byte.toInt())
 
             when (parsingState) {
                 ParsingState.BOUNDARY -> {

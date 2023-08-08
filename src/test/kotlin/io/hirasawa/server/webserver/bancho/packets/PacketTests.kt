@@ -21,8 +21,8 @@ class PacketTests {
     @Test
     fun testDoesChangingGamemodeSwitchUserStats() {
         val user = createUser("DCGSUS")
-        val osuStats = createUserStats(user.id, GameMode.OSU)
-        val taikoStats = createUserStats(user.id, GameMode.TAIKO)
+        createUserStats(user.id, GameMode.OSU)
+        createUserStats(user.id, GameMode.TAIKO)
 
         val payload = ByteArrayOutputStream()
         val writer = OsuWriter(payload)

@@ -5,11 +5,11 @@ import io.hirasawa.server.webserver.enums.HttpStatus
 
 class MutableHeaders(private val headers: HashMap<String, String>): ImmutableHeaders(headers) {
     operator fun set(key: String, value: String) {
-        this.headers[key.toLowerCase()] = value
+        this.headers[key.lowercase()] = value
     }
 
     operator fun set(key: Any, value: String) {
-        set(key.toString().toLowerCase(), value)
+        set(key.toString().lowercase(), value)
     }
 
     operator fun set(key: Any, value: Any) {

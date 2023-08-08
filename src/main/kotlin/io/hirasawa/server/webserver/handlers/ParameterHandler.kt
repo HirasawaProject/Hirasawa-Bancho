@@ -12,7 +12,7 @@ class ParameterHandler(parameterByteArray: ByteArray) {
         var parsingState = ParsingState.KEY
 
         for (newByte in parameterByteArray) {
-            val newChar = newByte.toChar()
+            val newChar = Char(newByte.toInt())
             when(parsingState) {
                 ParsingState.KEY -> {
                     when (newChar) {
