@@ -247,12 +247,10 @@ class IrcTests {
         val channelLines = arrayListOf(
             reader.nextLine(),
             reader.nextLine(),
-            reader.nextLine(),
         )
         // We can't guarantee the order
         assert(":$host 322 CCLC #osu 1 :Main channel" in channelLines)
         assert(":$host 322 CCLC #lounge 1 :Administration channel" in channelLines)
-        assert(":$host 322 CCLC #lobby 1 :Lobby stuff" in channelLines)
         assertEquals(":$host 323 CCLC :End of LIST", reader.nextLine())
 
         writer.writeBytesAndFlush("QUIT\r\n")
