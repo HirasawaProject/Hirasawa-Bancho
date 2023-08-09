@@ -5,11 +5,7 @@ import io.hirasawa.server.bancho.enums.*
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.database.tables.BeatmapsTable
-import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.experimental.and
 
 class MultiplayerMatchHandler(reader: OsuReader) {
@@ -47,7 +43,7 @@ class MultiplayerMatchHandler(reader: OsuReader) {
             }
         }
         val hostId = reader.readInt()
-        val mode = GameMode.fromId(reader.readByte())
+        val mode = Mode.fromId(reader.readByte())
         val matchScoringType = MatchScoringType.fromId(reader.readByte())
         val teamType = MatchTeamType.fromId(reader.readByte())
         val specialModes = MatchSpecialMode.fromId(reader.readByte())

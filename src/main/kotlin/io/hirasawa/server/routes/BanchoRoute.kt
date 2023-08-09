@@ -1,7 +1,7 @@
 package io.hirasawa.server.routes
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
@@ -10,7 +10,6 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
-import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.route.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -50,7 +49,7 @@ class BanchoRoute: Route {
                 val user = BanchoUser(transaction {
                     UsersTable.select { UsersTable.username eq userInfo.username }.first()
                 })
-                user.updateUserStats(GameMode.OSU)
+                user.updateUserStats(Mode.OSU)
                 user.uuid = token
                 user.updateKeepAlive()
 

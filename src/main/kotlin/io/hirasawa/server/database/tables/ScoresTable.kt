@@ -1,8 +1,9 @@
 package io.hirasawa.server.database.tables
 
+import io.hirasawa.server.database.LaravelTable
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object ScoresTable: IntIdTable("scores") {
+object ScoresTable: LaravelTable("scores") {
     val userId = integer("user_id").references(UsersTable.id)
     val score = integer("score")
     val combo = integer("combo")
@@ -14,9 +15,9 @@ object ScoresTable: IntIdTable("scores") {
     val countGeki = integer("count_geki")
     val fullCombo = bool("full_combo")
     val mods = integer("mods")
-    val timestamp = integer("timestamp")
     val beatmapId = integer("beatmap_id").references(BeatmapsTable.id)
-    val gamemode = integer("gamemode")
+    val mode = integer("mode")
     val rank = integer("rank")
     val accuracy = float("accuracy")
+    val hasReplay = bool("has_replay")
 }

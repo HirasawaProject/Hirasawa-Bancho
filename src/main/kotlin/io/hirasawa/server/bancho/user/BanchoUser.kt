@@ -1,7 +1,7 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.objects.UserStats
@@ -57,11 +57,11 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      *
      * This can be used to switch gamemodes or just update the stats on it
      */
-    fun updateUserStats(gameMode: GameMode) {
+    fun updateUserStats(mode: Mode) {
         val userId = this.id
         userStats = UserStats(transaction {
             UserStatsTable.select {
-                (UserStatsTable.userId eq userId) and (UserStatsTable.gamemode eq gameMode.ordinal)
+                (UserStatsTable.userId eq userId) and (UserStatsTable.mode eq mode.ordinal)
             }.first()
         })
     }
