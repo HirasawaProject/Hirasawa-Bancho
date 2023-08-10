@@ -1,6 +1,6 @@
 package io.hirasawa.server
 
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.webserver.Helper.Companion.createUser
 import io.hirasawa.server.webserver.Helper.Companion.createUserStats
@@ -15,11 +15,11 @@ class UserTests {
     @Test
     fun canUserSpectateOtherUsers() {
         val user1 = createUser("CUSOU1")
-        createUserStats(user1.id, GameMode.OSU)
+        createUserStats(user1.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user1 as BanchoUser)
 
         val user2 = createUser("CUSOU2")
-        createUserStats(user2.id, GameMode.OSU)
+        createUserStats(user2.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user2 as BanchoUser)
 
         user1.spectateUser(user2)
@@ -31,11 +31,11 @@ class UserTests {
     @Test
     fun canUserSpectateAndThenStopSpectatingOtherUsers() {
         val user1 = createUser("CUSOU1")
-        createUserStats(user1.id, GameMode.OSU)
+        createUserStats(user1.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user1 as BanchoUser)
 
         val user2 = createUser("CUSOU2")
-        createUserStats(user2.id, GameMode.OSU)
+        createUserStats(user2.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user2 as BanchoUser)
 
         user1.spectateUser(user2)
@@ -52,15 +52,15 @@ class UserTests {
     @Test
     fun canUserSpectateAnotherUserAndThenSpectateADifferentUser() {
         val user1 = createUser("CUSOU1")
-        createUserStats(user1.id, GameMode.OSU)
+        createUserStats(user1.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user1 as BanchoUser)
 
         val user2 = createUser("CUSOU2")
-        createUserStats(user2.id, GameMode.OSU)
+        createUserStats(user2.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user2 as BanchoUser)
 
         val user3 = createUser("CUSOU3")
-        createUserStats(user2.id, GameMode.OSU)
+        createUserStats(user2.id, Mode.OSU)
         Hirasawa.banchoUsers.add(user3 as BanchoUser)
 
         user1.spectateUser(user2)

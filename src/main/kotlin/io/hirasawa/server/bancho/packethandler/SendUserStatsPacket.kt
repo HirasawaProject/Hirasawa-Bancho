@@ -1,6 +1,6 @@
 package io.hirasawa.server.bancho.packethandler
 
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.objects.BanchoStatus
@@ -15,7 +15,7 @@ class SendUserStatsPacket: PacketHandler(BanchoPacketType.OSU_SEND_USER_STATS) {
         val statustext = reader.readString()
         val beatmapChecksum = reader.readString()
         val mods = reader.readInt()
-        val mode = GameMode.values()[reader.readByte().toInt()]
+        val mode = Mode.values()[reader.readByte().toInt()]
         val beatmapId = reader.readInt()
 
         val banchoStatus = BanchoStatus(status, statustext, beatmapChecksum, mods, mode, beatmapId)

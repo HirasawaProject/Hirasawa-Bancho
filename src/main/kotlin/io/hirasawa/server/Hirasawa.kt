@@ -1,11 +1,10 @@
 package io.hirasawa.server
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.google.gson.GsonBuilder
 import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.ChatEngine
-import io.hirasawa.server.bancho.enums.GameMode
 import io.hirasawa.server.bancho.multiplayer.MultiplayerManager
-import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
@@ -21,9 +20,7 @@ import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
 import io.hirasawa.server.lookupmaps.BeatmapLookupMap
 import io.hirasawa.server.lookupmaps.BeatmapSetLookupMap
-import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
-import io.hirasawa.server.objects.Score
 import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.osuapi.OsuApi
 import io.hirasawa.server.permissions.PermissionEngine
@@ -37,7 +34,6 @@ import io.hirasawa.server.webserver.Webserver
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -102,7 +98,7 @@ class Hirasawa {
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
                     SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
-                        PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
+                        PermissionGroupUserTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {
                         UsersTable.insert {
@@ -110,7 +106,7 @@ class Hirasawa {
                             it[UsersTable.username] = "BanchoBot"
                             it[UsersTable.password] = ""
                             it[UsersTable.isBanned] = false
-                            it[UsersTable.mutedUntil] = 0
+                            it[UsersTable.email] = ""
                         }
                     }
                 }
@@ -167,7 +163,8 @@ class Hirasawa {
                 UsersTable.select { UsersTable.username eq username }.firstOrNull()
             } ?: return false
 
-            return BCrypt.checkpw(password, result[UsersTable.password])
+            val verificationResult = BCrypt.verifyer().verify(password.toCharArray(), result[UsersTable.password])
+            return verificationResult.verified
         }
 
         fun authenticateIrc(username: String, ircToken: String): Boolean {
@@ -229,7 +226,6 @@ class Hirasawa {
                         it[BeatmapsTable.mapsetId] = id.value
                         it[BeatmapsTable.difficulty] = beatmap.version
                         it[BeatmapsTable.hash] = beatmap.fileMd5
-                        it[BeatmapsTable.ranks] = 0
                         it[BeatmapsTable.offset] = 0F
                         it[BeatmapsTable.osuId] = beatmap.beatmapId
                         it[BeatmapsTable.totalLength] = beatmap.totalLength
@@ -238,15 +234,13 @@ class Hirasawa {
                         it[BeatmapsTable.overallDifficulty] = beatmap.diffOverall
                         it[BeatmapsTable.approachRate] = beatmap.diffApproach
                         it[BeatmapsTable.healthDrain] = beatmap.diffDrain
-                        it[BeatmapsTable.gamemode] = beatmap.mode
+                        it[BeatmapsTable.mode] = beatmap.mode
                         it[BeatmapsTable.countNormal] = beatmap.countNormal
                         it[BeatmapsTable.countSlider] = beatmap.countSlider
                         it[BeatmapsTable.countSpinner] = beatmap.countSpinner
                         it[BeatmapsTable.bpm] = beatmap.bpm
                         it[BeatmapsTable.hasStoryboard] = beatmap.storyboard
                         it[BeatmapsTable.maxCombo] = beatmap.maxCombo
-                        it[BeatmapsTable.playCount] = 0
-                        it[BeatmapsTable.passCount] = 0
                     }
 
                 }
@@ -254,55 +248,6 @@ class Hirasawa {
 
             return true
 
-        }
-
-        // TODO move out
-        fun processLeaderboard(beatmap: Beatmap, gameMode: GameMode) {
-            var rank = 0
-
-            transaction {
-                (ScoresTable innerJoin UsersTable).select {
-                    (ScoresTable.beatmapId eq beatmap.id) and (ScoresTable.gamemode eq gameMode.ordinal)
-                }.forEach {
-                    val score = Score(it)
-                    if (!score.user.isBanned) {
-                        score.rank = ++rank
-                        transaction {
-                            ScoresTable.update({ ScoresTable.id eq score.id }) {
-                                it[ScoresTable.rank] = score.rank
-                            }
-                        }
-                    }
-                }
-            }
-
-            transaction {
-                BeatmapsTable.update({ BeatmapsTable.id eq beatmap.id }) {
-                    it[ranks] = rank
-                }
-            }
-        }
-
-        // TODO move out
-        fun processGlobalLeaderboard(gameMode: GameMode) {
-            var rank = 1
-            transaction {
-                UserStatsTable.select {
-                    UserStatsTable.gamemode eq gameMode.ordinal
-                }.sortedByDescending { UserStatsTable.rankedScore }
-            }.forEach {
-                val userStats = UserStats(it)
-                val user = BanchoUser(transaction {
-                    UsersTable.select { UsersTable.id eq userStats.userId }
-                }.first())
-                if (!user.isBanned) {
-                    userStats.rank = rank++
-                    UserStatsTable.update({ (UserStatsTable.userId eq user.id) and
-                            (UserStatsTable.gamemode eq gameMode.ordinal) }) {
-                        it[UserStatsTable.rank] = userStats.rank
-                    }
-                }
-            }
         }
 
         @Suppress("UNCHECKED_CAST")

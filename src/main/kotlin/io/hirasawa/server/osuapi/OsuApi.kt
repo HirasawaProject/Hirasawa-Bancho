@@ -1,12 +1,10 @@
 package io.hirasawa.server.osuapi
 
 import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.time.Instant
 
@@ -22,7 +20,7 @@ class OsuApi(private val key: String) {
                     mapsetId: Int? = null,
                     beatmapId: Int? = null,
                     userId: Int? = null,
-                    mode: GameMode? = null,
+                    mode: Mode? = null,
                     allowConverted: Boolean? = null,
                     beatmapHash: String? = null,
                     limit: Int = 500,
@@ -52,7 +50,7 @@ class OsuApi(private val key: String) {
 
     fun getUser(userId: Int? = null,
                 userName: String? = null,
-                mode: GameMode? = null,
+                mode: Mode? = null,
                 eventDays: Int = 1): Array<OsuApiUser> {
         if (key.isEmpty()) throw NoApiKeyException()
 
@@ -76,7 +74,7 @@ class OsuApi(private val key: String) {
     fun getScores(beatmapId: Int,
                   userId: Int? = null,
                   userName: String? = null,
-                  mode: GameMode? = null,
+                  mode: Mode? = null,
                   mods: Int? = null,
                   limit: Int = 50): Array<OsuApiScore> {
         if (key.isEmpty()) throw NoApiKeyException()

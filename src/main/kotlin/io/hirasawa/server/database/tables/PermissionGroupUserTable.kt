@@ -2,7 +2,7 @@ package io.hirasawa.server.database.tables
 
 import io.hirasawa.server.database.LaravelTable
 
-object FriendsTable: LaravelTable("friends") {
+object PermissionGroupUserTable: LaravelTable("permission_group_user") {
     val userId = integer("user_id").references(UsersTable.id)
-    val friendId = integer("friend_id")
+    val groupId = integer("group_id").references(PermissionGroupsTable.id)
 }

@@ -4,7 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.chat.command.CommandSender
 import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.database.tables.FriendsTable
-import io.hirasawa.server.database.tables.PermissionGroupUsersTable
+import io.hirasawa.server.database.tables.PermissionGroupUserTable
 import io.hirasawa.server.database.tables.PermissionGroupsTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.permissions.PermissionGroup
@@ -33,8 +33,8 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
         val permissionGroups = ArrayList<PermissionGroup>()
         val userId = this.id
         transaction {
-            (PermissionGroupUsersTable innerJoin PermissionGroupsTable).select {
-                PermissionGroupUsersTable.userId eq userId
+            (PermissionGroupUserTable innerJoin PermissionGroupsTable).select {
+                PermissionGroupUserTable.userId eq userId
             }.forEach {
                 permissionGroups.add(Hirasawa.permissionEngine.getGroup(it[PermissionGroupsTable.name]))
             }

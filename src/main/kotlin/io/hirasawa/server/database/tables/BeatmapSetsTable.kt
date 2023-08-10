@@ -1,8 +1,8 @@
 package io.hirasawa.server.database.tables
 
-import org.jetbrains.exposed.dao.id.IntIdTable
+import io.hirasawa.server.database.LaravelTable
 
-object BeatmapSetsTable: IntIdTable("beatmap_sets") {
+object BeatmapSetsTable: LaravelTable("beatmap_sets") {
     val osuId = integer("osu_id")
     val artist = varchar("artist", 255)
     val title = varchar("title", 255)
