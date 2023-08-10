@@ -1,11 +1,10 @@
 # Hirasawa Project
 [![Unit tests](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml) [![Codacy Security Scan](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml)
 
-Hirasawa Project is a WIP server for osu! supporting custom plugins written in Kotlin
+Hirasawa Project is a WIP Bancho server for osu! supporting custom plugins written in Kotlin
 
 ## The ethos of the project
-The project is intended to be an all-in-one application providing a (close to) vanilla Bancho experience and more 
-bespoke web frontend that can be extended via plugins.
+The project is intended to be an application providing a (close to) vanilla Bancho experience
 
 This project should not provide anything to end user further than what would be expected from the vanilla server itself,
 so any nice to have features should instead be done via the plugin support
@@ -24,19 +23,18 @@ Alongside having access to the same systems Hirasawa uses natively
 We will also have a plugin store available at some point later down the line of development
 
 ## Requirements
-* Java 8
-* Mysql (soon to be configurable)
+* Java 17
+* MariaDB
 * Gradle
 
 In terms of hardware requirements I've gotten this to run on a Pi Zero
 
 ## Builds
-Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project/releases), the version number uses the
-format YYYYMMDD using the UTC timezone
+Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project/releases), the version number uses the [semver versioning scheme](https://semver.org/)
 
 ## Building
 Building Hirasawa is very easy, for building testing builds `gradle shadow` will output to 
-`build/libs/HirasawaProject-VERSION.jar`
+`build/libs/HirasawaProject-VERSION-all.jar`
 
 ## Contribution
 Hirasawa is completely open to contribution, please feel free to open tickets or work on what we currently have in the
