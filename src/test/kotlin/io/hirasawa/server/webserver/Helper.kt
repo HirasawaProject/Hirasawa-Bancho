@@ -1,5 +1,6 @@
 package io.hirasawa.server.webserver
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.BanchoUser
@@ -11,7 +12,6 @@ import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 import kotlin.random.Random
 
@@ -21,7 +21,7 @@ class Helper {
             return BanchoUser(transaction {
                 val userId = UsersTable.insertAndGetId {
                     it[UsersTable.username] = username
-                    it[UsersTable.password] = BCrypt.hashpw("", BCrypt.gensalt())
+                    it[UsersTable.password] = String(BCrypt.with(BCrypt.Version.VERSION_2Y).hashToChar(10, "".toCharArray()))
                     it[UsersTable.isBanned] = false
                     it[UsersTable.ircToken] = ircToken
                     it[UsersTable.email] = ""

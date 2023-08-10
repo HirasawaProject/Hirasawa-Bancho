@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
+    implementation group: 'at.favre.lib', name: 'bcrypt', version: '0.10.2'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'

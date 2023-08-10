@@ -37,7 +37,6 @@ import io.hirasawa.server.webserver.Webserver
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -167,7 +166,8 @@ class Hirasawa {
                 UsersTable.select { UsersTable.username eq username }.firstOrNull()
             } ?: return false
 
-            return BCrypt.checkpw(password, result[UsersTable.password])
+            val verificationResult = BCrypt.verifyer().verify(password.toCharArray(), result[UsersTable.password])
+            return verificationResult.verified
         }
 
         fun authenticateIrc(username: String, ircToken: String): Boolean {
