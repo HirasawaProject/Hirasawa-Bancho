@@ -6,5 +6,5 @@ import java.time.Instant
 
 open class LaravelTable(name: String): IntIdTable(name) {
     val createdAt = timestamp("created_at").default(Instant.now())
-    val updatedAt = timestamp("update_at").nullable().clientDefault { Instant.now() }
+    val updatedAt = timestamp("updated_at").nullable().clientDefault { Instant.now() }
 }

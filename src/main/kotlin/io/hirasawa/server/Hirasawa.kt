@@ -1,11 +1,10 @@
 package io.hirasawa.server
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.google.gson.GsonBuilder
 import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.ChatEngine
-import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.multiplayer.MultiplayerManager
-import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packethandler.PacketHandler
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
@@ -21,9 +20,7 @@ import io.hirasawa.server.irc.IrcServer
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
 import io.hirasawa.server.lookupmaps.BeatmapLookupMap
 import io.hirasawa.server.lookupmaps.BeatmapSetLookupMap
-import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
-import io.hirasawa.server.objects.Score
 import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.osuapi.OsuApi
 import io.hirasawa.server.permissions.PermissionEngine
@@ -101,7 +98,7 @@ class Hirasawa {
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
                     SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
-                        PermissionGroupUsersTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
+                        PermissionGroupUserTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {
                         UsersTable.insert {
