@@ -13,6 +13,7 @@ import io.hirasawa.server.bancho.user.BanchoBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.config.ModsSerialiser
+import io.hirasawa.server.database.DatabaseCredentials
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.enums.DefaultRankingState
@@ -111,7 +112,20 @@ class Hirasawa {
                     }
                 }
             } else {
-                val dbc = Hirasawa.config.database
+                val environmentVariables = System.getenv()
+                val dbc = if ("DATABASE_HOST" in environmentVariables
+                    && "DATABASE_USERNAME" in environmentVariables
+                    && "DATABASE_PASSWORD" in environmentVariables
+                    && "DATABASE_DATABASE" in environmentVariables) {
+                    DatabaseCredentials(
+                        System.getenv("DATABASE_HOST"),
+                        System.getenv("DATABASE_USERNAME"),
+                        System.getenv("DATABASE_PASSWORD"),
+                        System.getenv("DATABASE_DATABASE"),
+                    )
+                } else {
+                    Hirasawa.config.database
+                }
                 Database.connect("jdbc:mariadb://${dbc.host}/${dbc.database}",
                     driver = "org.mariadb.jdbc.Driver", user = dbc.username, password = dbc.password)
             }
