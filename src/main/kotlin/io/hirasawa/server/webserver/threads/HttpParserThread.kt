@@ -47,19 +47,15 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
 
         val dataOutputStream = DataOutputStream(socket.getOutputStream())
 
-        val responseBuffer = ByteArrayOutputStream()
-
         val ipAddress = socket.inetAddress.hostAddress
 
         val request = Request(urlSegment, headerHandler.httpMethod, immutableHeaders, cookiesReceived,
             ByteArrayInputStream(postData), ipAddress)
 
-        val response = Response(HttpStatus.OK, DataOutputStream(responseBuffer), webserver.getDefaultHeaders(),
+        val response = Response(HttpStatus.OK, dataOutputStream, webserver.getDefaultHeaders(),
             cookiesToSend)
 
-        val webRequestEvent = WebRequestEvent(host, request, response)
-
-        Hirasawa.eventHandler.callEvent(webRequestEvent)
+        val webRequestEvent = WebRequestEvent(host, request, response).call()
 
         if (webRequestEvent.isCancelled) {
             RouteForbidden().handle(request, response)
@@ -81,10 +77,6 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             e.printStackTrace(PrintWriter(stringWriter))
             webserver.errorLogger.log(stringWriter)
 
-
-            // Clean up after errored route
-            responseBuffer.reset()
-
             response.headers.clear()
             for ((key, value) in webserver.getDefaultHeaders()) {
                 response.headers[key] = value
@@ -93,27 +85,6 @@ class HttpParserThread(private val socket: Socket, private val webserver: Webser
             InternalServerErrorRoute().handle(request, response)
         }
 
-        response.headers[HttpHeader.CONTENT_SIZE] = response.outputStream.size()
-
-        // Set version and status
-        dataOutputStream.writeBytes("HTTP/1.0 ")
-        dataOutputStream.writeBytes(response.httpStatus.code.toString() + " ")
-        dataOutputStream.writeBytes(response.httpStatus.toString())
-        dataOutputStream.writeBytes("\r\n")
-
-        for ((key, value) in response.headers) {
-            dataOutputStream.writeBytes("$key: $value\r\n")
-        }
-
-        for ((name, value) in cookiesToSend) {
-            dataOutputStream.writeBytes("Set-Cookie: $name=${value.encode()}\r\n")
-        }
-
-        dataOutputStream.writeBytes("\r\n")
-
-        dataOutputStream.write(responseBuffer.toByteArray())
-
-        dataOutputStream.close()
-
+        response.close()
     }
 }

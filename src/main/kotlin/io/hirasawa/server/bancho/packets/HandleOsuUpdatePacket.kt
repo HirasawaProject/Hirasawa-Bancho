@@ -12,7 +12,8 @@ class HandleOsuUpdatePacket(banchoUser: BanchoUser): BanchoPacket(BanchoPacketTy
         writer.writeByte(banchoUser.status.mode.ordinal.toByte())
         writer.writeInt(banchoUser.status.beatmapId)
         writer.writeLong(banchoUser.userStats.rankedScore)
-        writer.writeFloat(banchoUser.userStats.accuracy)
+        // osu! expects 0 - 1 values but we store them as 0-100
+        writer.writeFloat(banchoUser.userStats.accuracy / 100)
         writer.writeInt(banchoUser.userStats.playcount)
         writer.writeLong(banchoUser.userStats.totalScore)
         writer.writeInt(banchoUser.userStats.rank)

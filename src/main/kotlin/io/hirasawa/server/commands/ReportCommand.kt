@@ -1,8 +1,8 @@
 package io.hirasawa.server.commands
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.ReportsTable
 import io.hirasawa.server.database.tables.UsersTable
@@ -42,12 +42,12 @@ class ReportCommand: ChatCommand("report", "Report a player to the mods", "hiras
         transaction {
             ReportsTable.insertAndGetId {
                 it[ReportsTable.reporterId] = reporter.id
-                it[ReportsTable.reporteeId] = reportee.id
+                it[ReportsTable.userId] = reportee.id
                 it[ReportsTable.reason] = reason
             }
         }
 
-        Hirasawa.chatEngine.handleChat(Hirasawa.hirasawaBot, "#lounge", "User ${reporter.username} reported " +
+        Hirasawa.chatEngine.handleChat(Hirasawa.banchoBot, "#lounge", "User ${reporter.username} reported " +
                 "${reportee.username} for $reason")
 
         context.respond("Thank you! Your report has been noted and staff have been informed")

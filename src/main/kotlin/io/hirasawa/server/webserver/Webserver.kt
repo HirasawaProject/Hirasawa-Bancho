@@ -8,21 +8,17 @@ import io.hirasawa.server.webserver.objects.Request
 import io.hirasawa.server.webserver.objects.Response
 import io.hirasawa.server.webserver.route.*
 import io.hirasawa.server.webserver.threads.HttpServerThread
-import io.hirasawa.server.webserver.threads.HttpsServerThread
 import java.io.File
 import java.util.*
-import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Webserver(val httpPort: Int, val httpsPort: Int) {
+class Webserver(val httpPort: Int) {
     // Key: host, value RouteNode "tree"-like datatype
     private val routes = HashMap<String, RouteNode>()
     private val defaultHeaders = MutableHeaders(HashMap())
     val accessLogger = FileLogger(File("logs/webserver/access.txt"))
     val errorLogger = FileLogger(File("logs/webserver/error.txt"))
-
-    private var sslEnabled = true
 
     init {
         addDefaultHeader("server", "Hirasawa")
@@ -128,9 +124,6 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      * Starts the webserver
      */
     fun start() {
-        if (sslEnabled) {
-            Thread(HttpsServerThread(httpsPort)).start()
-        }
         Thread(HttpServerThread(httpPort, this)).start()
     }
 
@@ -210,5 +203,73 @@ class Webserver(val httpPort: Int, val httpsPort: Int) {
      */
     fun cloneRoutes(from: Any, to: Any) {
         cloneRoutes(from.toString(), to.toString())
+    }
+
+    /**
+     * Removes a route from the internal webserver
+     *
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     */
+    fun removeRoute(host: String, path: String, httpMethod: HttpMethod) {
+        removeNode(host, path, httpMethod)
+    }
+
+    /**
+     * Adds a route to the internal webserver
+     *
+     * You can also use parameters in the path e.g: /u/{user}
+     * @param host The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     * @param route The instance of the route
+     */
+    fun removeRoute(host: Any, path: String, httpMethod: HttpMethod) {
+        removeRoute(host.toString(), path, httpMethod)
+    }
+
+    /**
+     * Removes a node from the route tree
+     *
+     * @paramhost The domain the route should run under
+     * @param path The url path, eg /
+     * @param httpMethod The type of HTTP request, eg GET, POST
+     */
+    fun removeNode(host: Any, path: String, httpMethod: HttpMethod) {
+        val hostString = host.toString()
+
+        val routeSegments = ArrayList<String>()
+        val routeParameters = ArrayList<String>()
+
+        val pattern = Regex("\\{(.+)}")
+        for (segment in path.split("/")) {
+            if (segment.isBlank()) continue
+            if (pattern.matches(segment)) {
+                pattern.find(segment)?.groupValues?.get(1)?.let { routeParameters.add(it) }
+            }
+            routeSegments.add(segment)
+        }
+
+        var lastSegment = routes[hostString]
+        for (segment in routeSegments) {
+            if (lastSegment is DirectoryNode) {
+                lastSegment = lastSegment.routes[segment]
+            }
+            if (lastSegment is ParameterisedRouteNode) {
+                lastSegment = lastSegment.route
+            }
+        }
+
+        if (lastSegment is DirectoryNode) {
+            if (httpMethod in lastSegment.index.methods) {
+                lastSegment.index.methods.remove(httpMethod)
+            }
+        }
+        if (lastSegment is RouteContainerNode) {
+            if (httpMethod in lastSegment.methods) {
+                lastSegment.methods.remove(httpMethod)
+            }
+        }
     }
 }

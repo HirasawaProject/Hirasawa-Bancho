@@ -5,7 +5,7 @@ import io.hirasawa.server.webserver.enums.HttpHeader
 open class ImmutableHeaders(private val headers: HashMap<String, String>) {
 
     operator fun get(key: String): String? {
-        return headers[key.toLowerCase()]
+        return headers[key.lowercase()]
     }
 
     operator fun get(key: Any): String? {
@@ -13,7 +13,7 @@ open class ImmutableHeaders(private val headers: HashMap<String, String>) {
     }
 
     operator fun contains(key: String): Boolean {
-        return key.toLowerCase() in headers.keys
+        return key.lowercase() in headers.keys
     }
 
     operator fun contains(key: Any): Boolean {

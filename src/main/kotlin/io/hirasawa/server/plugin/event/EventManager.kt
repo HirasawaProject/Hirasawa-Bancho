@@ -13,7 +13,7 @@ class EventManager {
         }
     }
 
-    fun callEvent(hirasawaEvent: HirasawaEvent) {
+    fun callEvent(hirasawaEvent: HirasawaEvent<*>) {
         for (priority in EventPriority.values()) {
 
             val listeners = registeredEvents[priority]?.get(hirasawaEvent::class.qualifiedName) ?: continue

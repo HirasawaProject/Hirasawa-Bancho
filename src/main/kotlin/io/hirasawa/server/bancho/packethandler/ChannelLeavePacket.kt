@@ -6,7 +6,7 @@ import io.hirasawa.server.bancho.io.OsuWriter
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.ChannelAvailableAutojoinPacket
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.plugin.event.bancho.ChannelLeaveEvent
+import io.hirasawa.server.plugin.event.chat.ChannelLeaveEvent
 
 class ChannelLeavePacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_LEAVE) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
@@ -14,15 +14,11 @@ class ChannelLeavePacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_LEAVE) {
 
         if (channelName in Hirasawa.chatEngine.chatChannels.keys) {
             val channel = Hirasawa.chatEngine[channelName]!!
-            val event = ChannelLeaveEvent(user, channel)
-
-            Hirasawa.eventHandler.callEvent(event)
-
-            if (event.isCancelled) {
+            ChannelLeaveEvent(user, channel).call().then {
+                channel.removeUser(user)
+            }.cancelled {
                 // Force channel to reopen
                 user.sendPacket(ChannelAvailableAutojoinPacket(channel))
-            } else {
-                channel.removePlayer(user)
             }
         }
     }

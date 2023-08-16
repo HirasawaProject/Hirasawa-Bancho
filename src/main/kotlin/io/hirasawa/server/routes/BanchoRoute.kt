@@ -1,7 +1,7 @@
 package io.hirasawa.server.routes
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.handler.BanchoLoginHandler
 import io.hirasawa.server.bancho.io.OsuReader
 import io.hirasawa.server.bancho.io.OsuWriter
@@ -10,7 +10,6 @@ import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.plugin.event.bancho.BanchoUserLoginEvent
 import io.hirasawa.server.plugin.event.bancho.enums.BanchoLoginCancelReason
-import io.hirasawa.server.polyfill.readNBytes
 import io.hirasawa.server.webserver.route.Route
 import io.hirasawa.server.webserver.enums.ContentType
 import io.hirasawa.server.webserver.enums.HttpHeader
@@ -50,18 +49,12 @@ class BanchoRoute: Route {
                 val user = BanchoUser(transaction {
                     UsersTable.select { UsersTable.username eq userInfo.username }.first()
                 })
-                user.updateUserStats(GameMode.OSU)
+                user.updateUserStats(Mode.OSU)
                 user.uuid = token
                 user.updateKeepAlive()
 
-                var cancelReason = BanchoLoginCancelReason.NOT_CANCELLED
-                if (user.isBanned) {
-                    cancelReason = BanchoLoginCancelReason.BANNED
-                }
-                val loginEvent = BanchoUserLoginEvent(user, cancelReason)
-                Hirasawa.eventHandler.callEvent(loginEvent)
-
-                if (loginEvent.cancelReason == BanchoLoginCancelReason.NOT_CANCELLED) {
+                val cancelReason = if (user.isBanned) BanchoLoginCancelReason.BANNED  else BanchoLoginCancelReason.UNKNOWN
+                BanchoUserLoginEvent(user, cancelReason).call().then {
                     Hirasawa.banchoUsers.add(user)
                     LoginReplyPacket(user.id).write(osuWriter)
                     ProtocolNegotiationPacket(19).write(osuWriter)
@@ -87,14 +80,14 @@ class BanchoRoute: Route {
                     UserPresencePacket(user).write(osuWriter)
 
                     if (user.hasPermission("hirasawa.update.notify") && Hirasawa.isUpdateRequired) {
-                        user.sendPrivateMessage(Hirasawa.hirasawaBot, "You are running an outdated version of " +
+                        user.sendPrivateMessage(Hirasawa.banchoBot, "You are running an outdated version of " +
                                 "Hirasawa, please update by going to the following link")
-                        user.sendPrivateMessage(Hirasawa.hirasawaBot,
+                        user.sendPrivateMessage(Hirasawa.banchoBot,
                             Hirasawa.updateChecker.latestRelease?.assets?.first()?.browserDownloadUrl ?: "")
                     }
 
-                } else {
-                    LoginReplyPacket(loginEvent.cancelReason).write(osuWriter)
+                }.cancelled {
+                    LoginReplyPacket(cancelReason).write(osuWriter)
                 }
             } else {
                 LoginReplyPacket(BanchoLoginCancelReason.AUTHENTICATION_FAILED).write(osuWriter)

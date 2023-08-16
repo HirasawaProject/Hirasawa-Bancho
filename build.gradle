@@ -1,50 +1,41 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.71'
-    id 'org.jetbrains.dokka' version '0.10.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'org.jetbrains.dokka' version '1.8.20'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'io.hirasawa'
-version 'Testing'
+version '0.6.1'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 17
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
-        url  "https://dl.bintray.com/kotlin/exposed"
-    }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile 'com.google.code.gson:gson:2.8.6'
-    compile group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
-    compile 'mysql:mysql-connector-java:5.1.+'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.71"
-    implementation "org.bouncycastle:bcprov-jdk15:1.46"
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.1")
-    implementation 'org.jetbrains.exposed:exposed:0.17.7'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation group: 'at.favre.lib', name: 'bcrypt', version: '0.10.2'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.11.0'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-html-jvm:0.9.1"
+    implementation 'org.jetbrains.exposed:exposed-core:0.42.0'
+    implementation 'org.jetbrains.exposed:exposed-dao:0.42.0'
+    implementation 'org.jetbrains.exposed:exposed-jdbc:0.42.0'
+    implementation 'org.jetbrains.exposed:exposed-java-time:0.42.0'
+    implementation 'com.h2database:h2:2.2.220'
+    implementation 'org.overviewproject:mime-types:1.0.4'
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "17"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'io.hirasawa.server.HirasawaProjectKt'
-        attributes 'Implementation-Version': project.version
-        attributes 'Implementation-Name': 'Hirasawa'
-    }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    kotlinOptions.jvmTarget = "17"
 }
 
 test {
@@ -53,8 +44,10 @@ test {
     maxHeapSize = '1G'
 }
 
-task prod {
-    doLast {
-        project.version = new Date().format('yyyyMMdd')
+shadowJar {
+    relocate 'junit.framework', 'shadow.junit'
+    manifest {
+        attributes 'Main-Class': 'io.hirasawa.server.HirasawaProjectKt'
+        attributes 'Implementation-Version': project.version
     }
 }

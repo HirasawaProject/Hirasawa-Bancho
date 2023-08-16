@@ -21,7 +21,7 @@ Because now there's money involved (albeit fairly low) there are some restrictio
 
 ## How to report
 In order to report a security issues please either contact me (Connor) on our official Discord or emailing 
-security@hirasawa.io, do not report this issue on the public issue tracker
+<security@hirasawa.io>, do not report this issue on the public issue tracker
 
 ## Timeframe
 Please give us a full calendar month to both solve the issue and pay the reward.

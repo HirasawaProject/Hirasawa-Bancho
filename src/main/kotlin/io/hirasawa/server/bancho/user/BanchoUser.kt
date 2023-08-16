@@ -1,14 +1,13 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.message.PrivateChatMessage
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.objects.BanchoStatus
+import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
-import io.hirasawa.server.permissions.PermissionGroup
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateJoinEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateLeaveEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateSwitchEvent
@@ -24,7 +23,7 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
         timezone, countryCode, longitude, latitude, isBanned) {
 
     constructor(result: ResultRow): this(result[UsersTable.id].value, result[UsersTable.username], 0, 0, 0F ,0F,
-        UUID.randomUUID(), result[UsersTable.banned])
+        UUID.randomUUID(), result[UsersTable.isBanned])
 
     val packetCache = Stack<BanchoPacket>()
     var status = BanchoStatus()
@@ -33,6 +32,8 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
     val spectators = ArrayList<BanchoUser>()
     var spectating: BanchoUser? = null
+    var currentMatch: MultiplayerMatch? = null
+    val isInMatch: Boolean = currentMatch != null
 
     /**
      * Send a packet to the user
@@ -52,24 +53,15 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     }
 
     /**
-     * Sends a private chat message to this user
-     *
-     * @param from The user that sent the chat message
-     * @param message The message sent to the user
-     */
-    override fun sendPrivateMessage(from: User, message: String) {
-        Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
-    }
-
-    /**
      * Updates user stats for the specified gamemode
      *
      * This can be used to switch gamemodes or just update the stats on it
      */
-    fun updateUserStats(gameMode: GameMode) {
+    fun updateUserStats(mode: Mode) {
+        val userId = this.id
         userStats = UserStats(transaction {
             UserStatsTable.select {
-                (UserStatsTable.userId eq id) and (UserStatsTable.gamemode eq gameMode.ordinal)
+                (UserStatsTable.userId eq userId) and (UserStatsTable.mode eq mode.ordinal)
             }.first()
         })
     }
@@ -80,40 +72,37 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
      */
     fun spectateUser(banchoUser: BanchoUser) {
         if (this.spectating != null) {
-            val spectateSwitchEvent = BanchoUserSpectateSwitchEvent(this, this.spectating!!, banchoUser)
-            Hirasawa.eventHandler.callEvent(spectateSwitchEvent)
+            BanchoUserSpectateSwitchEvent(this, this.spectating!!, banchoUser).call()
             stopSpectating()
         }
-        val spectateJoinEvent = BanchoUserSpectateJoinEvent(this, banchoUser)
-        Hirasawa.eventHandler.callEvent(spectateJoinEvent)
+        BanchoUserSpectateJoinEvent(this, banchoUser).call().then {
+            for (spectators in banchoUser.spectators) {
+                spectators.sendPacket(FellowSpectatorJoined(this))
+            }
 
-        for (spectators in banchoUser.spectators) {
-            spectators.sendPacket(FellowSpectatorJoined(this))
+            banchoUser.sendPacket(SpectatorJoined(this))
+
+            this.spectating = banchoUser
+            banchoUser.spectators.add(this)
+
+            this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+            banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
         }
-
-        banchoUser.sendPacket(SpectatorJoined(this))
-
-        this.spectating = banchoUser
-        banchoUser.spectators.add(this)
-
-        this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
-        banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
     }
 
     fun stopSpectating() {
         if (this.spectating != null) {
-            val spectateLeaveEvent = BanchoUserSpectateLeaveEvent(this, this.spectating!!)
-            Hirasawa.eventHandler.callEvent(spectateLeaveEvent)
+            BanchoUserSpectateLeaveEvent(this, this.spectating!!).call().then {
+                for (spectators in this.spectating!!.spectators) {
+                    spectators.sendPacket(FellowSpectatorLeft(this))
+                }
 
-            for (spectators in this.spectating!!.spectators) {
-                spectators.sendPacket(FellowSpectatorLeft(this))
+                this.spectating?.sendPacket(SpectatorLeft(this))
+
+                this.spectating?.spectators?.remove(this)
+                this.spectating = null
+                this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
             }
-
-            this.spectating?.sendPacket(SpectatorLeft(this))
-
-            this.spectating?.spectators?.remove(this)
-            this.spectating = null
-            this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
         }
     }
 

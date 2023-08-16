@@ -32,7 +32,7 @@ enum class HttpStatus(val code: Int) {
     PAYMENT_REQUIRED(402),
     FORBIDDEN(403),
     NOT_FOUND(404),
-    METHOD_NOT_FOUND(405),
+    METHOD_NOT_ALLOWED(405),
     NOT_ACCEPTABLE(406),
     PROXY_AUTHENTICATION_REQUIRED(407),
     REQUEST_TIMEOUT(408),
@@ -70,7 +70,7 @@ enum class HttpStatus(val code: Int) {
     NETWORK_AUTHENTICATION_REQUIRED(511);
 
     override fun toString(): String {
-        val words = this.name.split("_").map { it.toLowerCase().capitalize() }
+        val words = this.name.split("_").map { it -> it.lowercase().replaceFirstChar { it.uppercase() } }
         return words.joinToString(" ")
     }
 }

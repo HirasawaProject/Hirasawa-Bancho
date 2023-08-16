@@ -1,6 +1,7 @@
 package io.hirasawa.server.webserver
 
-import io.hirasawa.server.bancho.enums.GameMode
+import at.favre.lib.crypto.bcrypt.BCrypt
+import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
@@ -9,30 +10,28 @@ import io.hirasawa.server.enums.BeatmapStatus
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.BeatmapSet
 import io.hirasawa.server.objects.Score
-import io.hirasawa.server.permissions.PermissionGroup
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 class Helper {
     companion object {
-        fun createUser(username: String): User {
+        fun createUser(username: String, ircToken: String? = "ircToken"): User {
             return BanchoUser(transaction {
                 val userId = UsersTable.insertAndGetId {
                     it[UsersTable.username] = username
-                    it[UsersTable.password] = BCrypt.hashpw("", BCrypt.gensalt())
-                    it[UsersTable.banned] = false
-                    it[UsersTable.mutedUntil] = 0
+                    it[UsersTable.password] = String(BCrypt.with(BCrypt.Version.VERSION_2Y).hashToChar(10, "".toCharArray()))
+                    it[UsersTable.isBanned] = false
+                    it[UsersTable.ircToken] = ircToken
+                    it[UsersTable.email] = ""
                 }
 
                 UsersTable.select { UsersTable.id eq userId }.first()
             })
         }
 
-        fun createScore(user: User, score: Int, rank: Int, beatmapId: Int, gamemode: GameMode): Score {
+        fun createScore(user: User, score: Int, rank: Int, beatmapId: Int, gamemode: Mode): Score {
             return Score(transaction {
                 val scoreId = ScoresTable.insertAndGetId {
                     it[ScoresTable.userId] = user.id
@@ -46,9 +45,8 @@ class Helper {
                     it[ScoresTable.countGeki] = 11
                     it[ScoresTable.fullCombo] = true
                     it[ScoresTable.mods] = 0
-                    it[ScoresTable.timestamp] = 0
                     it[ScoresTable.beatmapId] = beatmapId
-                    it[ScoresTable.gamemode] = gamemode.ordinal
+                    it[ScoresTable.mode] = gamemode.ordinal
                     it[ScoresTable.rank] = rank
                     it[ScoresTable.accuracy] = 0F
                 }
@@ -57,13 +55,12 @@ class Helper {
             })
         }
 
-        fun createBeatmap(mapsetId: Int, hash: String, ranks: Int): Beatmap {
+        fun createBeatmap(mapsetId: Int, hash: String): Beatmap {
             return Beatmap(transaction {
                 val beatmapId = BeatmapsTable.insertAndGetId {
                     it[BeatmapsTable.mapsetId] = mapsetId
                     it[BeatmapsTable.difficulty] = "HARD"
                     it[BeatmapsTable.hash] = hash
-                    it[BeatmapsTable.ranks] = ranks
                     it[BeatmapsTable.offset] = 0F
                     it[BeatmapsTable.osuId] = Random.nextInt()
                     it[BeatmapsTable.totalLength] = 0
@@ -72,15 +69,13 @@ class Helper {
                     it[BeatmapsTable.overallDifficulty] = 0F
                     it[BeatmapsTable.approachRate] = 0F
                     it[BeatmapsTable.healthDrain] = 0F
-                    it[BeatmapsTable.gamemode] = GameMode.OSU.ordinal
+                    it[BeatmapsTable.mode] = Mode.OSU.ordinal
                     it[BeatmapsTable.countNormal] = 0
                     it[BeatmapsTable.countSlider] = 0
                     it[BeatmapsTable.countSpinner] = 0
                     it[BeatmapsTable.bpm] = 0F
                     it[BeatmapsTable.hasStoryboard] = false
                     it[BeatmapsTable.maxCombo] = 0
-                    it[BeatmapsTable.playCount] = 0
-                    it[BeatmapsTable.passCount] = 0
                 }
 
                 BeatmapsTable.select { BeatmapsTable.id eq beatmapId }.first()
@@ -89,36 +84,36 @@ class Helper {
 
         fun createBeatmapSet(artist: String, title: String, status: BeatmapStatus): BeatmapSet {
             return BeatmapSet(transaction {
-                val mapsetId = BeatmapsetsTable.insertAndGetId {
-                    it[BeatmapsetsTable.artist] = artist
-                    it[BeatmapsetsTable.title] = title
-                    it[BeatmapsetsTable.status] = status.id
-                    it[BeatmapsetsTable.osuId] = Random.nextInt()
-                    it[BeatmapsetsTable.mapperName] = "Unknown"
-                    it[BeatmapsetsTable.genreId] = 0
-                    it[BeatmapsetsTable.languageId] = 0
-                    it[BeatmapsetsTable.rating] = 0F
+                val mapsetId = BeatmapSetsTable.insertAndGetId {
+                    it[BeatmapSetsTable.artist] = artist
+                    it[BeatmapSetsTable.title] = title
+                    it[BeatmapSetsTable.status] = status.id
+                    it[BeatmapSetsTable.osuId] = Random.nextInt()
+                    it[BeatmapSetsTable.mapperName] = "Unknown"
+                    it[BeatmapSetsTable.genreId] = 0
+                    it[BeatmapSetsTable.languageId] = 0
+                    it[BeatmapSetsTable.rating] = 0F
                 }
 
-                BeatmapsetsTable.select { BeatmapsetsTable.id eq mapsetId }.first()
+                BeatmapSetsTable.select { BeatmapSetsTable.id eq mapsetId }.first()
             })
         }
 
-        fun createUserStats(userId: Int, gamemode: GameMode): UserStats {
+        fun createUserStats(userId: Int, gamemode: Mode): UserStats {
             return UserStats(transaction {
                 UserStatsTable.insert {
                     it[UserStatsTable.userId] = userId
                     it[UserStatsTable.rankedScore] = 0
                     it[UserStatsTable.accuracy] = 0F
-                    it[UserStatsTable.playcount] = 0
+                    it[UserStatsTable.playCount] = 0
                     it[UserStatsTable.totalScore] = 0
                     it[UserStatsTable.rank] = 0
                     it[UserStatsTable.pp] = 0
-                    it[UserStatsTable.gamemode] = gamemode.ordinal
+                    it[UserStatsTable.mode] = gamemode.ordinal
                 }
 
                 UserStatsTable.select { (UserStatsTable.userId eq userId) and
-                        (UserStatsTable.gamemode eq gamemode.ordinal) }.first()
+                        (UserStatsTable.mode eq gamemode.ordinal) }.first()
             })
         }
 

@@ -5,17 +5,21 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.hirasawa.server.Hirasawa
 import okhttp3.OkHttpClient
+import java.lang.IllegalArgumentException
+import java.lang.NullPointerException
 
 class UpdateChecker {
     var isUpdateRequired = false
-    var latestRelease: Releases? = null
+    var latestRelease: Release? = null
 
     fun checkUpdate(): Boolean {
-        val currentVersion = Hirasawa.version.toFloatOrNull() ?: return false
-
+        if (Hirasawa.version.buildMetadata == "noupdate") {
+            println("Your build has been configured to ignore updates")
+            return false
+        }
         val client = OkHttpClient()
         val request = okhttp3.Request.Builder()
-            .url("https://api.github.com/repos/cg0/Hirasawa-Project/releases/latest")
+            .url("https://api.github.com/repos/HirasawaProject/Hirasawa-Server/releases/latest")
             .build()
 
         val response = client.newCall(request).execute()
@@ -24,10 +28,25 @@ class UpdateChecker {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
 
-        val releases = gson.fromJson<Releases>(response.body?.string(), Releases::class.java)
-        isUpdateRequired = currentVersion < releases.tagName.toFloat()
-        latestRelease = releases
+        val release = gson.fromJson(response.body?.string(), Release::class.java)
+        if (release != null) {
+            try {
+                isUpdateRequired = Hirasawa.version < release.semver
+                latestRelease = release
+            } catch (exception: IllegalArgumentException) {
+                printError()
+            }
+        } else {
+            printError()
+        }
 
         return isUpdateRequired
     }
+
+    private fun printError() {
+        println("Latest version of Hirasawa can't be parsed, either your version is too old or the latest " +
+                "release is broken")
+        println("You may need to update manually if you're on an old version or open a ticket for this issue")
+    }
+
 }

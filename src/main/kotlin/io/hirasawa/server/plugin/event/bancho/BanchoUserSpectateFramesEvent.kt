@@ -10,4 +10,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
  * Event when player sends spectate frames
  */
 class BanchoUserSpectateFramesEvent(val user: BanchoUser, var replayFrames: ArrayList<ReplayFrame>, var action: Byte,
-                                    var scoreFrame: ScoreFrame): HirasawaEvent, Cancelable()
+                                    var scoreFrame: ScoreFrame): HirasawaEvent<BanchoUserSpectateFramesEvent>, Cancelable()

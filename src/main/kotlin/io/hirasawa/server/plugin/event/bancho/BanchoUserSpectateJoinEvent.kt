@@ -6,4 +6,4 @@ import io.hirasawa.server.plugin.event.HirasawaEvent
 /**
  * Event when player starts spectating another player
  */
-class BanchoUserSpectateJoinEvent(val spectator: BanchoUser, val spectatee: BanchoUser): HirasawaEvent
+class BanchoUserSpectateJoinEvent(val spectator: BanchoUser, val spectatee: BanchoUser): HirasawaEvent<BanchoUserSpectateJoinEvent>

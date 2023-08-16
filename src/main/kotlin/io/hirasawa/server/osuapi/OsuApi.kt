@@ -1,12 +1,10 @@
 package io.hirasawa.server.osuapi
 
 import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.hirasawa.server.bancho.enums.GameMode
+import io.hirasawa.server.bancho.enums.Mode
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import java.time.Instant
 
@@ -22,11 +20,12 @@ class OsuApi(private val key: String) {
                     mapsetId: Int? = null,
                     beatmapId: Int? = null,
                     userId: Int? = null,
-                    mode: GameMode? = null,
+                    mode: Mode? = null,
                     allowConverted: Boolean? = null,
                     beatmapHash: String? = null,
                     limit: Int = 500,
                     mods: Int = 0): Array<OsuApiBeatmap> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_beatmaps".toHttpUrl().newBuilder()
         httpBuilder.addQueryParameterIfNotNull("since", since)
@@ -51,8 +50,9 @@ class OsuApi(private val key: String) {
 
     fun getUser(userId: Int? = null,
                 userName: String? = null,
-                mode: GameMode? = null,
+                mode: Mode? = null,
                 eventDays: Int = 1): Array<OsuApiUser> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_user".toHttpUrl().newBuilder()
 
@@ -74,9 +74,10 @@ class OsuApi(private val key: String) {
     fun getScores(beatmapId: Int,
                   userId: Int? = null,
                   userName: String? = null,
-                  mode: GameMode? = null,
+                  mode: Mode? = null,
                   mods: Int? = null,
                   limit: Int = 50): Array<OsuApiScore> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_scores".toHttpUrl().newBuilder()
 
@@ -100,6 +101,7 @@ class OsuApi(private val key: String) {
     fun getUserBest(userId: Int? = null,
                     userName: String? = null,
                     limit: Int = 10): Array<OsuApiScore> {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_user_best".toHttpUrl().newBuilder()
 
@@ -118,6 +120,7 @@ class OsuApi(private val key: String) {
     }
 
     fun getMatch(matchId: Int): OsuApiMatch {
+        if (key.isEmpty()) throw NoApiKeyException()
 
         val httpBuilder = "$baseUrl/get_match".toHttpUrl().newBuilder()
 

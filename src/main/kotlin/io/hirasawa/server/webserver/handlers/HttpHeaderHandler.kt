@@ -14,14 +14,14 @@ class HttpHeaderHandler(dataInputStream: DataInputStream) {
         var temp = ""
         var tempHeaderName = ""
         loop@ while (true) {
-            val newChar = dataInputStream.readByte().toChar()
+            val newChar = Char(dataInputStream.readByte().toInt())
 
             if (newChar == '\r') continue
 
             when(parsingState) {
                 ParsingState.HTTP_VERB -> {
                     if (newChar == ' ') {
-                        httpMethod = HttpMethod.valueOf(temp.toUpperCase())
+                        httpMethod = HttpMethod.valueOf(temp.uppercase())
                         temp = ""
                         parsingState = ParsingState.HTTP_ROUTE
                     } else {

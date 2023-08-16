@@ -1,9 +1,9 @@
 package io.hirasawa.server.commands
 
 import io.hirasawa.server.Hirasawa
-import io.hirasawa.server.bancho.chat.command.ChatCommand
-import io.hirasawa.server.bancho.chat.command.CommandContext
-import io.hirasawa.server.plugin.InternalPlugin
+import io.hirasawa.server.chat.command.ChatCommand
+import io.hirasawa.server.chat.command.CommandContext
+import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
 import java.io.File
 
@@ -18,7 +18,8 @@ class ReloadCommand: ChatCommand("reload", "Reloads the loaded plugins", "hirasa
         }
 
         Hirasawa.pluginManager.loadPluginsFromDirectory(File("plugins"), true)
-        Hirasawa.pluginManager.loadPlugin(InternalPlugin(), PluginDescriptor("Internal Plugin", Hirasawa.version,
+        Hirasawa.pluginManager.loadPlugin(
+            InternalBanchoPlugin(), PluginDescriptor("Internal Plugin", Hirasawa.version,
             "Hirasawa", "")
         )
         return true

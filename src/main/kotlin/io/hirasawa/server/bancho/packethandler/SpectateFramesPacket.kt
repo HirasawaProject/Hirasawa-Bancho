@@ -1,6 +1,5 @@
 package io.hirasawa.server.bancho.packethandler
 
-import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.handler.ReplayFrameHandler
 import io.hirasawa.server.bancho.handler.ScoreFrameHandler
 import io.hirasawa.server.bancho.io.OsuReader
@@ -9,7 +8,6 @@ import io.hirasawa.server.bancho.objects.ReplayFrame
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.packets.SpectateFramesPacket
 import io.hirasawa.server.bancho.user.BanchoUser
-import io.hirasawa.server.bancho.user.HirasawaBot
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateFramesEvent
 
 class SpectateFramesPacket: PacketHandler(BanchoPacketType.OSU_SPECTATE_FRAMES) {
@@ -27,15 +25,10 @@ class SpectateFramesPacket: PacketHandler(BanchoPacketType.OSU_SPECTATE_FRAMES) 
 
         val scoreFrame = ScoreFrameHandler(reader).scoreFrame
 
-        val event = BanchoUserSpectateFramesEvent(user, replayFrames, action, scoreFrame)
-        Hirasawa.eventHandler.callEvent(event)
-
-        if (event.isCancelled) {
-            return
-        }
-
-        for (spectator in user.spectators) {
-            spectator.sendPacket(SpectateFramesPacket(user.id, event.replayFrames, event.action, event.scoreFrame))
+        BanchoUserSpectateFramesEvent(user, replayFrames, action, scoreFrame).call().then {
+            for (spectator in user.spectators) {
+                spectator.sendPacket(SpectateFramesPacket(user.id, it.replayFrames, it.action, it.scoreFrame))
+            }
         }
     }
 }
