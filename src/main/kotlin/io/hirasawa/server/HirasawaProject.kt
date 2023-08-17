@@ -12,6 +12,7 @@ import java.util.concurrent.Executors
 fun main() {
     println("Starting Hirasawa v${Hirasawa.version}")
     Hirasawa.initDatabase()
+    Hirasawa.crossServer.listen()
     // Register internal plugins, these are used to separate out our functionality so users can disable if needed
     Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
     Hirasawa.pluginManager.loadPlugin(InternalIrcPlugin(), InternalIrcPlugin.descriptor)

@@ -13,6 +13,7 @@ import io.hirasawa.server.bancho.user.BanchoBot
 import io.hirasawa.server.config.ChatChannelSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.config.ModsSerialiser
+import io.hirasawa.server.crossServer.CrossServerManager
 import io.hirasawa.server.database.DatabaseCredentials
 import io.hirasawa.server.database.tables.*
 import io.hirasawa.server.enums.BeatmapStatus
@@ -66,6 +67,7 @@ class Hirasawa {
         lateinit var permissionEngine: PermissionEngine
         val updateChecker = UpdateChecker()
         val isUpdateRequired get() = updateChecker.checkUpdate()
+        val crossServer = CrossServerManager()
 
         val beatmaps = BeatmapLookupMap()
         val beatmapSets = BeatmapSetLookupMap()
@@ -94,7 +96,7 @@ class Hirasawa {
         }
 
         fun initDatabase(memoryDatabase: Boolean = false) {
-            if (memoryDatabase) {
+            if (true) {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
