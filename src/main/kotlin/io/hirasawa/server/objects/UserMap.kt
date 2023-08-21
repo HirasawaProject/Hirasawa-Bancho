@@ -81,10 +81,7 @@ class UserMap<T: User> {
     }
 
     operator fun contains(user: T): Boolean {
-        if (user is BanchoUser) {
-            return user.uuid in uuidCache.keys
-        }
-        return user.id in idCache.keys
+        return user in values
     }
 
     fun bind(bindType: BindType, function: (user: T?) -> Unit): Int {

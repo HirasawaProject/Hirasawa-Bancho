@@ -17,6 +17,11 @@ class ChannelJoinPacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_JOIN) {
         if (channel == null) {
             user.sendPacket(ChannelRevokedPacket(channelName))
         } else {
+            if (user in channel.connectedUsers) {
+                // User is already in channel, we'll just say it was successful to connect
+                user.sendPacket(ChannelJoinSuccessPacket(channel))
+                return
+            }
             ChannelJoinEvent(user, channel).call().then {
                 channel.addUser(user)
                 user.sendPacket(ChannelJoinSuccessPacket(channel))
