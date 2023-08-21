@@ -12,8 +12,8 @@ class ChannelLeavePacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_LEAVE) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val channelName = reader.readString()
 
-        if (channelName in Hirasawa.chatEngine.chatChannels.keys) {
-            val channel = Hirasawa.chatEngine[channelName]!!
+        val channel = Hirasawa.chatEngine[user, channelName]
+        if (channel != null) {
             ChannelLeaveEvent(user, channel).call().then {
                 channel.removeUser(user)
             }.cancelled {

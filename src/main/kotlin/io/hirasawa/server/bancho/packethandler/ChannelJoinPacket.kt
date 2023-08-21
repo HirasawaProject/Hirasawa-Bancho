@@ -13,16 +13,16 @@ class ChannelJoinPacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_JOIN) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         val channelName = reader.readString()
 
-        if (channelName in Hirasawa.chatEngine.chatChannels.keys) {
-            val channel = Hirasawa.chatEngine[channelName]!!
+        val channel = Hirasawa.chatEngine[user, channelName]
+        if (channel == null) {
+            user.sendPacket(ChannelRevokedPacket(channelName))
+        } else {
             ChannelJoinEvent(user, channel).call().then {
                 channel.addUser(user)
                 user.sendPacket(ChannelJoinSuccessPacket(channel))
             }.cancelled {
                 user.sendPacket(ChannelRevokedPacket(channelName))
             }
-        } else {
-            user.sendPacket(ChannelRevokedPacket(channelName))
         }
     }
 }

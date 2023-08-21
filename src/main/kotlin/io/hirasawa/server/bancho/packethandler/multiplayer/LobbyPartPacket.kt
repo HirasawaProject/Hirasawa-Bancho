@@ -14,7 +14,7 @@ class LobbyPartPacket: PacketHandler(BanchoPacketType.OSU_LOBBY_JOIN) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         BanchoUserLobbyLeaveEvent(user).call()
         // For some reason this is its own packet and not just using the standard channel join packet
-        user.sendPacket(ChannelRevokedPacket(ChatChannel("#lobby", "Place to find games I guess", false)))
+//        user.sendPacket(ChannelRevokedPacket(ChatChannel("#lobby", "Place to find games I guess", false)))
 
         Hirasawa.multiplayer.unsubscribeToChanges(user)
     }

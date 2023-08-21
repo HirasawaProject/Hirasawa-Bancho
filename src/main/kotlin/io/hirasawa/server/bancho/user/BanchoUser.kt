@@ -6,8 +6,10 @@ import io.hirasawa.server.bancho.objects.BanchoStatus
 import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.*
+import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
+import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateJoinEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateLeaveEvent
 import io.hirasawa.server.plugin.event.bancho.BanchoUserSpectateSwitchEvent
@@ -30,7 +32,7 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     var userStats = UserStats(id)
     var lastKeepAlive = 0
     val clientPermissions by lazy { Hirasawa.permissionEngine.calculateClientPermissions(this) }
-    val spectators = ArrayList<BanchoUser>()
+    val spectators = UserMap<BanchoUser>()
     var spectating: BanchoUser? = null
     var currentMatch: MultiplayerMatch? = null
     val isInMatch: Boolean = currentMatch != null
@@ -85,8 +87,8 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
             this.spectating = banchoUser
             banchoUser.spectators.add(this)
 
-            this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
-            banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+//            this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+//            banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
         }
     }
 
@@ -101,9 +103,20 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
 
                 this.spectating?.spectators?.remove(this)
                 this.spectating = null
-                this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
+//                this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
             }
         }
     }
 
+    override fun revokeChatChannel(chatChannel: ChatChannel) {
+        sendPacket(ChannelRevokedPacket(chatChannel))
+    }
+
+    override fun addChannel(chatChannel: ChatChannel) {
+        if (chatChannel.metadata.autojoin) {
+            sendPacket(ChannelAvailableAutojoinPacket(chatChannel))
+        } else {
+            sendPacket(ChannelAvailablePacket(chatChannel))
+        }
+    }
 }

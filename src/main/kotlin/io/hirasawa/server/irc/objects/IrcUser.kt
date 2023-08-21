@@ -2,8 +2,11 @@ package io.hirasawa.server.irc.objects
 
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.irc.clientcommands.IrcProtocolReply
+import io.hirasawa.server.irc.clientcommands.Part
+import io.hirasawa.server.irc.clientcommands.RplNameReply
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -27,5 +30,15 @@ class IrcUser(id: Int, username: String, timezone: Byte, countryCode: Byte, long
      */
     fun updateKeepAlive() {
         lastKeepAlive = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()).toInt()
+    }
+
+    override fun revokeChatChannel(chatChannel: ChatChannel) {
+        // IRC expects that channels without a user in them are deleted
+        // So we'll just tell the client that BanchoBot left
+        sendReply(Part(chatChannel, Hirasawa.banchoBot))
+    }
+
+    override fun addChannel(chatChannel: ChatChannel) {
+        sendReply(RplNameReply(chatChannel, chatChannel.connectedUsers.values.toTypedArray()))
     }
 }

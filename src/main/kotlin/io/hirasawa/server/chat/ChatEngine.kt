@@ -1,6 +1,7 @@
 package io.hirasawa.server.chat
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.bancho.packets.ChannelAvailableAutojoinPacket
 import io.hirasawa.server.chat.command.ChatCommand
 import io.hirasawa.server.chat.command.CommandContext
 import io.hirasawa.server.chat.command.CommandSender
@@ -11,6 +12,7 @@ import io.hirasawa.server.bancho.packets.ChannelRevokedPacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.chat.enums.ChatChannelVisibility
 import io.hirasawa.server.irc.clientcommands.Privmsg
 import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.plugin.HirasawaPlugin
@@ -19,8 +21,8 @@ import kotlin.collections.HashMap
 
 class ChatEngine {
     val chatChannels = HashMap<String, ChatChannel>()
+    val privateChatChannels = HashMap<User, HashMap<String, ChatChannel>>()
     val chatCommands = HashMap<String, Pair<ChatCommand, HirasawaPlugin>>()
-    val spectatorChannel = ChatChannel("#spectator", "", false)
     val connectedUsers = ArrayList<User>()
 
     operator fun set(key: String, value: ChatChannel) {
@@ -31,18 +33,18 @@ class ChatEngine {
         return chatChannels[key]
     }
 
+    operator fun get(user: User, key: String): ChatChannel? {
+        return privateChatChannels[user]?.get(key) ?: this[key]
+    }
+
     fun handleChat(user: User, destination: String, message: String) {
         when {
             destination == "!CONSOLE" -> {
                 println(message)
             }
-            destination == spectatorChannel.name -> {
-                if (user is BanchoUser) {
-                    handleSpectatorChat(user, message)
-                }
-            }
             destination.startsWith("#") -> {
-                handleChat(GlobalChatMessage(user, chatChannels[destination]!!, message))
+                val channel = this[user, destination] ?: return
+                handleChat(GlobalChatMessage(user, channel, message))
             }
             else -> {
                 if (destination == "BanchoBot" && Hirasawa.banchoBot.username != destination) {
@@ -57,22 +59,6 @@ class ChatEngine {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun handleSpectatorChat(user: BanchoUser, message: String) {
-        val spectators: ArrayList<BanchoUser>
-        if (user.spectating != null) {
-            user.spectating?.sendPacket(SendMessagePacket(GlobalChatMessage(user, spectatorChannel, message)))
-            spectators = user.spectating?.spectators ?: return
-        } else {
-            spectators = user.spectators
-        }
-
-        for (spectator in spectators) {
-            if (spectator != user) {
-                spectator.sendPacket(SendMessagePacket(GlobalChatMessage(user, spectatorChannel, message)))
             }
         }
     }
@@ -149,5 +135,38 @@ class ChatEngine {
         for (channel in chatChannels) {
             channel.value.removeUser(user)
         }
+
+        if (user in privateChatChannels) {
+            for (channel in privateChatChannels[user]!!) {
+                channel.value.removeUser(user)
+            }
+
+            privateChatChannels.remove(user)
+        }
+    }
+
+    fun removeChannel(chatChannel: ChatChannel) {
+        when (chatChannel.visibility) {
+            ChatChannelVisibility.PUBLIC -> {
+                chatChannels.remove(chatChannel.metadata.name)
+            }
+            ChatChannelVisibility.PRIVATE -> {
+                for (user in privateChatChannels) {
+                    if (chatChannel.metadata.name in user.value) {
+                        user.value[chatChannel.metadata.name]?.removeUser(user.key)
+                    }
+                }
+            }
+        }
+    }
+
+    fun addUserToPrivateChannel(user: User, chatChannel: ChatChannel) {
+        if (user in privateChatChannels) {
+            privateChatChannels[user]?.set(chatChannel.metadata.name, chatChannel)
+        } else {
+            privateChatChannels[user] = hashMapOf(chatChannel.metadata.name to chatChannel)
+        }
+
+        user.addChannel(chatChannel)
     }
 }

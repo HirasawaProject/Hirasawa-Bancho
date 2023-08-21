@@ -7,11 +7,31 @@ import io.hirasawa.server.bancho.packets.ChannelAvailablePacket
 import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
+import io.hirasawa.server.chat.enums.ChatChannelVisibility
 import io.hirasawa.server.irc.clientcommands.*
 import io.hirasawa.server.irc.objects.IrcUser
+import io.hirasawa.server.objects.UserMap
 
-data class ChatChannel(val name: String, val description: String, val autojoin: Boolean) {
-    val connectedUsers = ArrayList<User>()
+abstract class ChatChannel(val metadata: ChatChannelMetadata,
+                           connectedUsers: UserMap<out User> = UserMap(),
+                           val visibility: ChatChannelVisibility = ChatChannelVisibility.PRIVATE) {
+    val connectedUsers: UserMap<User> = UserMap()
+    private val addBindId: Int
+    private val removeBindId: Int
+    init {
+        connectedUsers.values.forEach {
+            this.connectedUsers.add(it)
+        }
+        addBindId = connectedUsers.bind(UserMap.BindType.ADD) {
+            addUser(it ?: return@bind)
+        }
+        removeBindId = connectedUsers.bind(UserMap.BindType.REMOVE) {
+            addUser(it ?: return@bind)
+        }
+        connectedUsers.bind(UserMap.BindType.CLOSE) {
+            this.close()
+        }
+    }
     val size get() = connectedUsers.size.toShort()
 
     /**
@@ -19,7 +39,7 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
      *
      * @param banchoPacket The packet to send
      */
-    fun sendPacketToAll(banchoPacket: BanchoPacket) {
+    fun sendBanchoPacketToAll(banchoPacket: BanchoPacket) {
         for (user in connectedUsers) {
             if (user is BanchoUser) {
                 user.sendPacket(banchoPacket)
@@ -66,6 +86,9 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
         if (user in connectedUsers) {
             sendIrcReplyToAll(Part(this, user))
             connectedUsers.remove(user)
+            if (visibility == ChatChannelVisibility.PRIVATE) {
+                user.revokeChatChannel(this)
+            }
             update()
         }
     }
@@ -89,8 +112,21 @@ data class ChatChannel(val name: String, val description: String, val autojoin: 
         }
     }
 
+    fun close() {
+        connectedUsers.unbind(UserMap.BindType.ADD, addBindId)
+        connectedUsers.unbind(UserMap.BindType.REMOVE, removeBindId)
+        Hirasawa.chatEngine.removeChannel(this)
+    }
+
     private fun update() {
-        Hirasawa.sendBanchoPacketToAll(ChannelAvailablePacket(this))
+        when (visibility) {
+            ChatChannelVisibility.PRIVATE -> {
+                sendBanchoPacketToAll(ChannelAvailablePacket(this))
+            }
+            ChatChannelVisibility.PUBLIC -> {
+                Hirasawa.sendBanchoPacketToAll(ChannelAvailablePacket(this))
+            }
+        }
     }
 
 }

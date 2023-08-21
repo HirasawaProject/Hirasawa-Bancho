@@ -64,7 +64,7 @@ class BanchoRoute: Route {
                     Hirasawa.chatEngine["#osu"]?.addUser(user)
 
                     for ((_, channel) in Hirasawa.chatEngine.chatChannels) {
-                        if (channel.autojoin) {
+                        if (channel.metadata.autojoin) {
                             ChannelAvailableAutojoinPacket(channel).write(osuWriter)
                         } else {
                             ChannelAvailablePacket(channel).write(osuWriter)

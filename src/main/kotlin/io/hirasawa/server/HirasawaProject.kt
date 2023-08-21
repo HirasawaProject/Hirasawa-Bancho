@@ -28,9 +28,9 @@ fun main() {
         println(Hirasawa.updateChecker.latestRelease?.getRelease(Release.AssetType.HIRASAWA_RELEASE)?.browserDownloadUrl)
     }
 
-    // Hardcoded fake channel to get console responses
-    val consoleChatChannel = ChatChannel("!CONSOLE", "", false)
-    while (true) {
-        Hirasawa.chatEngine.handleCommand(readLine()?.split(" ")!!, ConsoleCommandSender(), consoleChatChannel)
-    }
+//    // Hardcoded fake channel to get console responses
+//    val consoleChatChannel = ChatChannel("!CONSOLE", "", false)
+//    while (true) {
+//        Hirasawa.chatEngine.handleCommand(readLine()?.split(" ")!!, ConsoleCommandSender(), consoleChatChannel)
+//    }
 }
