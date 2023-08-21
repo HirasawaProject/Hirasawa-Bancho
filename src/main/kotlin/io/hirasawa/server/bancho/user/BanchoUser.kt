@@ -7,6 +7,7 @@ import io.hirasawa.server.bancho.objects.MultiplayerMatch
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.packets.*
 import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.channel.SpectatorChannel
 import io.hirasawa.server.database.tables.UserStatsTable
 import io.hirasawa.server.database.tables.UsersTable
 import io.hirasawa.server.objects.UserMap
@@ -36,6 +37,7 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
     var spectating: BanchoUser? = null
     var currentMatch: MultiplayerMatch? = null
     val isInMatch: Boolean = currentMatch != null
+    var spectatorChannel: SpectatorChannel? = null
 
     /**
      * Send a packet to the user
@@ -86,9 +88,10 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
 
             this.spectating = banchoUser
             banchoUser.spectators.add(this)
-
-//            this.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
-//            banchoUser.sendPacket(ChannelJoinSuccessPacket(Hirasawa.chatEngine.spectatorChannel))
+            // TODO Realistically this should be handled from the opposite prospective
+            if (banchoUser.spectatorChannel == null) {
+                banchoUser.spectatorChannel = SpectatorChannel(banchoUser)
+            }
         }
     }
 
@@ -101,9 +104,15 @@ open class BanchoUser(id: Int, username: String, timezone: Byte, countryCode: By
 
                 this.spectating?.sendPacket(SpectatorLeft(this))
 
+                if (this.spectating?.spectators?.size == 1) {
+                    // If just us then let's kill the spectator channel
+                    // TODO realistically this should be handled from the opposite prospective
+                    this.spectating?.spectatorChannel?.close()
+                    this.spectating?.spectatorChannel = null
+                }
+
                 this.spectating?.spectators?.remove(this)
                 this.spectating = null
-//                this.sendPacket(ChannelRevokedPacket(Hirasawa.chatEngine.spectatorChannel))
             }
         }
     }

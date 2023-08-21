@@ -5,7 +5,7 @@ import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.ChatChannelMetadata
 
 class SpectatorChannel(user: BanchoUser): ChatChannel(
-    ChatChannelMetadata("#spectator", "uwu", false),
+    ChatChannelMetadata("#spectator", "#spectator community chat", true),
     user.spectators) {
 
     init {
