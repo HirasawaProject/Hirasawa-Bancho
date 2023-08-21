@@ -5,9 +5,12 @@ import io.hirasawa.server.bancho.enums.*
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.multiplayer.*
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.channel.MultiplayerChannel
 import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
+import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.plugin.event.bancho.multiplayer.*
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,7 +36,9 @@ data class MultiplayerMatch(
     var teamType: MatchTeamType,
     var specialModes: MatchSpecialMode,
     var seed: Int,
-    var slotMods: ArrayList<Mods> = ArrayList(Collections.nCopies(16, Mods.fromInt(0)))) {
+    var slotMods: ArrayList<Mods> = ArrayList(Collections.nCopies(16, Mods.fromInt(0))),
+    var users: UserMap<BanchoUser> = UserMap(),
+) {
 
     constructor(gameName: String, password: String, beatmap: Beatmap, host: BanchoUser): this(
         -1,
@@ -62,20 +67,12 @@ data class MultiplayerMatch(
     private val loaded = ArrayList<BanchoUser>()
     private val finished = ArrayList<BanchoUser>()
     private val skipped = ArrayList<BanchoUser>()
+    val channel: ChatChannel = MultiplayerChannel(this)
 
     val host: BanchoUser?
         get() = Hirasawa.banchoUsers[hostId]
     val size: Int
-        get() {
-            var size = 0
-
-            for (status in slotStatus) {
-                if (status has MatchSlotStatus.OCCUPIED) {
-                    size++
-                }
-            }
-            return size
-        }
+        get() = users.size
     val beatmap: Beatmap?
         get() {
             val result = transaction {
@@ -159,6 +156,7 @@ data class MultiplayerMatch(
             }
         }
         user.currentMatch = this
+        users.add(user)
         sendUpdate()
         return true
     }
@@ -175,8 +173,11 @@ data class MultiplayerMatch(
             }
         }
 
+        users.remove(user)
+
         if (isEmpty()) {
             Hirasawa.multiplayer.removeMatch(this)
+            users.close()
         } else if (this.host == user) {
             for (scannedUser: BanchoUser? in slotUser) {
                 if (scannedUser != null) {
@@ -367,5 +368,9 @@ data class MultiplayerMatch(
 
     operator fun contains(user: BanchoUser): Boolean {
         return user in slotUser
+    }
+
+    fun close() {
+        users.close()
     }
 }

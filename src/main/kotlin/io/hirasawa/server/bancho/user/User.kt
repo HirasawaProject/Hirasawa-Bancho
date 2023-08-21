@@ -1,6 +1,7 @@
 package io.hirasawa.server.bancho.user
 
 import io.hirasawa.server.Hirasawa
+import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.command.CommandSender
 import io.hirasawa.server.chat.message.PrivateChatMessage
 import io.hirasawa.server.database.tables.FriendsTable
@@ -64,4 +65,16 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
     fun sendPrivateMessage(from: User, message: String) {
         Hirasawa.chatEngine.handleChat(PrivateChatMessage(from, this, message))
     }
+
+    /**
+     * Revokes the ChatChannel from the user, this will cause the channel to be removed from the user's client
+     */
+    abstract fun revokeChatChannel(chatChannel: ChatChannel)
+
+    /**
+     * Adds a ChatChannel to the user, this will cause the channel to be added to the user's client
+     *
+     * If the client supports autojoin, this will automatically join the user to the channel
+     */
+    abstract fun addChannel(chatChannel: ChatChannel)
 }

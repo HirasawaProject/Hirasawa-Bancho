@@ -1,9 +1,9 @@
 package io.hirasawa.server.objects
 
-import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 /**
@@ -13,11 +13,14 @@ class UserMap<T: User> {
     private val uuidCache = HashMap<UUID, BanchoUser>()
     private val usernameCache = HashMap<String, T>()
     private val idCache = HashMap<Int, T>()
+    private val contents = ArrayList<T>()
+    private val binds = HashMap<BindType, HashMap<Int, (user: T?) -> Unit>>()
 
     val usernameKeys get() = usernameCache.keys
     val uuidKeys get() = uuidCache.keys
     val idKeys get() = idCache.keys
-    val values get() = idCache.values
+    val values get() = contents
+    val size get() = contents.size
 
     operator fun get(key: UUID): BanchoUser? {
         return uuidCache[key]
@@ -36,7 +39,7 @@ class UserMap<T: User> {
     }
 
     operator fun iterator(): MutableIterator<T> {
-        return idCache.values.iterator()
+        return values.iterator()
     }
 
     fun add(user: T) {
@@ -45,7 +48,11 @@ class UserMap<T: User> {
         }
         usernameCache[user.username] = user
         idCache[user.id] = user
-        Hirasawa.chatEngine.addUser(user)
+        values.add(user)
+
+        binds[BindType.ADD]?.forEach {
+            it.value(user)
+        }
     }
 
     fun remove(user: T) {
@@ -54,7 +61,11 @@ class UserMap<T: User> {
         }
         usernameCache.remove(user.username)
         idCache.remove(user.id)
-        Hirasawa.chatEngine.removeUser(user)
+        values.remove(user)
+
+        binds[BindType.REMOVE]?.forEach {
+            it.value(user)
+        }
     }
 
     operator fun contains(key: UUID): Boolean {
@@ -70,9 +81,30 @@ class UserMap<T: User> {
     }
 
     operator fun contains(user: T): Boolean {
-        if (user is BanchoUser) {
-            return user.uuid in uuidCache.keys
+        return user in values
+    }
+
+    fun bind(bindType: BindType, function: (user: T?) -> Unit): Int {
+        if (bindType !in binds.keys) {
+            binds[bindType] = HashMap()
         }
-        return user.id in idCache.keys
+
+        val id = binds[bindType]?.size ?: return -1
+        binds[bindType]?.set(id, function)
+        return id
+    }
+
+    fun unbind(bindType: BindType, id: Int) {
+        binds[bindType]?.remove(id)
+    }
+
+    fun close() {
+        binds[BindType.CLOSE]?.forEach {
+            it.value(null)
+        }
+    }
+
+    enum class BindType {
+        ADD, REMOVE, CLOSE
     }
 }
