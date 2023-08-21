@@ -6,6 +6,7 @@ import io.hirasawa.server.chat.message.ChatMessage
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.irc.enums.NumericReply
 import io.hirasawa.server.irc.enums.TextualReply
+import io.hirasawa.server.irc.objects.IrcUser
 import io.hirasawa.server.webserver.enums.CommonDomains
 
 private val host = CommonDomains.HIRASAWA_IRC.domain
@@ -29,7 +30,7 @@ class RplList(chatChannel: ChatChannel): NumericIrcReply(host, NumericReply.RPL_
 class RplListEnd: NumericIrcReply(host, NumericReply.RPL_LISTEND, ":End of LIST")
 class RplNoTopic(chatChannel: ChatChannel): NumericIrcReply(host, NumericReply.RPL_NOTOPIC, "${chatChannel.metadata.name} :No topic is set")
 class RplTopic(chatChannel: ChatChannel): NumericIrcReply(host, NumericReply.RPL_TOPIC, "${chatChannel.metadata.name} :${chatChannel.metadata.description}")
-class RplNameReply(chatChannel: ChatChannel, presence: Array<User>): NumericIrcReply(host, NumericReply.RPL_NAMEREPLY, "= ${chatChannel.metadata.name} :${presence.joinToString(separator = " ") { it.username }}")
+class RplNameReply(chatChannel: ChatChannel, presence: Array<User>): NumericIrcReply(host, NumericReply.RPL_NAMEREPLY, "= ${chatChannel.metadata.name} :${presence.joinToString(separator = " ") { (if (it.hasPermission("hirasawa.client.admin")) "@" else if (it is IrcUser) "+" else "") + it.username }}")
 class RplEndOfNames(chatChannel: ChatChannel): NumericIrcReply(host, NumericReply.RPL_ENDOFNAMES, "${chatChannel.metadata.name} :End of names")
 class RplMotdStart: NumericIrcReply(host, NumericReply.RPL_MOTDSTART, ":Hirasawa MOTD")
 class RplMotd(motdLine: String): NumericIrcReply(host, NumericReply.RPL_MOTD, ":$motdLine")

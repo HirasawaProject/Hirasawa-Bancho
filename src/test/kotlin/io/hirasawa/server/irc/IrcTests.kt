@@ -137,7 +137,7 @@ class IrcTests {
 
         assertEquals(":TCJCARC JOIN #osu", reader.nextLine())
         assertEquals(":$host 332 TCJCARC #osu :Main channel", reader.nextLine())
-        assertEquals(":$host 353 TCJCARC = #osu :TCJCARC", reader.nextLine())
+        assertEquals(":$host 353 TCJCARC = #osu :+TCJCARC", reader.nextLine())
         assertEquals(":$host 353 TCJCARC = #osu :BanchoBot", reader.nextLine())
         assertEquals(":$host 366 TCJCARC #osu :End of names", reader.nextLine())
 
@@ -163,7 +163,7 @@ class IrcTests {
         // Confirm user1 joined #osu
         assertEquals(":TCJCACBTC1 JOIN #osu", reader1.nextLine())
         assertEquals(":$host 332 TCJCACBTC1 #osu :Main channel", reader1.nextLine())
-        assertEquals(":$host 353 TCJCACBTC1 = #osu :TCJCACBTC1", reader1.nextLine())
+        assertEquals(":$host 353 TCJCACBTC1 = #osu :+TCJCACBTC1", reader1.nextLine())
         assertEquals(":$host 353 TCJCACBTC1 = #osu :BanchoBot", reader1.nextLine())
         assertEquals(":$host 366 TCJCACBTC1 #osu :End of names", reader1.nextLine())
 
@@ -176,7 +176,7 @@ class IrcTests {
         // Confirm user2 joined #osu
         assertEquals(":TCJCACBTC2 JOIN #osu", reader2.nextLine())
         assertEquals(":$host 332 TCJCACBTC2 #osu :Main channel", reader2.nextLine())
-        assertEquals(":$host 353 TCJCACBTC2 = #osu :TCJCACBTC1 TCJCACBTC2", reader2.nextLine())
+        assertEquals(":$host 353 TCJCACBTC2 = #osu :+TCJCACBTC1 +TCJCACBTC2", reader2.nextLine())
         assertEquals(":$host 353 TCJCACBTC2 = #osu :BanchoBot", reader2.nextLine())
         assertEquals(":$host 366 TCJCACBTC2 #osu :End of names", reader2.nextLine())
 
