@@ -1,7 +1,12 @@
 package io.hirasawa.server
 
 import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.ChatChannelMetadata
+import io.hirasawa.server.chat.GlobalChatChannel
+import io.hirasawa.server.chat.channel.ConsoleChannel
 import io.hirasawa.server.chat.command.ConsoleCommandSender
+import io.hirasawa.server.chat.enums.ChatChannelVisibility
+import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
 import io.hirasawa.server.threads.CacheInvalidationThread
@@ -28,9 +33,9 @@ fun main() {
         println(Hirasawa.updateChecker.latestRelease?.getRelease(Release.AssetType.HIRASAWA_RELEASE)?.browserDownloadUrl)
     }
 
-//    // Hardcoded fake channel to get console responses
-//    val consoleChatChannel = ChatChannel("!CONSOLE", "", false)
-//    while (true) {
-//        Hirasawa.chatEngine.handleCommand(readLine()?.split(" ")!!, ConsoleCommandSender(), consoleChatChannel)
-//    }
+    // Hardcoded fake channel to get console responses
+    val consoleChatChannel = ConsoleChannel()
+    while (true) {
+        Hirasawa.chatEngine.handleCommand(readlnOrNull()?.split(" ")!!, ConsoleCommandSender(), consoleChatChannel)
+    }
 }

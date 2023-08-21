@@ -106,7 +106,7 @@ abstract class ChatChannel(val metadata: ChatChannelMetadata,
      *
      * @param chatMessage The chat message to queue
      */
-    fun sendMessage(chatMessage: GlobalChatMessage) {
+    open fun sendMessage(chatMessage: GlobalChatMessage) {
         for (user in connectedUsers) {
             if (chatMessage.source == user) continue
             when (user) {
