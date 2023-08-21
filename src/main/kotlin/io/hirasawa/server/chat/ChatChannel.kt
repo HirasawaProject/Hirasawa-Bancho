@@ -74,6 +74,9 @@ abstract class ChatChannel(val metadata: ChatChannelMetadata,
         connectedUsers.add(user)
         sendIrcReplyToAll(Join(this, user))
         update()
+        if (visibility == ChatChannelVisibility.PRIVATE) {
+            Hirasawa.chatEngine.addUserToPrivateChannel(user, this)
+        }
     }
 
     /**
@@ -90,6 +93,11 @@ abstract class ChatChannel(val metadata: ChatChannelMetadata,
                 user.revokeChatChannel(this)
             }
             update()
+
+
+            if (visibility == ChatChannelVisibility.PRIVATE) {
+                Hirasawa.chatEngine.removeUserFromPrivateChannel(user, this)
+            }
         }
     }
 

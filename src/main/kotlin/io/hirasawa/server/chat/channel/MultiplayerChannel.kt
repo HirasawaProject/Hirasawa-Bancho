@@ -5,5 +5,5 @@ import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.ChatChannelMetadata
 
 class MultiplayerChannel(multiplayerMatch: MultiplayerMatch): ChatChannel(
-    ChatChannelMetadata("#multiplayer", "uwu", false),
+    ChatChannelMetadata("#multiplayer", "#multiplayer community chat", false),
     multiplayerMatch.users)

@@ -169,4 +169,10 @@ class ChatEngine {
 
         user.addChannel(chatChannel)
     }
+
+    fun removeUserFromPrivateChannel(user: User, chatChannel: ChatChannel) {
+        if (user in privateChatChannels) {
+            privateChatChannels[user]?.remove(chatChannel.metadata.name)
+        }
+    }
 }

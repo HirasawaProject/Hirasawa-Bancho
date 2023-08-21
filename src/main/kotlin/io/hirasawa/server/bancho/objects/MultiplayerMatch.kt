@@ -5,6 +5,8 @@ import io.hirasawa.server.bancho.enums.*
 import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.multiplayer.*
 import io.hirasawa.server.bancho.user.BanchoUser
+import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.channel.MultiplayerChannel
 import io.hirasawa.server.database.tables.BeatmapsTable
 import io.hirasawa.server.objects.Beatmap
 import io.hirasawa.server.objects.Mods
@@ -35,7 +37,8 @@ data class MultiplayerMatch(
     var specialModes: MatchSpecialMode,
     var seed: Int,
     var slotMods: ArrayList<Mods> = ArrayList(Collections.nCopies(16, Mods.fromInt(0))),
-    var users: UserMap<BanchoUser> = UserMap()) {
+    var users: UserMap<BanchoUser> = UserMap(),
+) {
 
     constructor(gameName: String, password: String, beatmap: Beatmap, host: BanchoUser): this(
         -1,
@@ -64,6 +67,7 @@ data class MultiplayerMatch(
     private val loaded = ArrayList<BanchoUser>()
     private val finished = ArrayList<BanchoUser>()
     private val skipped = ArrayList<BanchoUser>()
+    val channel: ChatChannel = MultiplayerChannel(this)
 
     val host: BanchoUser?
         get() = Hirasawa.banchoUsers[hostId]
@@ -364,5 +368,9 @@ data class MultiplayerMatch(
 
     operator fun contains(user: BanchoUser): Boolean {
         return user in slotUser
+    }
+
+    fun close() {
+        users.close()
     }
 }

@@ -29,6 +29,7 @@ class MultiplayerManager {
 
     fun removeMatch(match: MultiplayerMatch) {
         BanchoMatchGameRemovedEvent(match).call()
+        match.close()
         matches.remove(match.id)
     }
 
