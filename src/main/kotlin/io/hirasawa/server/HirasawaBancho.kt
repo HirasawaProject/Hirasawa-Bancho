@@ -15,7 +15,7 @@ import java.io.File
 import java.util.concurrent.Executors
 
 fun main() {
-    println("Starting Hirasawa v${Hirasawa.version}")
+    println("Starting Hirasawa Bancho v${Hirasawa.version}")
     Hirasawa.initDatabase()
     // Register internal plugins, these are used to separate out our functionality so users can disable if needed
     Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
