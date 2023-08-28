@@ -4,7 +4,7 @@ import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.chat.ChatChannel
 import io.hirasawa.server.chat.command.CommandSender
 import io.hirasawa.server.chat.message.PrivateChatMessage
-import io.hirasawa.server.database.tables.FriendsTable
+import io.hirasawa.server.database.tables.FriendTable
 import io.hirasawa.server.database.tables.PermissionGroupUserTable
 import io.hirasawa.server.database.tables.PermissionGroupsTable
 import io.hirasawa.server.database.tables.UsersTable
@@ -21,8 +21,8 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
         val arrayList = ArrayList<User>()
         val userId = this.id
         transaction {
-            (FriendsTable innerJoin UsersTable).select {
-                (FriendsTable.userId eq userId)
+            (FriendTable innerJoin UsersTable).select {
+                (FriendTable.userId eq userId)
             }.forEach {
                 arrayList.add(BanchoUser(it))
             }
