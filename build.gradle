@@ -47,7 +47,7 @@ test {
 shadowJar {
     relocate 'junit.framework', 'shadow.junit'
     manifest {
-        attributes 'Main-Class': 'io.hirasawa.server.HirasawaProjectKt'
+        attributes 'Main-Class': 'io.hirasawa.server.HirasawaBanchoKt'
         attributes 'Implementation-Version': project.version
     }
 }

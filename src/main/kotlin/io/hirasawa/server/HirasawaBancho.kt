@@ -1,12 +1,7 @@
 package io.hirasawa.server
 
-import io.hirasawa.server.chat.ChatChannel
-import io.hirasawa.server.chat.ChatChannelMetadata
-import io.hirasawa.server.chat.GlobalChatChannel
 import io.hirasawa.server.chat.channel.ConsoleChannel
 import io.hirasawa.server.chat.command.ConsoleCommandSender
-import io.hirasawa.server.chat.enums.ChatChannelVisibility
-import io.hirasawa.server.objects.UserMap
 import io.hirasawa.server.plugin.internalplugins.InternalBanchoPlugin
 import io.hirasawa.server.plugin.internalplugins.InternalIrcPlugin
 import io.hirasawa.server.threads.CacheInvalidationThread
@@ -15,7 +10,7 @@ import java.io.File
 import java.util.concurrent.Executors
 
 fun main() {
-    println("Starting Hirasawa v${Hirasawa.version}")
+    println("Starting Hirasawa Bancho v${Hirasawa.version}")
     Hirasawa.initDatabase()
     // Register internal plugins, these are used to separate out our functionality so users can disable if needed
     Hirasawa.pluginManager.loadPlugin(InternalBanchoPlugin(), InternalBanchoPlugin.descriptor)
