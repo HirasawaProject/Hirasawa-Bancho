@@ -1,7 +1,7 @@
 # Hirasawa Project
 [![Unit tests](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/tests.yml) [![Codacy Security Scan](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml/badge.svg)](https://github.com/HirasawaProject/Hirasawa-Server/actions/workflows/codacy.yml)
 
-Hirasawa Project is a WIP Bancho server for osu! supporting custom plugins written in Kotlin
+Hirasawa Bancho is a WIP Bancho server for osu! supporting custom plugins written in Kotlin
 
 ## The ethos of the project
 The project is intended to be an application providing a (close to) vanilla Bancho experience
@@ -33,15 +33,15 @@ In terms of hardware requirements I've gotten this to run on a Pi Zero
 Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project/releases), the version number uses the [semver versioning scheme](https://semver.org/)
 
 ## Building
-Building Hirasawa is very easy, for building testing builds `gradle shadow` will output to 
-`build/libs/HirasawaProject-VERSION-all.jar`
+Building Hirasawa Bancho is very easy, for building testing builds `gradle shadow` will output to 
+`build/libs/HirasawaBancho-VERSION-all.jar`
 
 ## Contribution
-Hirasawa is completely open to contribution, please feel free to open tickets or work on what we currently have in the
+Hirasawa Bancho is completely open to contribution, please feel free to open tickets or work on what we currently have in the
 backlog
 
 The language used in the project is British English, this won't impact language shown to the user but we'd prefer 
 keeping the internal language consistent as possible
 
 ## Licencing
-Hirasawa Project is licenced under the MIT licence so do with it as you please
+Hirasawa Bancho is licenced under the MIT licence so do with it as you please

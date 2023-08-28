@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'io.hirasawa'
-version '0.6.1'
+version '0.6.2'
 
 sourceCompatibility = 17
 
@@ -47,7 +47,7 @@ test {
 shadowJar {
     relocate 'junit.framework', 'shadow.junit'
     manifest {
-        attributes 'Main-Class': 'io.hirasawa.server.HirasawaProjectKt'
+        attributes 'Main-Class': 'io.hirasawa.server.HirasawaBanchoKt'
         attributes 'Implementation-Version': project.version
     }
 }

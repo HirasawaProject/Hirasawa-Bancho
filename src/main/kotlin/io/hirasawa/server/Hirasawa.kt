@@ -10,7 +10,7 @@ import io.hirasawa.server.bancho.packets.BanchoPacket
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.BanchoBot
-import io.hirasawa.server.config.ChatChannelSerialiser
+import io.hirasawa.server.config.ChatChannelMetadataSerialiser
 import io.hirasawa.server.config.HirasawaConfig
 import io.hirasawa.server.config.ModsSerialiser
 import io.hirasawa.server.database.DatabaseCredentials
@@ -48,7 +48,7 @@ import kotlin.reflect.full.createType
 class Hirasawa {
     companion object {
         private val gson = GsonBuilder()
-            .registerTypeAdapter(ChatChannel::class.java, ChatChannelSerialiser())
+            .registerTypeAdapter(ChatChannel::class.java, ChatChannelMetadataSerialiser())
             .registerTypeAdapter(Mods::class.java, ModsSerialiser())
             .setPrettyPrinting()
             .create()
@@ -98,7 +98,7 @@ class Hirasawa {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
-                    SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
+                    SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendTable, PermissionGroupsTable,
                         PermissionGroupUserTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {

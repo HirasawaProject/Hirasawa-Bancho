@@ -2,12 +2,13 @@ package io.hirasawa.server.config
 
 import io.hirasawa.server.enums.DefaultRankingState
 import io.hirasawa.server.chat.ChatChannel
+import io.hirasawa.server.chat.ChatChannelMetadata
 import io.hirasawa.server.database.DatabaseCredentials
 import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.objects.Mods
 
 data class HirasawaConfig (val httpPort: Int, val ircPort: Int, val database: DatabaseCredentials,
-                           val channels: List<ChatChannel>, val banchoUserTimeout: Int, val ircUserTimeout: Int,
+                           val channels: List<ChatChannelMetadata>, val banchoUserTimeout: Int, val ircUserTimeout: Int,
                            val banchoBotId: Int, val domain: String, val blockedMods: List<Mod>, val osuApiKey: String,
                            val ircWelcomeMessage: String, val ircMotd: List<String>, val multiplayerFreeMods: Mods,
                            val defaultRankingState: DefaultRankingState
@@ -17,8 +18,8 @@ data class HirasawaConfig (val httpPort: Int, val ircPort: Int, val database: Da
         6667,
         DatabaseCredentials(),
         arrayListOf(
-            ChatChannel("#osu", "Main channel", true),
-            ChatChannel("#lounge", "Administration channel", false)
+            ChatChannelMetadata("#osu", "Main channel", true),
+            ChatChannelMetadata("#lounge", "Administration channel", false)
         ),
         60,
         60,

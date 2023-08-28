@@ -5,6 +5,7 @@ import io.hirasawa.server.bancho.packethandler.*
 import io.hirasawa.server.bancho.packethandler.multiplayer.*
 import io.hirasawa.server.bancho.packets.BanchoPacketType
 import io.hirasawa.server.bancho.threads.UserTimeoutThread
+import io.hirasawa.server.chat.GlobalChatChannel
 import io.hirasawa.server.commands.*
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.PluginDescriptor
@@ -24,7 +25,7 @@ class InternalBanchoPlugin: HirasawaPlugin() {
 
         // Setup chat channels
         for (channel in Hirasawa.config.channels) {
-            Hirasawa.chatEngine[channel.name] = channel
+            Hirasawa.chatEngine[channel.name] = GlobalChatChannel(channel)
         }
 
         // Add Hirasawa's "BanchoBot" to the player list
@@ -101,6 +102,8 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         registerCommand(StartMatchCommand())
         registerCommand(MatchHirasawaCommand())
         registerCommand(MatchAllReadyCommand())
+        registerCommand(PrivateChannelCommand())
+        registerCommand(ChannelUsersCommand())
     }
 
     companion object {

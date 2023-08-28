@@ -13,6 +13,9 @@ class ListCommand: IrcServerCommand {
         for (channel in Hirasawa.chatEngine.chatChannels) {
             user.sendReply(RplList(channel.value))
         }
+        for (channel in Hirasawa.chatEngine.privateChatChannels[user] ?: HashMap()) {
+            user.sendReply(RplList(channel.value))
+        }
         user.sendReply(RplListEnd())
     }
 }

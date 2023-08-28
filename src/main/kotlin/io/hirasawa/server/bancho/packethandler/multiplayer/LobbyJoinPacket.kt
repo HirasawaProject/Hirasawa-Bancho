@@ -15,7 +15,8 @@ class LobbyJoinPacket: PacketHandler(BanchoPacketType.OSU_LOBBY_JOIN) {
     override fun handle(reader: OsuReader, writer: OsuWriter, user: BanchoUser) {
         BanchoUserLobbyJoinEvent(user).call()
         // For some reason this is its own packet and not just using the standard channel join packet
-        user.sendPacket(ChannelJoinSuccessPacket(ChatChannel("#lobby", "Place to find games I guess", false)))
+        // TODO make this a standard channel
+//        user.sendPacket(ChannelJoinSuccessPacket(ChatChannel("#lobby", "Place to find games I guess", false)))
 
         Hirasawa.multiplayer.subscribeToChanges(user)
         for (match in Hirasawa.multiplayer.matches) {

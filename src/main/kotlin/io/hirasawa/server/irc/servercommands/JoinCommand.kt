@@ -6,7 +6,7 @@ import io.hirasawa.server.irc.objects.IrcUser
 
 class JoinCommand: IrcServerCommand {
     override fun handle(user: IrcUser, command: String, args: Array<String>) {
-        val channel = Hirasawa.chatEngine[args[0]]
+        val channel = Hirasawa.chatEngine[user, args[0]]
         if (channel == null) {
             user.sendReply(ErrNoSuchChannel(args[0]))
             return
@@ -14,8 +14,8 @@ class JoinCommand: IrcServerCommand {
 
         channel.addUser(user)
         user.sendReply(RplTopic(channel))
-        user.sendReply(RplNameReply(channel, channel.connectedUsers.toTypedArray()))
-        user.sendReply(RplNameReply(channel, arrayOf(Hirasawa.banchoBot))) // Fake Hirasawa being in every channel
+        user.sendReply(RplNameReply(channel, channel.connectedUsers.values.toTypedArray()))
+        user.sendReply(RplNameReply(channel, arrayOf(Hirasawa.banchoBot))) // Fake BanchoBot being in every channel
         user.sendReply(RplEndOfNames(channel))
     }
 }
