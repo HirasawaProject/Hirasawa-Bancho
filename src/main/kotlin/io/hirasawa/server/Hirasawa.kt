@@ -98,7 +98,7 @@ class Hirasawa {
                 Database.connect("jdbc:h2:mem:regular;DB_CLOSE_DELAY=-1;", "org.h2.Driver")
                 // TODO switch transaction with SOON^TM database migration system
                 transaction {
-                    SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendsTable, PermissionGroupsTable,
+                    SchemaUtils.create(BeatmapSetsTable, BeatmapsTable, FriendTable, PermissionGroupsTable,
                         PermissionGroupUserTable, ScoresTable, UsersTable, UserStatsTable, PermissionNodesTable)
 
                     if (UsersTable.select { UsersTable.id eq Hirasawa.config.banchoBotId }.count() == 0L) {
