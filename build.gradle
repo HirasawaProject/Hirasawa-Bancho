@@ -51,3 +51,13 @@ shadowJar {
         attributes 'Implementation-Version': project.version
     }
 }
+
+task api(type: Jar) {
+    archiveClassifier = 'api'
+    from sourceSets.main.output
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
