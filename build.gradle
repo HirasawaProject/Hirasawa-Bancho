@@ -62,3 +62,9 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
+
+build {
+    dependsOn shadowJar
+    dependsOn api
+    dependsOn javadocJar
+}
