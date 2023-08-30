@@ -18,7 +18,7 @@ data class Release(val url: String, val assetsUrl: String, val tagName: String, 
 
     fun getRelease(releaseType: AssetType): Asset? {
         for (asset in assets) {
-            if (releaseType == releaseType) {
+            if (asset.releaseType == releaseType) {
                 return asset
             }
         }
