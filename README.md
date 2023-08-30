@@ -33,8 +33,10 @@ In terms of hardware requirements I've gotten this to run on a Pi Zero
 Hirasawa builds can be downloaded [here](https://github.com/cg0/Hirasawa-Project/releases), the version number uses the [semver versioning scheme](https://semver.org/)
 
 ## Building
-Building Hirasawa Bancho is very easy, for building testing builds `gradle shadow` will output to 
-`build/libs/HirasawaBancho-VERSION-all.jar`
+To build Hirasawa Bancho you can run `gradle build`, this will generate three jars in `build/libs`:
+* `HirasawaBancho-VERSION.jar` - The executable jar with all dependencies included
+* `HirasawaBancho-VERSION-api.jar` - The API jar without dependencies
+* `HirasawaBancho-VERSION-javadoc.jar` - A jar including generated Javadocs
 
 ## Contribution
 Hirasawa Bancho is completely open to contribution, please feel free to open tickets or work on what we currently have in the
