@@ -45,6 +45,7 @@ test {
 }
 
 shadowJar {
+    archiveClassifier = ''
     relocate 'junit.framework', 'shadow.junit'
     manifest {
         attributes 'Main-Class': 'io.hirasawa.server.HirasawaBanchoKt'
