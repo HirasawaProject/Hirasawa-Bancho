@@ -106,7 +106,12 @@ class ChatEngine {
         if (commandName in chatCommands) {
             val chatCommand = chatCommands[commandName]?.first
             val context = CommandContext(sender, channel)
-            chatCommand?.onCommand(context, chatSegments[0], chatSegments.slice(IntRange(1, chatSegments.size - 1)))
+            try {
+                chatCommand?.onCommand(context, chatSegments[0], chatSegments.slice(IntRange(1, chatSegments.size - 1)))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                context.respond("An error occurred while executing that command")
+            }
         }
     }
 
