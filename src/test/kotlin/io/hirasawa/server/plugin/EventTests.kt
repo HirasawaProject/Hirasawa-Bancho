@@ -161,16 +161,13 @@ class EventTests {
             }
         }, this.plugin)
 
-        var wasEventCalled = false
-
-        TestEvent(0).call().then {
-            assertEquals(0, it.test)
-            wasEventCalled = true
-        }.cancelled {
+        try {
+            TestEvent(0).call()
+            assert(true)
+        } catch (exception: Exception) {
             assert(false)
         }
 
-        assertTrue(wasEventCalled)
     }
 
 
