@@ -152,6 +152,24 @@ class EventTests {
         assertTrue(wasSecondEventCalled)
     }
 
+    @Test
+    fun testEventSystemHandlesExceptions() {
+        Hirasawa.eventHandler.registerEvents(object: EventListener {
+            @EventHandler(EventPriority.NORMAL)
+            fun onTestEvent(testEvent: TestEvent) {
+                throw Exception("Test exception")
+            }
+        }, this.plugin)
+
+        try {
+            TestEvent(0).call()
+            assert(true)
+        } catch (exception: Exception) {
+            assert(false)
+        }
+
+    }
+
 
     class TestEvent(var test: Int): HirasawaEvent<TestEvent>
     class TestCanceledEvent(var test: Int): HirasawaEvent<TestCanceledEvent>, Cancelable()

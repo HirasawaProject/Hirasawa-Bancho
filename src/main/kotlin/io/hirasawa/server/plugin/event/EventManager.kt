@@ -22,7 +22,11 @@ class EventManager {
                 if (hirasawaEvent is Cancelable) {
                     if (hirasawaEvent.isCancelled && !function.annotation.bypassCancel) continue
                 }
-                function.call(hirasawaEvent)
+                try {
+                    function.call(hirasawaEvent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
