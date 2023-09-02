@@ -136,7 +136,7 @@ class IrcTests {
         writer.writeBytesAndFlush("JOIN #osu\r\n")
 
         assertEquals(":TCJCARC JOIN #osu", reader.nextLine())
-        assertEquals(":$host 332 TCJCARC #osu :Main channel", reader.nextLine())
+        assertEquals(":$host 332 TCJCARC #osu :The official osu! channel (english only).", reader.nextLine())
         assertEquals(":$host 353 TCJCARC = #osu :+TCJCARC", reader.nextLine())
         assertEquals(":$host 353 TCJCARC = #osu :BanchoBot", reader.nextLine())
         assertEquals(":$host 366 TCJCARC #osu :End of names", reader.nextLine())
@@ -162,7 +162,7 @@ class IrcTests {
 
         // Confirm user1 joined #osu
         assertEquals(":TCJCACBTC1 JOIN #osu", reader1.nextLine())
-        assertEquals(":$host 332 TCJCACBTC1 #osu :Main channel", reader1.nextLine())
+        assertEquals(":$host 332 TCJCACBTC1 #osu :The official osu! channel (english only).", reader1.nextLine())
         assertEquals(":$host 353 TCJCACBTC1 = #osu :+TCJCACBTC1", reader1.nextLine())
         assertEquals(":$host 353 TCJCACBTC1 = #osu :BanchoBot", reader1.nextLine())
         assertEquals(":$host 366 TCJCACBTC1 #osu :End of names", reader1.nextLine())
@@ -175,7 +175,7 @@ class IrcTests {
 
         // Confirm user2 joined #osu
         assertEquals(":TCJCACBTC2 JOIN #osu", reader2.nextLine())
-        assertEquals(":$host 332 TCJCACBTC2 #osu :Main channel", reader2.nextLine())
+        assertEquals(":$host 332 TCJCACBTC2 #osu :The official osu! channel (english only).", reader2.nextLine())
         assertEquals(":$host 353 TCJCACBTC2 = #osu :+TCJCACBTC1 +TCJCACBTC2", reader2.nextLine())
         assertEquals(":$host 353 TCJCACBTC2 = #osu :BanchoBot", reader2.nextLine())
         assertEquals(":$host 366 TCJCACBTC2 #osu :End of names", reader2.nextLine())
@@ -247,9 +247,21 @@ class IrcTests {
         val channelLines = arrayListOf(
             reader.nextLine(),
             reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
         )
         // We can't guarantee the order
-        assert(":$host 322 CCLC #osu 1 :Main channel" in channelLines)
+        assert(":$host 322 CCLC #osu 1 :The official osu! channel (english only)." in channelLines)
+        assert(":$host 322 CCLC #taiko 1 :Drums be bashing!" in channelLines)
+        assert(":$host 322 CCLC #osumania 1 :Notes dropping from above!" in channelLines)
+        assert(":$host 322 CCLC #ctb 1 :Fruit be falling!" in channelLines)
+        assert(":$host 322 CCLC #announce 1 :Automated announcements of stuff going on in this server." in channelLines)
+        assert(":$host 322 CCLC #lobby 1 :Advertise your Multiplayer game." in channelLines)
+        assert(":$host 322 CCLC #help 1 :Help for newbies." in channelLines)
         assert(":$host 322 CCLC #lounge 1 :Administration channel" in channelLines)
         assertEquals(":$host 323 CCLC :End of LIST", reader.nextLine())
 
