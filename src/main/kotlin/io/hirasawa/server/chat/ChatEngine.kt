@@ -51,7 +51,13 @@ class ChatEngine {
             return gson.fromJson(FileReader(File("channels.json")), Array<ChatChannelMetadata>::class.java).toCollection(ArrayList())
         } else {
             val config = arrayListOf(
-                ChatChannelMetadata("#osu", "Main channel", true),
+                ChatChannelMetadata("#osu", "The official osu! channel (english only).", true),
+                ChatChannelMetadata("#taiko", "Drums be bashing!", false),
+                ChatChannelMetadata("#osumania", "Notes dropping from above!", false),
+                ChatChannelMetadata("#ctb", "Fruit be falling!", false),
+                ChatChannelMetadata("#announce", "Automated announcements of stuff going on in this server.", false),
+                ChatChannelMetadata("#lobby", "Advertise your Multiplayer game.", false),
+                ChatChannelMetadata("#help", "Help for newbies.", false),
                 ChatChannelMetadata("#lounge", "Administration channel", false)
             )
             val writer = FileWriter("channels.json")
