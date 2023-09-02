@@ -1,5 +1,7 @@
 package io.hirasawa.server.chat
 
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.packets.ChannelAvailableAutojoinPacket
 import io.hirasawa.server.chat.command.ChatCommand
@@ -13,10 +15,17 @@ import io.hirasawa.server.bancho.packets.SendMessagePacket
 import io.hirasawa.server.bancho.user.BanchoUser
 import io.hirasawa.server.bancho.user.User
 import io.hirasawa.server.chat.enums.ChatChannelVisibility
+import io.hirasawa.server.config.ChatChannelMetadataSerialiser
+import io.hirasawa.server.config.HirasawaConfig
+import io.hirasawa.server.config.ModsSerialiser
 import io.hirasawa.server.irc.clientcommands.Privmsg
 import io.hirasawa.server.irc.objects.IrcUser
+import io.hirasawa.server.objects.Mods
 import io.hirasawa.server.plugin.HirasawaPlugin
 import io.hirasawa.server.plugin.event.chat.UserChatEvent
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
 import kotlin.collections.HashMap
 
 class ChatEngine {
@@ -24,6 +33,33 @@ class ChatEngine {
     val privateChatChannels = HashMap<User, HashMap<String, ChatChannel>>()
     val chatCommands = HashMap<String, Pair<ChatCommand, HirasawaPlugin>>()
     val connectedUsers = ArrayList<User>()
+
+    init {
+        val channels = loadConfig()
+        for (channel in channels) {
+            chatChannels[channel.name] = GlobalChatChannel(channel)
+        }
+    }
+
+    private fun loadConfig(): ArrayList<ChatChannelMetadata> {
+        val gson = GsonBuilder()
+            .registerTypeAdapter(ChatChannel::class.java, ChatChannelMetadataSerialiser())
+            .setPrettyPrinting()
+            .create()
+
+        if (File("channels.json").exists()) {
+            return gson.fromJson(FileReader(File("channels.json")), Array<ChatChannelMetadata>::class.java).toCollection(ArrayList())
+        } else {
+            val config = arrayListOf(
+                ChatChannelMetadata("#osu", "Main channel", true),
+                ChatChannelMetadata("#lounge", "Administration channel", false)
+            )
+            val writer = FileWriter("channels.json")
+            gson.toJson(config, writer)
+            writer.close()
+            return config
+        }
+    }
 
     operator fun set(key: String, value: ChatChannel) {
         chatChannels[key] = value
