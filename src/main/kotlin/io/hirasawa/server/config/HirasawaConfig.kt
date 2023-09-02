@@ -8,8 +8,8 @@ import io.hirasawa.server.enums.Mod
 import io.hirasawa.server.objects.Mods
 
 data class HirasawaConfig (val httpPort: Int, val ircPort: Int, val database: DatabaseCredentials,
-                           val channels: List<ChatChannelMetadata>, val banchoUserTimeout: Int, val ircUserTimeout: Int,
-                           val banchoBotId: Int, val domain: String, val blockedMods: List<Mod>, val osuApiKey: String,
+                           val banchoUserTimeout: Int, val ircUserTimeout: Int, val banchoBotId: Int,
+                           val domain: String, val blockedMods: List<Mod>, val osuApiKey: String,
                            val ircWelcomeMessage: String, val ircMotd: List<String>, val multiplayerFreeMods: Mods,
                            val defaultRankingState: DefaultRankingState
 ) {
@@ -17,10 +17,6 @@ data class HirasawaConfig (val httpPort: Int, val ircPort: Int, val database: Da
         8080,
         6667,
         DatabaseCredentials(),
-        arrayListOf(
-            ChatChannelMetadata("#osu", "Main channel", true),
-            ChatChannelMetadata("#lounge", "Administration channel", false)
-        ),
         60,
         60,
         3,

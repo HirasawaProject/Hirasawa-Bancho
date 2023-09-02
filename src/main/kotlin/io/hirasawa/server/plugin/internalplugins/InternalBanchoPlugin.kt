@@ -23,11 +23,6 @@ class InternalBanchoPlugin: HirasawaPlugin() {
         registerPackets()
         registerCommands()
 
-        // Setup chat channels
-        for (channel in Hirasawa.config.channels) {
-            Hirasawa.chatEngine[channel.name] = GlobalChatChannel(channel)
-        }
-
         // Add Hirasawa's "BanchoBot" to the player list
         // This allows users to see them as being online
         Hirasawa.banchoUsers.add(Hirasawa.banchoBot)
