@@ -238,7 +238,7 @@ class Hirasawa {
                 for (beatmap in beatmaps) {
                     BeatmapsTable.insert {
                         it[BeatmapsTable.mapsetId] = id.value
-                        it[BeatmapsTable.difficulty] = beatmap.version
+                        it[BeatmapsTable.difficultyName] = beatmap.version
                         it[BeatmapsTable.hash] = beatmap.fileMd5
                         it[BeatmapsTable.offset] = 0F
                         it[BeatmapsTable.osuId] = beatmap.beatmapId
