@@ -59,7 +59,7 @@ class Helper {
             return Beatmap(transaction {
                 val beatmapId = BeatmapsTable.insertAndGetId {
                     it[BeatmapsTable.mapsetId] = mapsetId
-                    it[BeatmapsTable.difficulty] = "HARD"
+                    it[BeatmapsTable.difficultyName] = "HARD"
                     it[BeatmapsTable.hash] = hash
                     it[BeatmapsTable.offset] = 0F
                     it[BeatmapsTable.osuId] = Random.nextInt()

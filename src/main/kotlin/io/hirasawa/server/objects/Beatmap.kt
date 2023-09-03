@@ -14,7 +14,7 @@ data class Beatmap(var id: Int, val osuId: Int, var mapsetId: Int, var difficult
                    val bpm: Float, val hasStoryboard: Boolean, val maxCombo: Int) {
 
     constructor(result: ResultRow): this(result[BeatmapsTable.id].value, result[BeatmapsTable.osuId],
-        result[BeatmapsTable.mapsetId], result[BeatmapsTable.difficulty], result[BeatmapsTable.hash],
+        result[BeatmapsTable.mapsetId], result[BeatmapsTable.difficultyName], result[BeatmapsTable.hash],
         result[BeatmapsTable.offset], result[BeatmapsTable.totalLength], result[BeatmapsTable.hitLength],
         result[BeatmapsTable.circleSize], result[BeatmapsTable.overallDifficulty], result[BeatmapsTable.approachRate],
         result[BeatmapsTable.healthDrain], Mode.values()[result[BeatmapsTable.mode]], result[BeatmapsTable.countNormal],
