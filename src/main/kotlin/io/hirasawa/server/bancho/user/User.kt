@@ -67,6 +67,16 @@ abstract class User(val id: Int, val username: String, val timezone: Byte, val c
     }
 
     /**
+     * Can this user see this channel?
+     */
+    fun canSeeChannel(channel: ChatChannel): Boolean = channel.canUserSee(this)
+
+    /**
+     * Can this user talk within this channel?
+     */
+    fun canTalkInChannel(channel: ChatChannel): Boolean = channel.canUserTalk(this)
+
+    /**
      * Revokes the ChatChannel from the user, this will cause the channel to be removed from the user's client
      */
     abstract fun revokeChatChannel(chatChannel: ChatChannel)
