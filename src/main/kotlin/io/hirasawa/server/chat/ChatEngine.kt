@@ -143,6 +143,9 @@ class ChatEngine {
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
+        if (chatMessage.channel.canUserSee(chatMessage.source)) {
+            return
+        }
         chatMessage.channel.sendMessage(chatMessage)
 
         if (chatMessage.message.startsWith("!")) {
