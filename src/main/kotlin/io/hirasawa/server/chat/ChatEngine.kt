@@ -143,7 +143,7 @@ class ChatEngine {
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
-        if (chatMessage.channel.canUserSee(chatMessage.source)) {
+        if (chatMessage.channel.canUserTalk(chatMessage.source)) {
             return
         }
         chatMessage.channel.sendMessage(chatMessage)
