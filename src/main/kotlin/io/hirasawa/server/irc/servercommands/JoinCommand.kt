@@ -7,7 +7,8 @@ import io.hirasawa.server.irc.objects.IrcUser
 class JoinCommand: IrcServerCommand {
     override fun handle(user: IrcUser, command: String, args: Array<String>) {
         val channel = Hirasawa.chatEngine[user, args[0]]
-        if (channel == null) {
+        // TODO use channel join event
+        if (channel == null || !channel.canUserSee(user)) {
             user.sendReply(ErrNoSuchChannel(args[0]))
             return
         }
