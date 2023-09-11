@@ -117,6 +117,15 @@ class ChatEngine {
         }
     }
 
+    /**
+     * Get all channels the specified user is able to see
+     */
+    fun getChannels(user: User): ArrayList<ChatChannel> {
+        val globalChannels = chatChannels.filter { it.value.canUserSee(user) }.values
+        val privateChannels = (privateChatChannels[user] ?: hashMapOf()).values
+        return ArrayList(globalChannels + privateChannels)
+    }
+
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
         when (chatMessage.destination) {
             is BanchoUser -> {
