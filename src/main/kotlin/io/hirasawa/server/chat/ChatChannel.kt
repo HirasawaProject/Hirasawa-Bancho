@@ -128,9 +128,11 @@ abstract class ChatChannel(val metadata: ChatChannelMetadata,
 
     /**
      * Does the specified user have permission to talk within the channel?
+     *
+     * This function will use the see permission if the talk permission is not set
      */
     fun canUserTalk(user: User): Boolean {
-        val talkPermission = metadata.canTalkPermission ?: return true
+        val talkPermission = metadata.canTalkPermission ?: metadata.canSeePermission ?: return true
         return user.hasPermission(talkPermission)
     }
 
