@@ -252,7 +252,6 @@ class IrcTests {
             reader.nextLine(),
             reader.nextLine(),
             reader.nextLine(),
-            reader.nextLine(),
         )
         // We can't guarantee the order
         assert(":$host 322 CCLC #osu 1 :The official osu! channel (english only)." in channelLines)
@@ -262,7 +261,6 @@ class IrcTests {
         assert(":$host 322 CCLC #announce 1 :Automated announcements of stuff going on in this server." in channelLines)
         assert(":$host 322 CCLC #lobby 1 :Advertise your Multiplayer game." in channelLines)
         assert(":$host 322 CCLC #help 1 :Help for newbies." in channelLines)
-        assert(":$host 322 CCLC #lounge 1 :Administration channel" in channelLines)
         assertEquals(":$host 323 CCLC :End of LIST", reader.nextLine())
 
         writer.writeBytesAndFlush("QUIT\r\n")
