@@ -55,10 +55,10 @@ class ChatEngine {
                 ChatChannelMetadata("#taiko", "Drums be bashing!", false),
                 ChatChannelMetadata("#osumania", "Notes dropping from above!", false),
                 ChatChannelMetadata("#ctb", "Fruit be falling!", false),
-                ChatChannelMetadata("#announce", "Automated announcements of stuff going on in this server.", false),
+                ChatChannelMetadata("#announce", "Automated announcements of stuff going on in this server.", false, canTalkPermission = "hirasawa.client.admin"),
                 ChatChannelMetadata("#lobby", "Advertise your Multiplayer game.", false),
                 ChatChannelMetadata("#help", "Help for newbies.", false),
-                ChatChannelMetadata("#lounge", "Administration channel", false)
+                ChatChannelMetadata("#lounge", "Administration channel", false, canSeePermission = "hirasawa.client.moderator")
             )
             val writer = FileWriter("channels.json")
             gson.toJson(config, writer)
@@ -117,6 +117,15 @@ class ChatEngine {
         }
     }
 
+    /**
+     * Get all channels the specified user is able to see
+     */
+    fun getChannels(user: User): ArrayList<ChatChannel> {
+        val globalChannels = chatChannels.filter { it.value.canUserSee(user) }.values
+        val privateChannels = (privateChatChannels[user] ?: hashMapOf()).values
+        return ArrayList(globalChannels + privateChannels)
+    }
+
     private fun handlePrivateChat(chatMessage: PrivateChatMessage) {
         when (chatMessage.destination) {
             is BanchoUser -> {
@@ -134,6 +143,9 @@ class ChatEngine {
     }
 
     private fun handleGlobalChat(chatMessage: GlobalChatMessage) {
+        if (!chatMessage.channel.canUserTalk(chatMessage.source)) {
+            return
+        }
         chatMessage.channel.sendMessage(chatMessage)
 
         if (chatMessage.message.startsWith("!")) {

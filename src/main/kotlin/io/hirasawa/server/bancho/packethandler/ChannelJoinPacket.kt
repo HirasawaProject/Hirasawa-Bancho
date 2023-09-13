@@ -14,7 +14,7 @@ class ChannelJoinPacket: PacketHandler(BanchoPacketType.OSU_CHANNEL_JOIN) {
         val channelName = reader.readString()
 
         val channel = Hirasawa.chatEngine[user, channelName]
-        if (channel == null) {
+        if (channel == null || !channel.canUserSee(user)) {
             user.sendPacket(ChannelRevokedPacket(channelName))
         } else {
             if (user in channel.connectedUsers) {

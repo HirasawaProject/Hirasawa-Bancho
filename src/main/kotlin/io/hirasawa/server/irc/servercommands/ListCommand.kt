@@ -10,11 +10,8 @@ import io.hirasawa.server.irc.objects.IrcUser
 class ListCommand: IrcServerCommand {
     override fun handle(user: IrcUser, command: String, args: Array<String>) {
         user.sendReply(RplListStart())
-        for (channel in Hirasawa.chatEngine.chatChannels) {
-            user.sendReply(RplList(channel.value))
-        }
-        for (channel in Hirasawa.chatEngine.privateChatChannels[user] ?: HashMap()) {
-            user.sendReply(RplList(channel.value))
+        for (channel in Hirasawa.chatEngine.getChannels(user)) {
+            user.sendReply(RplList(channel))
         }
         user.sendReply(RplListEnd())
     }

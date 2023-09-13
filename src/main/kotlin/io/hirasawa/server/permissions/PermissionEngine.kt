@@ -11,11 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transactionScope
 
 class PermissionEngine(val permissionGroups: HashMap<String, PermissionGroup>) {
     init {
-        transaction {
-            (PermissionNodesTable leftJoin PermissionGroupsTable).selectAll().forEach {
-                permissionGroups[it[PermissionGroupsTable.name]]?.addPermission(it[PermissionNodesTable.node])
-            }
-        }
+        this.reload()
     }
 
     fun addGroup(group: PermissionGroup) {
@@ -71,6 +67,18 @@ class PermissionEngine(val permissionGroups: HashMap<String, PermissionGroup>) {
         }
 
         return clientPermissions.toByte()
+    }
+
+    fun reload() {
+        permissionGroups.clear()
+        transaction {
+            (PermissionNodesTable leftJoin PermissionGroupsTable).selectAll().forEach {
+                if (it[PermissionGroupsTable.name] !in permissionGroups.keys) {
+                    permissionGroups[it[PermissionGroupsTable.name]] = PermissionGroup(it[PermissionGroupsTable.name])
+                }
+                permissionGroups[it[PermissionGroupsTable.name]]?.addPermission(it[PermissionNodesTable.node])
+            }
+        }
     }
 
 }

@@ -126,6 +126,24 @@ abstract class ChatChannel(val metadata: ChatChannelMetadata,
         Hirasawa.chatEngine.removeChannel(this)
     }
 
+    /**
+     * Does the specified user have permission to talk within the channel?
+     *
+     * This function will use the see permission if the talk permission is not set
+     */
+    fun canUserTalk(user: User): Boolean {
+        val talkPermission = metadata.canTalkPermission ?: metadata.canSeePermission ?: return true
+        return user.hasPermission(talkPermission)
+    }
+
+    /**
+     * Does the specified user have permission to see the channel?
+     */
+    fun canUserSee(user: User): Boolean {
+        val seePermission = metadata.canSeePermission ?: return true
+        return user.hasPermission(seePermission)
+    }
+
     private fun update() {
         when (visibility) {
             ChatChannelVisibility.PRIVATE -> {

@@ -1,6 +1,7 @@
 package io.hirasawa.server.webserver
 
 import at.favre.lib.crypto.bcrypt.BCrypt
+import io.hirasawa.server.Hirasawa
 import io.hirasawa.server.bancho.enums.Mode
 import io.hirasawa.server.bancho.objects.UserStats
 import io.hirasawa.server.bancho.user.BanchoUser
@@ -13,11 +14,12 @@ import io.hirasawa.server.objects.Score
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 class Helper {
     companion object {
-        fun createUser(username: String, ircToken: String? = "ircToken"): User {
+        fun createUser(username: String, ircToken: String? = "ircToken", permissions: ArrayList<String> = arrayListOf()): User {
             return BanchoUser(transaction {
                 val userId = UsersTable.insertAndGetId {
                     it[UsersTable.username] = username
@@ -25,6 +27,26 @@ class Helper {
                     it[UsersTable.isBanned] = false
                     it[UsersTable.ircToken] = ircToken
                     it[UsersTable.email] = ""
+                }
+
+                if (permissions.isNotEmpty()) {
+                    val permissionGroupId = PermissionGroupsTable.insertAndGetId {
+                        it[PermissionGroupsTable.name] = "$username group"
+                    }
+
+                    permissions.forEach { permission ->
+                        PermissionNodesTable.insert {
+                            it[PermissionNodesTable.node] = permission
+                            it[PermissionNodesTable.groupId] = permissionGroupId.value
+                        }
+                    }
+
+                    PermissionGroupUserTable.insert {
+                        it[PermissionGroupUserTable.groupId] = permissionGroupId.value
+                        it[PermissionGroupUserTable.userId] = userId.value
+                    }
+
+                    Hirasawa.permissionEngine.reload()
                 }
 
                 UsersTable.select { UsersTable.id eq userId }.first()
