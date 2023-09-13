@@ -267,4 +267,37 @@ class IrcTests {
         assertTrue(socket.getInputStream().read() == -1) // Basic check to see if socket is closed
         socket.close()
     }
+
+    @Test
+    fun canClientListChannelsIncludingPrivilegedChannels() {
+        createUser("CCLCIPC", permissions = arrayListOf("hirasawa.client.moderator"))
+        val (socket, writer, reader) = connectToIrc("CCLCIPC", "ircToken")
+        reader.skipMotd()
+        writer.writeBytesAndFlush("LIST\r\n")
+        assertEquals(":$host 321 CCLCIPC Channel :Users Name", reader.nextLine())
+        val channelLines = arrayListOf(
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+            reader.nextLine(),
+        )
+        // We can't guarantee the order
+        assert(":$host 322 CCLCIPC #osu 1 :The official osu! channel (english only)." in channelLines)
+        assert(":$host 322 CCLCIPC #taiko 1 :Drums be bashing!" in channelLines)
+        assert(":$host 322 CCLCIPC #osumania 1 :Notes dropping from above!" in channelLines)
+        assert(":$host 322 CCLCIPC #ctb 1 :Fruit be falling!" in channelLines)
+        assert(":$host 322 CCLCIPC #announce 1 :Automated announcements of stuff going on in this server." in channelLines)
+        assert(":$host 322 CCLCIPC #lobby 1 :Advertise your Multiplayer game." in channelLines)
+        assert(":$host 322 CCLCIPC #help 1 :Help for newbies." in channelLines)
+        assert(":$host 322 CCLCIPC #lounge 1 :Administration channel" in channelLines)
+        assertEquals(":$host 323 CCLCIPC :End of LIST", reader.nextLine())
+
+        writer.writeBytesAndFlush("QUIT\r\n")
+        assertTrue(socket.getInputStream().read() == -1) // Basic check to see if socket is closed
+        socket.close()
+    }
 }
