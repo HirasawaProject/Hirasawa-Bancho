@@ -18,7 +18,7 @@ data class Release(val url: String, val assetsUrl: String, val tagName: String, 
 
     fun getRelease(releaseType: AssetType): Asset? {
         for (asset in assets) {
-            if (releaseType == releaseType) {
+            if (asset.releaseType == releaseType) {
                 return asset
             }
         }
@@ -27,16 +27,23 @@ data class Release(val url: String, val assetsUrl: String, val tagName: String, 
 
     data class Asset(val url: String, val browserDownloadUrl: String, val name: String) {
         val releaseType: AssetType get() {
-            return if (name.endsWith("-all.jar")) {
-                AssetType.HIRASAWA_RELEASE
-            } else {
-                AssetType.UNKNOWN
+            val segments = name.split("-")
+            return when {
+                segments.size < 2 -> AssetType.UNKNOWN
+                segments.size == 2 -> AssetType.HIRASAWA_RELEASE
+                segments[1] == "javadoc" -> AssetType.JAVADOC
+                segments[1] == "sources" -> AssetType.SOURCES
+                segments[1] == "api" -> AssetType.API
+                else -> AssetType.UNKNOWN
             }
         }
     }
 
     enum class AssetType {
         HIRASAWA_RELEASE,
+        JAVADOC,
+        SOURCES,
+        API,
         UNKNOWN
     }
 }

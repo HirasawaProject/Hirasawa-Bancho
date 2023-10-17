@@ -45,9 +45,26 @@ test {
 }
 
 shadowJar {
+    archiveClassifier = ''
     relocate 'junit.framework', 'shadow.junit'
     manifest {
         attributes 'Main-Class': 'io.hirasawa.server.HirasawaBanchoKt'
         attributes 'Implementation-Version': project.version
     }
+}
+
+task api(type: Jar) {
+    archiveClassifier = 'api'
+    from sourceSets.main.output
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier = 'javadoc'
+    from dokkaJavadoc.getOutputDirectory()
+}
+
+build {
+    dependsOn shadowJar
+    dependsOn api
+    dependsOn javadocJar
 }
